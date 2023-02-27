@@ -1,0 +1,85 @@
+generator client {
+  provider       = "prisma-client-js"
+  previewFeature = ["mongodb"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  firstName    String
+  lastName     String
+  phoneNumber  String    @unique
+  password     String
+  refreshToken String
+  blocked      Boolean
+  age          Int
+  balance      Int
+  countryCode  Int
+  addresses    Address[]
+  Cart         Cart?
+}
+
+type Address {
+  country String
+  city    String
+  address String
+}
+
+model Cart {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @unique @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  productsId String[] @db.ObjectId
+  product    Product  @relation(fields: [productsId], references: [id])
+  varientId  String   @db.ObjectId
+}
+
+model Product {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  description  String
+  wage         Int
+  weight       Int
+  weightUnit   Int
+  quantity     Int
+  lockQuantity Int
+  discount     Int
+  metaData     MetaData[]
+  installment  Installment
+  varients     Varient[]
+  Cart         Cart[]
+}
+
+type MetaData {
+  property String
+  value    String
+}
+
+type Installment {
+  available Boolean
+  minWeight Int
+  deadLine  Int
+}
+
+type Varient {
+  varientId    String      @db.ObjectId
+  varients     String[]
+  wage         Int
+  weight       Int
+  quantity     Int
+  lockQuantity Int
+  discount     Int
+  installment  Installment
+}
+
+model Admin {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  userName     String @unique
+  password     String
+  refreshToken String
+  permissions  Int[]
+}
