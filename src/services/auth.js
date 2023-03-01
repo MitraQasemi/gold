@@ -51,7 +51,6 @@ const login = async (user) => {
                 username: username,
             }
         })
-        console.log(foundedUser)
 
         if (!foundedUser) {
             return "this user does not exist";
