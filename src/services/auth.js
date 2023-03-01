@@ -45,10 +45,10 @@ const signup = async (user) => {
 
 const login = async (user) => {
     try {
-        const {username, password} = user;
+        const { username, password } = user;
         const foundedUser = await prisma.admin.findUnique({
             where: {
-                username: username, 
+                username: username,
             }
         })
         console.log(foundedUser)
@@ -60,6 +60,25 @@ const login = async (user) => {
         if (!isMatch) {
             return "wrong password ";
         }
+
+        const accessToken = JWT.sign({
+            username,
+        }, process.env.JWT_SECRET_ACCESS
+            , { expiresIn: 3600000 })
+        const refreshToken = JWT.sign({
+            username,
+        }, process.env.JWT_SECRET_REFRESH
+            , { expiresIn: 3600000 * 1000 })
+
+        const updateUser = await prisma.admin.update({
+            where: {
+                username: username,
+            },
+            data: {
+                refreshToken: refreshToken,
+            },
+        })
+        return accessToken;
     } catch (error) {
         throw error;
     }
