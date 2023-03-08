@@ -5,9 +5,9 @@ require("dotenv").config({ path: "../.env" });
 
 const prisma = new PrismaClient()
 
-const adminSignup = async (user) => {
+const adminSignup = async (admin) => {
     try {
-        const { username, password } = user;
+        const { username, password } = admin;
         const result = await prisma.admin.findUnique({
             where: {
                 username: username,
@@ -43,9 +43,9 @@ const adminSignup = async (user) => {
     }
 }
 
-const adminLogin = async (user) => {
+const adminLogin = async (admin) => {
     try {
-        const { username, password } = user;
+        const { username, password } = admin;
         const foundedUser = await prisma.admin.findUnique({
             where: {
                 username: username,
