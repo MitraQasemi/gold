@@ -41,7 +41,39 @@ const userSignup = async (user) => {
 
 const userLogin = async (user) => {
     try {
+        const { phoneNumber, password } = admin;
+        const foundedUser = await prisma.user.findUnique({
+            where: {
+                phoneNumber: phoneNumber,
+            }
+        })
 
+        if (!foundedUser) {
+            return "this user does not exist";
+        }
+        const isMatch = await bcrypt.compare(password, foundedUser.password);
+        if (!isMatch) {
+            return "wrong password ";
+        }
+
+        const accessToken = JWT.sign({
+            phoneNumber,
+        }, process.env.JWT_SECRET_ACCESS
+            , { expiresIn: 3600000 })
+        const refreshToken = JWT.sign({
+            phoneNumber,
+        }, process.env.JWT_SECRET_REFRESH
+            , { expiresIn: 3600000 * 1000 })
+
+        await prisma.user.update({
+            where: {
+                phoneNumber: phoneNumber,
+            },
+            data: {
+                refreshToken: refreshToken,
+            },
+        })
+        return accessToken;
     } catch (error) {
         throw error;
     }
@@ -68,7 +100,7 @@ const userSignupVerification = async (user) => {
                 phoneNumber,
             }, process.env.JWT_SECRET_REFRESH
                 , { expiresIn: 3600000 * 1000 })
-    
+
             await prisma.user.create({
                 data: {
                     phoneNumber,
