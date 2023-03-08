@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 
 const adminSignup = async (admin) => {
     try {
-        const { username, password } = admin;
+        const { username, password, Permissions } = admin;
         const result = await prisma.admin.findUnique({
             where: {
                 username: username,
@@ -33,6 +33,7 @@ const adminSignup = async (admin) => {
             data: {
                 username,
                 password: hashedPassword,
+                Permissions,
                 refreshToken
             },
         })
