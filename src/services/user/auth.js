@@ -3,7 +3,7 @@ const JWT = require("jsonwebtoken");
 const axios = require('axios');
 const { Level } = require('level')
 
-const db = new Level('./leveldb', { valueEncoding: 'json' })
+const db = new Level('../../E/leveldb', { valueEncoding: 'json' })
 const { PrismaClient } = require('@prisma/client');
 require("dotenv").config({ path: "../.env" });
 
