@@ -57,14 +57,6 @@ const userSignupVerification = async (user) => {
 
         const dateNow = new Date();
         dateNow.toString();
-
-        const date1 = data.time.split(":");
-        const date2 = dateNow.split(":");
-        
-
-        if (date2[2] - date1[2] > 2 || date2[2] - date1[2] < 2 ) {
-3
-        }
         if (data.code == code) {
 
         } else {
