@@ -21,11 +21,8 @@ const userSignup = async (user) => {
             return "this user already exists";
         }
 
-        const date = new Date();
-        date.toString();
-
         const code = Math.floor(Math.random() * (99999 - 9999)) + 9999;
-        await db.put(phoneNumber, { code: code, time: date })
+        await db.put(phoneNumber, { code: code, time: Date.now() })
 
         const apiKey = "627269524D4A464252476F584B6264684A4D6B6A57387654343461645A713644344C7348674A67567943513D"
         const template = "chalak"
@@ -52,13 +49,34 @@ const userLogin = async (user) => {
 
 const userSignupVerification = async (user) => {
     try {
-        const { phoneNumber, code } = user;
+        const { phoneNumber, code, password } = user;
         const data = await db.get(phoneNumber);
 
-        const dateNow = new Date();
-        dateNow.toString();
+        if (Date.now() - data.time > 120000) {
+            db.del(phoneNumber);
+            return "verification failed"
+        }
+
         if (data.code == code) {
 
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const accessToken = JWT.sign({
+                phoneNumber,
+            }, process.env.JWT_SECRET_ACCESS
+                , { expiresIn: 3600000 })
+            const refreshToken = JWT.sign({
+                phoneNumber,
+            }, process.env.JWT_SECRET_REFRESH
+                , { expiresIn: 3600000 * 1000 })
+    
+            await prisma.user.create({
+                data: {
+                    phoneNumber,
+                    password: hashedPassword,
+                    refreshToken
+                },
+            })
+            return accessToken;
         } else {
             return "verification failed"
         }
