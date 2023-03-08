@@ -10,15 +10,15 @@ datasource db {
 
 model User {
   id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  firstName    String
-  lastName     String
+  firstName    String?
+  lastName     String?
   phoneNumber  String    @unique
   password     String
   refreshToken String
-  blocked      Boolean
-  age          Int
-  balance      Int
-  countryCode  Int
+  blocked      Boolean?
+  age          Int?
+  balance      Int?
+  countryCode  Int?
   addresses    Address[]
   Cart         Cart?
 }

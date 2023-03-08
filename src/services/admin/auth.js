@@ -69,7 +69,7 @@ const adminLogin = async (admin) => {
         }, process.env.JWT_SECRET_REFRESH
             , { expiresIn: 3600000 * 1000 })
 
-        const updateUser = await prisma.admin.update({
+        await prisma.admin.update({
             where: {
                 username: username,
             },
