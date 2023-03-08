@@ -5,7 +5,7 @@ const { adminSignup, adminLogin } = require("../../../services/admin/auth");
 
 const func = (app) => {
     app.use(route);
-    route.post("/adminSignup/v1", async (req, res, next) => {
+    route.post("/adminSignup", async (req, res, next) => {
         try {
             const result = await adminSignup(req.body);
             return res.send(result);
@@ -14,7 +14,7 @@ const func = (app) => {
         }
     })
 
-    route.post("/adminLogin/v1", async (req, res, next) => {
+    route.post("/adminLogin", async (req, res, next) => {
         try {
             const result = await adminLogin(req.body);
             return res.send(result);

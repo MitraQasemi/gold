@@ -2,11 +2,11 @@ const express = require("express");
 const httpStatus = require('http-status-codes');
 require("dotenv").config({path:"../.env"});
 
-const routes = require("../routes");
+const routes = require("../routes/v1");
 
 const expressLoader = async (app) => {
     app.use(express.json());
-    app.use("/api", routes());
+    app.use("/v1", routes());
 
     app.listen(process.env.PORT, () => {
         console.log(`on port ${process.env.PORT}`);
