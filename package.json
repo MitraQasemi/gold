@@ -17,6 +17,7 @@
     "http-status-codes": "^2.2.0",
     "jsonwebtoken": "^9.0.0",
     "level": "^8.0.0",
-    "prisma": "^4.10.1"
+    "prisma": "^4.10.1",
+    "simple-data-storage": "^1.0.0"
   }
 }

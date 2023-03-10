@@ -10,23 +10,23 @@ datasource db {
 
 model User {
   id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  firstName    String?
-  lastName     String?
+  firstName    String    @default("")
+  lastName     String    @default("")
   phoneNumber  String    @unique
   password     String
   refreshToken String
-  blocked      Boolean?
-  age          Int?
-  balance      Int?
-  countryCode  Int?
+  blocked      Boolean?  @default(false)
+  age          Int       @default(0)
+  balance      Int       @default(0)
+  countryCode  Int       @default(0)
   addresses    Address[]
   Cart         Cart?
 }
 
 type Address {
-  country String
-  city    String
-  address String
+  country String 
+  city    String 
+  address String 
 }
 
 model Cart {
