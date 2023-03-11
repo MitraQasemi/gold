@@ -1,7 +1,7 @@
 const express = require("express");
 const route = express.Router();
 
-const { userSignupVerification, userSignup, userLogin } = require("../../../services/user/auth");
+const { userSignupVerification, userSignup, userLogin } = require("../../../../services/user/auth");
 
 const func = (app) => {
     app.use(route);

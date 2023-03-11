@@ -1,7 +1,7 @@
 const express = require("express");
 const route = express.Router();
 
-const { forgetPassword, forgetPasswordVerification } = require("../../../services/user/forgetPassword.js");
+const { forgetPassword, forgetPasswordVerification } = require("../../../../services/user/forgetPassword.js");
 
 const func = (app) => {
     app.use(route);

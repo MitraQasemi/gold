@@ -1,7 +1,7 @@
 const express = require("express");
 const route = express.Router();
 
-const { adminSignup, adminLogin } = require("../../../services/admin/auth");
+const { adminSignup, adminLogin } = require("../../../../services/admin/auth");
 
 const func = (app) => {
     app.use(route);
