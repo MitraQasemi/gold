@@ -14,7 +14,7 @@ model User {
   lastName     String    @default("")
   phoneNumber  String    @unique
   password     String
-  refreshToken String
+  refreshToken String    @default("")
   blocked      Boolean?  @default(false)
   age          Int       @default(0)
   balance      Int       @default(0)
@@ -24,9 +24,9 @@ model User {
 }
 
 type Address {
-  country String 
-  city    String 
-  address String 
+  country String
+  city    String
+  address String
 }
 
 model Cart {
@@ -77,8 +77,9 @@ type Varient {
 }
 
 model Admin {
-  id           String @id @default(auto()) @map("_id") @db.ObjectId
-  username     String @unique
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  username     String   @unique
   password     String
-  refreshToken String
+  permissions  String[] @default([])
+  refreshToken String   @default("")
 }
