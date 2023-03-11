@@ -91,6 +91,7 @@ const userSignupVerification = async (user) => {
             if (data.code == code) {
 
                 SData.clear(phoneNumber);
+
                 const hashedPassword = await bcrypt.hash(password, 10);
                 const accessToken = JWT.sign({
                         phoneNumber,
