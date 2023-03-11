@@ -1,6 +1,6 @@
 const express = require("express");
 const route = express.Router();
-
+const jwtMiddleware = require("../../../middlewares/jwtMiddleware");
 const { userSignupVerification, userSignup, userLogin } = require("../../../../services/user/auth");
 
 const func = (app) => {
@@ -30,6 +30,9 @@ const func = (app) => {
         } catch (error) {
             return next(error);
         }
+    })
+    route.post("/test",jwtMiddleware,(req,res)=>{
+        return res.send("jwt middleware works")
     })
 }
 
