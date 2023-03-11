@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 
 const adminSignup = async (admin) => {
     try {
-        const { username, password } = admin;
+        const { username, password, permissions } = admin;
         const result = await prisma.admin.findUnique({
             where: {
                 username: username,
@@ -19,6 +19,8 @@ const adminSignup = async (admin) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
+
+        const permissionsString = JSON.stringify(permissions)
 
         const accessToken = JWT.sign({
             username,
@@ -33,6 +35,7 @@ const adminSignup = async (admin) => {
             data: {
                 username,
                 password: hashedPassword,
+                permissions: permissionsString,
                 refreshToken
             },
         })
