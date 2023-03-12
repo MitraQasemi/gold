@@ -42,7 +42,9 @@ const createUser = async (userDetails) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     userDetails.password = hashedPassword
-    const user = await prisma.user.create(userDetails);
+    const user = await prisma.user.create({
+      data: userDetails
+    });
 
     return user;
   } catch (error) {
@@ -82,6 +84,16 @@ const editUser = async (userId, newDetails) => {
 
 const deleteUser = async (userId) => {
   try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId
+      }
+    })
+
+    if (!user) {
+      return "user not exist"
+    }
+
     const result = await prisma.user.delete({
       where: {
         id: userId
