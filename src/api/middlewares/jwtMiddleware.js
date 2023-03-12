@@ -9,7 +9,7 @@ module.exports = async (req, res, next) => {
     }
     try {
         let user = await JWT.verify(token, process.env.JWT_SECRET_ACCESS );
-        req.user = user.id;
+        req.user = user;
         next();
     } catch (e) {
         res.send("token invalid")
