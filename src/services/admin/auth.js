@@ -67,17 +67,17 @@ const adminLogin = async (admin) => {
         }
 
         const accessToken = JWT.sign({
-                id:foundedUser.id,
+                id: foundedUser.id,
             }, process.env.JWT_SECRET_ACCESS
             , {expiresIn: 3600000})
         const refreshToken = JWT.sign({
-                id:foundedUser.id,
+                id: foundedUser.id,
             }, process.env.JWT_SECRET_REFRESH
             , {expiresIn: 3600000 * 1000})
 
         await prisma.admin.update({
             where: {
-                id:foundedUser.id,
+                id: foundedUser.id,
             },
             data: {
                 refreshToken: refreshToken,
@@ -88,4 +88,22 @@ const adminLogin = async (admin) => {
         throw error;
     }
 }
-module.exports = {adminSignup, adminLogin};
+
+const adminLogout = async (user) => {
+    try {
+        const {id} = user;
+        await prisma.Admin.update({
+            where: {
+                id: id
+            },
+            data: {
+                refreshToken:""
+            }
+        })
+        return "loged out"
+
+    } catch (error) {
+        throw error;
+    }
+}
+module.exports = {adminSignup, adminLogin, adminLogout};

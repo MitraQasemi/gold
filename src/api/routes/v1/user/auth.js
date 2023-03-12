@@ -1,7 +1,7 @@
 const express = require("express");
 const route = express.Router();
 const jwtMiddleware = require("../../../middlewares/jwtMiddleware");
-const { userSignupVerification, userSignup, userLogin } = require("../../../../services/user/auth");
+const { userSignupVerification, userSignup, userLogin, userLogout } = require("../../../../services/user/auth");
 
 const func = (app) => {
     app.use(route);
@@ -31,6 +31,16 @@ const func = (app) => {
             return next(error);
         }
     })
+
+    route.post("/userLogout",jwtMiddleware, async (req, res, next) => {
+        try {
+            const result = await userLogout(req.user);
+            return res.send(result);
+        } catch (error) {
+            return next(error);
+        }
+    })
+
     route.post("/test",jwtMiddleware,(req,res)=>{
         return res.send("jwt middleware works")
     })

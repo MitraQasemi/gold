@@ -57,17 +57,17 @@ const userLogin = async (user) => {
         }
 
         const accessToken = JWT.sign({
-                id:foundedUser.id,
+                id: foundedUser.id,
             }, process.env.JWT_SECRET_ACCESS
             , {expiresIn: 3600000})
         const refreshToken = JWT.sign({
-                id:foundedUser.id,
+                id: foundedUser.id,
             }, process.env.JWT_SECRET_REFRESH
             , {expiresIn: 3600000 * 1000})
 
         await prisma.user.update({
             where: {
-                id:foundedUser.id,
+                id: foundedUser.id,
             },
             data: {
                 refreshToken: refreshToken,
@@ -112,7 +112,7 @@ const userSignupVerification = async (user) => {
                     where: {
                         id: result.id
                     },
-                    data:{
+                    data: {
                         refreshToken
                     }
                 })
@@ -128,4 +128,22 @@ const userSignupVerification = async (user) => {
         throw error;
     }
 }
-module.exports = {userSignup, userLogin, userSignupVerification};
+
+const userLogout = async (user) => {
+    try {
+        const {id} = user;
+        await prisma.User.update({
+            where: {
+                id: id
+            },
+            data: {
+                refreshToken:""
+            }
+        })
+        return "loged out"
+
+    } catch (error) {
+        throw error;
+    }
+}
+module.exports = {userSignup, userLogin, userSignupVerification, userLogout};
