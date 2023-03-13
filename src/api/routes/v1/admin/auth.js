@@ -1,31 +1,32 @@
 const express = require("express");
 const route = express.Router();
 
-const { userSignupVerification, userSignup, userLogin } = require("../../../services/user/auth");
+const jwtMiddleware = require("../../../middlewares/jwtMiddleware");
+const { adminSignup, adminLogin,adminLogout } = require("../../../../services/admin/auth");
 
 const func = (app) => {
     app.use(route);
-    route.post("/userSignup", async (req, res, next) => {
+    route.post("/adminSignup", async (req, res, next) => {
         try {
-            const result = await userSignup(req.body);
+            const result = await adminSignup(req.body);
             return res.send(result);
         } catch (error) {
             return next(error);
         }
     })
 
-    route.post("/userLogin", async (req, res, next) => {
+    route.post("/adminLogin", async (req, res, next) => {
         try {
-            const result = await userLogin(req.body);
+            const result = await adminLogin(req.body);
             return res.send(result);
         } catch (error) {
             return next(error);
         }
     })
 
-    route.post("/userSignupVerification", async (req, res, next) => {
+    route.post("/adminLogout",jwtMiddleware, async (req, res, next) => {
         try {
-            const result = await userSignupVerification(req.body);
+            const result = await adminLogout(req.user);
             return res.send(result);
         } catch (error) {
             return next(error);

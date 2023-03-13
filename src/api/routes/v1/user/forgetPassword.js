@@ -1,22 +1,22 @@
 const express = require("express");
 const route = express.Router();
 
-const { adminSignup, adminLogin } = require("../../../services/admin/auth");
+const { forgetPassword, forgetPasswordVerification } = require("../../../../services/user/forgetPassword.js");
 
 const func = (app) => {
     app.use(route);
-    route.post("/adminSignup", async (req, res, next) => {
+    route.post("/forgetPassword", async (req, res, next) => {
         try {
-            const result = await adminSignup(req.body);
+            const result = await forgetPassword(req.body);
             return res.send(result);
         } catch (error) {
             return next(error);
         }
     })
 
-    route.post("/adminLogin", async (req, res, next) => {
+    route.post("/forgetPasswordVerification", async (req, res, next) => {
         try {
-            const result = await adminLogin(req.body);
+            const result = await forgetPasswordVerification(req.body);
             return res.send(result);
         } catch (error) {
             return next(error);

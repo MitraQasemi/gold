@@ -57,17 +57,17 @@ const userLogin = async (user) => {
         }
 
         const accessToken = JWT.sign({
-                phoneNumber,
+                id: foundedUser.id,
             }, process.env.JWT_SECRET_ACCESS
             , {expiresIn: 3600000})
         const refreshToken = JWT.sign({
-                phoneNumber,
+                id: foundedUser.id,
             }, process.env.JWT_SECRET_REFRESH
             , {expiresIn: 3600000 * 1000})
 
         await prisma.user.update({
             where: {
-                phoneNumber: phoneNumber,
+                id: foundedUser.id,
             },
             data: {
                 refreshToken: refreshToken,
@@ -92,31 +92,58 @@ const userSignupVerification = async (user) => {
 
                 SData.clear(phoneNumber);
                 const hashedPassword = await bcrypt.hash(password, 10);
-                const accessToken = JWT.sign({
+                const result = await prisma.user.create({
+                    data: {
                         phoneNumber,
+                        password: hashedPassword
+                    },
+                })
+
+                const accessToken = JWT.sign({
+                        id: result.id,
                     }, process.env.JWT_SECRET_ACCESS
                     , {expiresIn: 3600000})
                 const refreshToken = JWT.sign({
-                        phoneNumber,
+                        id: result.id,
                     }, process.env.JWT_SECRET_REFRESH
                     , {expiresIn: 3600000 * 1000})
 
-                await prisma.user.create({
-                    data: {
-                        phoneNumber,
-                        password: hashedPassword,
-                        refreshToken
+                await prisma.User.update({
+                    where: {
+                        id: result.id
                     },
+                    data: {
+                        refreshToken
+                    }
                 })
+
                 return accessToken;
             } else {
                 return "verification failed"
             }
-        }else{
+        } else {
             return "verification failed (undefined code)"
         }
     } catch (error) {
         throw error;
     }
 }
-module.exports = {userSignup, userLogin, userSignupVerification};
+
+const userLogout = async (user) => {
+    try {
+        const {id} = user;
+        await prisma.User.update({
+            where: {
+                id: id
+            },
+            data: {
+                refreshToken:""
+            }
+        })
+        return "loged out"
+
+    } catch (error) {
+        throw error;
+    }
+}
+module.exports = {userSignup, userLogin, userSignupVerification, userLogout};

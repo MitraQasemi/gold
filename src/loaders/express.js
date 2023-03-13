@@ -2,7 +2,7 @@ const express = require("express");
 const httpStatus = require('http-status-codes');
 require("dotenv").config({path:"../.env"});
 
-const routes = require("../routes/v1");
+const routes = require("../api/routes/v1");
 
 const expressLoader = async (app) => {
     app.use(express.json());
