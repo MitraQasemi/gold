@@ -17,7 +17,7 @@ const userSignup = async (user) => {
             }
         })
         if (result) {
-            return "this user already exists";
+            return "this user.js already exists";
         }
 
         const code = Math.floor(Math.random() * (99999 - 9999)) + 9999;
@@ -49,7 +49,7 @@ const userLogin = async (user) => {
         })
 
         if (!foundedUser) {
-            return "this user does not exist";
+            return "this user.js does not exist";
         }
         const isMatch = await bcrypt.compare(password, foundedUser.password);
         if (!isMatch) {
