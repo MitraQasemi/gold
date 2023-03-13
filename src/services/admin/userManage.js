@@ -65,8 +65,11 @@ const editUser = async (userId, newDetails) => {
             return "user is not exist";
         }
         const {password} = newDetails;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        newDetails.password = hashedPassword
+        if (password){
+            const hashedPassword = await bcrypt.hash(password, 10);
+            newDetails.password = hashedPassword
+        }
+
         const updatedUser = await prisma.user.update({
             where: {
                 id: userId
