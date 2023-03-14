@@ -25,7 +25,7 @@ const userSignup = async (user) => {
         await SData(phoneNumber, {code: code, time: Date.now()})
 
         const apiKey = "627269524D4A464252476F584B6264684A4D6B6A57387654343461645A713644344C7348674A67567943513D"
-        const template = "chalak"
+        const template = "MicroLearning"
         const url = `https://api.kavenegar.com/v1/${apiKey}/verify/lookup.json?receptor=${phoneNumber}&token=${code}&template=${template}`
 
         return axios.get(url).then(response => {
@@ -48,7 +48,7 @@ const userLogin = async (user) => {
             }
         })
 
-        if (!foundedUser) {
+        if (!foundedUser ) {
             return "this user does not exist";
         }
         const isMatch = await bcrypt.compare(password, foundedUser.password);

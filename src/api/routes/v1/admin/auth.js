@@ -1,7 +1,7 @@
 const express = require("express");
 const route = express.Router();
 
-const jwtMiddleware = require("../../../middlewares/jwtMiddleware");
+const {isAuth} = require("../../../middlewares");
 const { adminSignup, adminLogin,adminLogout } = require("../../../../services/admin/auth");
 
 const func = (app) => {
@@ -24,9 +24,9 @@ const func = (app) => {
         }
     })
 
-    route.post("/adminLogout",jwtMiddleware, async (req, res, next) => {
+    route.post("/adminLogout",isAuth, async (req, res, next) => {
         try {
-            const result = await adminLogout(req.user);
+            const result = await adminLogout(req.admin);
             return res.send(result);
         } catch (error) {
             return next(error);
