@@ -65,7 +65,7 @@ const editUser = async (userId, newDetails) => {
             return "user is not exist";
         }
         const {password} = newDetails;
-        if (password){
+        if (password) {
             const hashedPassword = await bcrypt.hash(password, 10);
             newDetails.password = hashedPassword
         }
@@ -95,10 +95,14 @@ const deleteUser = async (userId) => {
         if (!user) {
             return "user not exist"
         }
-
-        const result = await prisma.user.delete({
+        const newString = "d" + user.phoneNumber;
+        const result = await prisma.user.update({
             where: {
                 id: userId
+            },
+            data: {
+                phoneNumber: newString,
+                softDelete: true
             }
         })
 

@@ -15,7 +15,8 @@ model User {
   phoneNumber  String    @unique
   password     String
   refreshToken String    @default("")
-  blocked      Boolean?  @default(false)
+  blocked      Boolean   @default(false)
+  softDelete   Boolean   @default(false)
   age          Int       @default(0)
   balance      Int       @default(0)
   countryCode  Int       @default(0)
@@ -36,6 +37,7 @@ model Cart {
   productsId String[] @db.ObjectId
   product    Product  @relation(fields: [productsId], references: [id])
   varientId  String   @db.ObjectId
+  softDelete Boolean  @default(false)
 }
 
 model Product {
@@ -52,6 +54,7 @@ model Product {
   installment  Installment
   varients     Varient[]
   Cart         Cart[]
+  softDelete   Boolean     @default(false)
 }
 
 type MetaData {
@@ -77,9 +80,10 @@ type Varient {
 }
 
 model Admin {
-  id           String @id @default(auto()) @map("_id") @db.ObjectId
-  username     String @unique
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  username     String  @unique
   password     String
-  permissions  String @default("[]")
-  refreshToken String @default("")
+  permissions  String  @default("[]")
+  refreshToken String  @default("")
+  softDelete   Boolean @default(false)
 }

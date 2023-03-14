@@ -18,7 +18,7 @@ const forgetPassword = async (user) => {
         })
 
         if (!result) {
-            return "this user.js does not exists";
+            return "this user does not exists";
         }
 
         const code = Math.floor(Math.random() * (99999 - 9999)) + 9999;

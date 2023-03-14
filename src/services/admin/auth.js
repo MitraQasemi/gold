@@ -15,7 +15,7 @@ const adminSignup = async (admin) => {
         })
 
         if (result) {
-            return "this user.js already exists";
+            return "this admin already exists";
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -61,7 +61,7 @@ const adminLogin = async (admin) => {
         })
 
         if (!foundedUser) {
-            return "this user.js does not exist";
+            return "this admin does not exist";
         }
         const isMatch = await bcrypt.compare(password, foundedUser.password);
         if (!isMatch) {
