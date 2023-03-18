@@ -35,7 +35,7 @@ const createUser = async (userDetails) => {
             }
         })
 
-        if (result) {
+        if (result && result.softDelete === false) {
             return "this user already exists";
         }
 
@@ -61,7 +61,7 @@ const editUser = async (userId, newDetails) => {
                 id: userId
             }
         })
-        if (!user) {
+        if (!user ) {
             return "user is not exist";
         }
         const {password} = newDetails;
@@ -95,14 +95,14 @@ const deleteUser = async (userId) => {
         if (!user) {
             return "user not exist"
         }
-        const newString = "d" + user.phoneNumber;
+        const newString = "d"+user.phoneNumber;
         const result = await prisma.user.update({
             where: {
                 id: userId
             },
-            data: {
-                phoneNumber: newString,
-                softDelete: true
+            data : {
+                phoneNumber : newString,
+                softDelete : true
             }
         })
 
