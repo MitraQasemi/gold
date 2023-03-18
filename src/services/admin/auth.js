@@ -19,7 +19,7 @@ const adminSignup = async (admin) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const permissionsString = JSON.stringify(permissions)
+        const permissionsString = JSON.stringify(permissions);
         const foundAdmin = await prisma.admin.create({
             data: {
                 username,

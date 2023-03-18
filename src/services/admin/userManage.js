@@ -15,7 +15,7 @@ const getUser = async (userId) => {
         })
 
         if (!user) {
-            return "user is not exist"
+            return "user does not exist"
         }
 
         return user;
@@ -35,7 +35,7 @@ const createUser = async (userDetails) => {
             }
         })
 
-        if (result && result.softDelete === false) {
+        if (result) {
             return "this user already exists";
         }
 
@@ -62,7 +62,7 @@ const editUser = async (userId, newDetails) => {
             }
         })
         if (!user ) {
-            return "user is not exist";
+            return "user does not exist";
         }
         const {password} = newDetails;
         if (password) {
@@ -82,34 +82,4 @@ const editUser = async (userId, newDetails) => {
     }
 }
 
-// DELETE
-
-const deleteUser = async (userId) => {
-    try {
-        const user = await prisma.user.findUnique({
-            where: {
-                id: userId
-            }
-        })
-
-        if (!user) {
-            return "user not exist"
-        }
-        const newString = "d"+user.phoneNumber;
-        const result = await prisma.user.update({
-            where: {
-                id: userId
-            },
-            data : {
-                phoneNumber : newString,
-                softDelete : true
-            }
-        })
-
-        return result
-    } catch (error) {
-        throw error
-    }
-}
-
-module.exports = {getUser, createUser, editUser, deleteUser}
+module.exports = {getUser, createUser, editUser}

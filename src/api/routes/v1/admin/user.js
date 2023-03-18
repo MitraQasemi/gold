@@ -2,7 +2,7 @@ const express = require("express");
 const route = express.Router();
 const {isAuth, isCan, attachCurrentUser} = require("../../../middlewares");
 
-const {getUser, createUser, editUser, deleteUser} = require("../../../../services/admin/userManage");
+const {getUser, createUser, editUser} = require("../../../../services/admin/userManage");
 
 const func = (app) => {
 
@@ -29,15 +29,6 @@ const func = (app) => {
     route.put("/user/:userId", isAuth, attachCurrentUser, isCan("update", "User"), async (req, res, next) => {
         try {
             const result = await editUser(req.params.userId, req.body)
-            return res.send(result)
-        } catch (error) {
-            return next(error);
-        }
-    })
-
-    route.delete("/user/:userId", isAuth, attachCurrentUser, isCan("delete", "User"), async (req, res, next) => {
-        try {
-            const result = await deleteUser(req.params.userId)
             return res.send(result)
         } catch (error) {
             return next(error);
