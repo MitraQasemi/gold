@@ -42,6 +42,8 @@ model Product {
   id           String      @id @default(auto()) @map("_id") @db.ObjectId
   title        String
   description  String
+  tags         String[]    @default([])
+  category     String[]    @default([])
   wage         Int
   weight       Int
   weightUnit   Int
@@ -77,9 +79,17 @@ type Varient {
 }
 
 model Admin {
-  id           String  @id @default(auto()) @map("_id") @db.ObjectId
-  username     String  @unique
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  username     String @unique
   password     String
-  permissions  String  @default("[]")
-  refreshToken String  @default("")
+  permissions  String @default("[]")
+  refreshToken String @default("")
+}
+
+model category {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String @default("")
+  slog     String @default("")
+  category String @default("")
+  parent   String @default("")
 }
