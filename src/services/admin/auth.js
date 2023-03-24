@@ -1,13 +1,13 @@
 const bcrypt = require("bcrypt");
 const JWT = require("jsonwebtoken");
-const { PrismaClient } = require('@prisma/client')
-require("dotenv").config({ path: "../.env" });
+const {PrismaClient} = require('@prisma/client')
+require("dotenv").config({path: "../.env"});
 
 const prisma = new PrismaClient()
 
 const adminSignup = async (admin) => {
     try {
-        const { username, password } = admin;
+        const { username, password, permissions } = admin;
         const result = await prisma.admin.findUnique({
             where: {
                 username: username,
@@ -15,26 +15,34 @@ const adminSignup = async (admin) => {
         })
 
         if (result) {
-            return "this user already exists";
+            return "this admin already exists";
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        const accessToken = JWT.sign({
-            username,
-        }, process.env.JWT_SECRET_ACCESS
-            , { expiresIn: 3600000 })
-        const refreshToken = JWT.sign({
-            username,
-        }, process.env.JWT_SECRET_REFRESH
-            , { expiresIn: 3600000 * 1000 })
-
-        await prisma.admin.create({
+        const permissionsString = JSON.stringify(permissions);
+        const foundAdmin = await prisma.admin.create({
             data: {
                 username,
                 password: hashedPassword,
-                refreshToken
+                permissions: permissionsString
             },
+        })
+        const accessToken = JWT.sign({
+                id: foundAdmin.id,
+            }, process.env.JWT_SECRET_ACCESS
+            , {expiresIn: 3600000})
+        const refreshToken = JWT.sign({
+                id: foundAdmin.id,
+            }, process.env.JWT_SECRET_REFRESH
+            , {expiresIn: 3600000 * 1000})
+
+        await prisma.admin.update({
+            where: {
+                id: foundAdmin.id
+            },
+            data: {
+                refreshToken
+            }
         })
 
         return accessToken;
@@ -45,7 +53,7 @@ const adminSignup = async (admin) => {
 
 const adminLogin = async (admin) => {
     try {
-        const { username, password } = admin;
+        const {username, password} = admin;
         const foundedUser = await prisma.admin.findUnique({
             where: {
                 username: username,
@@ -53,7 +61,7 @@ const adminLogin = async (admin) => {
         })
 
         if (!foundedUser) {
-            return "this user does not exist";
+            return "this admin does not exist";
         }
         const isMatch = await bcrypt.compare(password, foundedUser.password);
         if (!isMatch) {
@@ -61,17 +69,17 @@ const adminLogin = async (admin) => {
         }
 
         const accessToken = JWT.sign({
-            username,
-        }, process.env.JWT_SECRET_ACCESS
-            , { expiresIn: 3600000 })
+                id: foundedUser.id,
+            }, process.env.JWT_SECRET_ACCESS
+            , {expiresIn: 3600000})
         const refreshToken = JWT.sign({
-            username,
-        }, process.env.JWT_SECRET_REFRESH
-            , { expiresIn: 3600000 * 1000 })
+                id: foundedUser.id,
+            }, process.env.JWT_SECRET_REFRESH
+            , {expiresIn: 3600000 * 1000})
 
         await prisma.admin.update({
             where: {
-                username: username,
+                id: foundedUser.id,
             },
             data: {
                 refreshToken: refreshToken,
@@ -82,4 +90,22 @@ const adminLogin = async (admin) => {
         throw error;
     }
 }
-module.exports = { adminSignup, adminLogin };
+
+const adminLogout = async (user) => {
+    try {
+        const {id} = user;
+        await prisma.Admin.update({
+            where: {
+                id: id
+            },
+            data: {
+                refreshToken:""
+            }
+        })
+        return "loged out"
+
+    } catch (error) {
+        throw error;
+    }
+}
+module.exports = {adminSignup, adminLogin, adminLogout};

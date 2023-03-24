@@ -3,6 +3,7 @@ const axios = require('axios');
 const SData = require('simple-data-storage');
 
 const {PrismaClient} = require('@prisma/client');
+const JWT = require("jsonwebtoken");
 require("dotenv").config({path: "../.env"});
 
 const prisma = new PrismaClient()
@@ -53,15 +54,32 @@ const forgetPasswordVerification = async (user) => {
 
                 SData.clear(phoneNumber);
                 const hashedPassword = await bcrypt.hash(password, 10);
+
+                const result = await prisma.user.findUnique({
+                    where: {
+                        phoneNumber: phoneNumber
+                    }
+                })
+                const accessToken = JWT.sign({
+                        id: result.id,
+                    }, process.env.JWT_SECRET_ACCESS
+                    , {expiresIn: 3600000})
+                const refreshToken = JWT.sign({
+                        id: result.id,
+                    }, process.env.JWT_SECRET_REFRESH
+                    , {expiresIn: 3600000 * 1000})
+
                 await prisma.user.update({
                     where: {
                         phoneNumber: phoneNumber,
                     },
                     data: {
                         password: hashedPassword,
+                        refreshToken:refreshToken
                     },
                 })
-                return "password changed";
+
+                return accessToken;
             } else {
                 return "verification failed"
             }

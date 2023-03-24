@@ -1,7 +1,7 @@
 const express = require("express");
 const route = express.Router();
-
-const { userSignupVerification, userSignup, userLogin } = require("../../../services/user/auth");
+const {isAuth} = require("../../../middlewares");
+const { userSignupVerification, userSignup, userLogin, userLogout } = require("../../../../services/user/auth");
 
 const func = (app) => {
     app.use(route);
@@ -30,6 +30,19 @@ const func = (app) => {
         } catch (error) {
             return next(error);
         }
+    })
+
+    route.post("/userLogout",isAuth, async (req, res, next) => {
+        try {
+            const result = await userLogout(req.admin);
+            return res.send(result);
+        } catch (error) {
+            return next(error);
+        }
+    })
+
+    route.post("/test",isAuth,(req,res)=>{
+        return res.send("jwt middleware works")
     })
 }
 
