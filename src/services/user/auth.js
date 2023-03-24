@@ -8,9 +8,8 @@ require("dotenv").config({path: "../.env"});
 
 const prisma = new PrismaClient()
 
-const userSignup = async (user) => {
+const userSignup = async (phoneNumber) => {
     try {
-        const {phoneNumber} = user;
         const result = await prisma.user.findUnique({
             where: {
                 phoneNumber: phoneNumber,
@@ -39,9 +38,8 @@ const userSignup = async (user) => {
     }
 }
 
-const userLogin = async (user) => {
+const userLogin = async (phoneNumber, password) => {
     try {
-        const {phoneNumber, password} = user;
         const foundedUser = await prisma.user.findUnique({
             where: {
                 phoneNumber: phoneNumber,
@@ -79,9 +77,8 @@ const userLogin = async (user) => {
     }
 }
 
-const userSignupVerification = async (user) => {
+const userSignupVerification = async (phoneNumber, code, password) => {
     try {
-        const {phoneNumber, code, password} = user;
         const data = await SData(phoneNumber);
         if (data) {
             if (Date.now() - data.time > 120000) {
@@ -91,6 +88,7 @@ const userSignupVerification = async (user) => {
             if (data.code == code) {
 
                 SData.clear(phoneNumber);
+
                 const hashedPassword = await bcrypt.hash(password, 10);
                 const result = await prisma.user.create({
                     data: {
@@ -129,9 +127,8 @@ const userSignupVerification = async (user) => {
     }
 }
 
-const userLogout = async (user) => {
+const userLogout = async (id) => {
     try {
-        const {id} = user;
         await prisma.User.update({
             where: {
                 id: id

@@ -1,13 +1,14 @@
 const express = require("express");
 const route = express.Router();
 const {isAuth} = require("../../../middlewares");
-const { userSignupVerification, userSignup, userLogin, userLogout } = require("../../../../services/user/auth");
+const {userSignupVerification, userSignup, userLogin, userLogout} = require("../../../../services/user/auth");
 
 const func = (app) => {
     app.use(route);
     route.post("/userSignup", async (req, res, next) => {
         try {
-            const result = await userSignup(req.body);
+            const {phoneNumber} = req.body;
+            const result = await userSignup(phoneNumber);
             return res.send(result);
         } catch (error) {
             return next(error);
@@ -16,7 +17,8 @@ const func = (app) => {
 
     route.post("/userLogin", async (req, res, next) => {
         try {
-            const result = await userLogin(req.body);
+            const {phoneNumber, password} = req.body;
+            const result = await userLogin(phoneNumber, password);
             return res.send(result);
         } catch (error) {
             return next(error);
@@ -25,24 +27,22 @@ const func = (app) => {
 
     route.post("/userSignupVerification", async (req, res, next) => {
         try {
-            const result = await userSignupVerification(req.body);
+            const {phoneNumber, code, password} = req.body;
+            const result = await userSignupVerification(phoneNumber, code, password);
             return res.send(result);
         } catch (error) {
             return next(error);
         }
     })
 
-    route.post("/userLogout",isAuth, async (req, res, next) => {
+    route.post("/userLogout", isAuth, async (req, res, next) => {
         try {
-            const result = await userLogout(req.admin);
+            const {id} = req.user;
+            const result = await userLogout(id);
             return res.send(result);
         } catch (error) {
             return next(error);
         }
-    })
-
-    route.post("/test",isAuth,(req,res)=>{
-        return res.send("jwt middleware works")
     })
 }
 
