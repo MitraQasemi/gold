@@ -7,7 +7,8 @@ const func = (app) => {
     app.use(route);
     route.post("/forgetPassword", async (req, res, next) => {
         try {
-            const result = await forgetPassword(req.body);
+            const {phoneNumber} = req.body;
+            const result = await forgetPassword(phoneNumber);
             return res.send(result);
         } catch (error) {
             return next(error);
@@ -16,7 +17,8 @@ const func = (app) => {
 
     route.post("/forgetPasswordVerification", async (req, res, next) => {
         try {
-            const result = await forgetPasswordVerification(req.body);
+            const {phoneNumber, code, password} = req.body;
+            const result = await forgetPasswordVerification(phoneNumber, code, password);
             return res.send(result);
         } catch (error) {
             return next(error);

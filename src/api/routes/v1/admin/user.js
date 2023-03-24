@@ -8,9 +8,9 @@ const func = (app) => {
 
     app.use(route);
 
-    route.get("/user/:userId", isAuth, attachCurrentUser, isCan("read", "User"), async (req, res, next) => {
+    route.get("/user/:id", isAuth, attachCurrentUser, isCan("read", "User"), async (req, res, next) => {
         try {
-            const result = await getUser(req.params.userId)
+            const result = await getUser(req.params.id)
             return res.send(result)
         } catch (error) {
             return next(error);
@@ -26,9 +26,9 @@ const func = (app) => {
     })
 
 
-    route.put("/user/:userId", isAuth, attachCurrentUser, isCan("update", "User"), async (req, res, next) => {
+    route.put("/user/:id", isAuth, attachCurrentUser, isCan("update", "User"), async (req, res, next) => {
         try {
-            const result = await editUser(req.params.userId, req.body)
+            const result = await editUser(req.params.id, req.body)
             return res.send(result)
         } catch (error) {
             return next(error);

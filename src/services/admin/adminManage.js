@@ -26,9 +26,8 @@ const getAdmin = async (adminId) => {
 
 // POST
 
-const createAdmin = async (adminDetails) => {
+const createAdmin = async (username, password, permissions) => {
     try {
-        const {username, password} = adminDetails;
         const result = await prisma.admin.findUnique({
             where: {
                 username: username
@@ -39,8 +38,9 @@ const createAdmin = async (adminDetails) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        adminDetails.password = hashedPassword
+        const permissionsString = JSON.stringify(permissions);
+        adminDetails.password = hashedPassword;
+        adminDetails.permissions = permissionsString;
         const admin = await prisma.admin.create({
             data: adminDetails
         });
@@ -71,7 +71,7 @@ const editAdmin = async (adminId, newDetails) => {
         }
         const {permissions} = newDetails;
         if (permissions) {
-            permissionsString = JSON.stringify(permissions);
+            const permissionsString = JSON.stringify(permissions);
             newDetails.permissions = permissionsString;
         }
         const updatedAdmin = await prisma.admin.update({
