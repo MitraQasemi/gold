@@ -42,6 +42,8 @@ model Product {
   id           String      @id @default(auto()) @map("_id") @db.ObjectId
   title        String
   description  String
+  category     String
+  tags         String[]
   wage         Int
   weight       Int
   weightUnit   Int
@@ -52,6 +54,13 @@ model Product {
   installment  Installment
   varients     Varient[]
   Cart         Cart[]
+}
+
+model Category {
+  id     String @id @map("_id")
+  name   String
+  parent String
+  slug   String
 }
 
 type MetaData {
