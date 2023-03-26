@@ -26,6 +26,7 @@ const getAdmin = async (adminId) => {
 
 // POST
 
+
 const createAdmin = async (username, password, permissions) => {
     try {
         const result = await prisma.admin.findUnique({

@@ -11,11 +11,11 @@ const create = {
         age: joi.number(),
         balance: joi.number(),
         countryCode: joi.number(),
-        addresses: joi.object({
+        addresses: joi.array().items(joi.object({
             country: joi.string().required(),
             city: joi.string().required(),
             address: joi.string().required()
-        })
+        }))
     })
 }
 
@@ -38,11 +38,11 @@ const update = {
         age: joi.number(),
         balance: joi.number(),
         countryCode: joi.number(),
-        addresses: joi.object({
+        addresses: joi.array().items(joi.object({
             country: joi.string().required(),
             city: joi.string().required(),
             address: joi.string().required()
-        })
+        }))
     })
 }
 

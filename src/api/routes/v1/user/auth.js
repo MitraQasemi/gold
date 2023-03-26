@@ -1,7 +1,7 @@
 const express = require("express");
 const route = express.Router();
 const {isAuth, validate} = require("../../../middlewares");
-const userAuthValidation = require("../../../../services/validation/userAuth")
+const userAuthValidation = require("../../../../validation/userAuth")
 const {userSignupVerification, userSignup, userLogin, userLogout} = require("../../../../services/user/auth");
 const {forgetPassword, forgetPasswordVerification} = require("../../../../services/user/forgetPassword");
 

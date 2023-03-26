@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const JWT = require("jsonwebtoken");
-const {PrismaClient} = require('@prisma/client')
-require("dotenv").config({path: "../.env"});
+const { PrismaClient } = require('@prisma/client')
+require("dotenv").config({ path: "../.env" });
 
 const prisma = new PrismaClient()
 
@@ -27,13 +27,13 @@ const adminSignup = async (username, password, permissions) => {
             },
         })
         const accessToken = JWT.sign({
-                id: foundAdmin.id,
-            }, process.env.JWT_SECRET_ACCESS
-            , {expiresIn: 3600000})
+            id: foundAdmin.id,
+        }, process.env.JWT_SECRET_ACCESS
+            , { expiresIn: 3600000 })
         const refreshToken = JWT.sign({
-                id: foundAdmin.id,
-            }, process.env.JWT_SECRET_REFRESH
-            , {expiresIn: 3600000 * 1000})
+            id: foundAdmin.id,
+        }, process.env.JWT_SECRET_REFRESH
+            , { expiresIn: 3600000 * 1000 })
 
         await prisma.admin.update({
             where: {
@@ -67,13 +67,13 @@ const adminLogin = async (username, password) => {
         }
 
         const accessToken = JWT.sign({
-                id: foundedUser.id,
-            }, process.env.JWT_SECRET_ACCESS
-            , {expiresIn: 3600000})
+            id: foundedUser.id,
+        }, process.env.JWT_SECRET_ACCESS
+            , { expiresIn: 3600000 })
         const refreshToken = JWT.sign({
-                id: foundedUser.id,
-            }, process.env.JWT_SECRET_REFRESH
-            , {expiresIn: 3600000 * 1000})
+            id: foundedUser.id,
+        }, process.env.JWT_SECRET_REFRESH
+            , { expiresIn: 3600000 * 1000 })
 
         await prisma.admin.update({
             where: {
@@ -96,7 +96,7 @@ const adminLogout = async (id) => {
                 id: id
             },
             data: {
-                refreshToken:""
+                refreshToken: ""
             }
         })
         return "loged out"
@@ -105,4 +105,4 @@ const adminLogout = async (id) => {
         throw error;
     }
 }
-module.exports = {adminSignup, adminLogin, adminLogout};
+module.exports = { adminSignup, adminLogin, adminLogout };
