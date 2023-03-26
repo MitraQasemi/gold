@@ -13,7 +13,6 @@ const api = () => {
     refreshToken(router);
     userManageRoutes(router);
     adminMange(router);
-
     return router;
 }
 module.exports = api;
