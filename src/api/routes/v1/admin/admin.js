@@ -1,5 +1,6 @@
 const express = require("express");
 const route = express.Router();
+
 const {isAuth, isCan, attachCurrentUser, validate} = require("../../../middlewares");
 
 const adminCrudValidation = require("../../../../validation/adminCrud");
@@ -9,6 +10,7 @@ const func = (app) => {
 
     app.use(route);
 
+
     route.get("/admin/:id",validate(adminCrudValidation.read), isAuth, attachCurrentUser, isCan("read", "Admin"), async (req, res, next) => {
         try {
             const result = await getAdmin(req.params.id)
@@ -17,6 +19,7 @@ const func = (app) => {
             return next(error);
         }
     })
+
     route.post("/admin",validate(adminCrudValidation.create), isAuth, attachCurrentUser, isCan("create", "Admin"), async (req, res, next) => {
         try {
             const {username, password, permissions} = req.body;
@@ -26,7 +29,6 @@ const func = (app) => {
             return next(error);
         }
     })
-
 
     route.put("/admin/:id",validate(adminCrudValidation.update), isAuth, attachCurrentUser, isCan("update", "Admin"), async (req, res, next) => {
         try {

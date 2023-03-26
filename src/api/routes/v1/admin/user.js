@@ -1,5 +1,6 @@
 const express = require("express");
 const route = express.Router();
+
 const {isAuth, isCan, attachCurrentUser, validate} = require("../../../middlewares");
 const userCrudValidation = require("../../../../validation/userCrud");
 const {getUser, createUser, editUser} = require("../../../../services/admin/userManage");
