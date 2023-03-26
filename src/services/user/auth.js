@@ -8,9 +8,8 @@ require("dotenv").config({path: "../.env"});
 
 const prisma = new PrismaClient()
 
-const userSignup = async (user) => {
+const userSignup = async (phoneNumber) => {
     try {
-        const {phoneNumber} = user;
         const result = await prisma.user.findUnique({
             where: {
                 phoneNumber: phoneNumber,
@@ -25,7 +24,7 @@ const userSignup = async (user) => {
         await SData(phoneNumber, {code: code, time: Date.now()})
 
         const apiKey = "627269524D4A464252476F584B6264684A4D6B6A57387654343461645A713644344C7348674A67567943513D"
-        const template = "chalak"
+        const template = "MicroLearning"
         const url = `https://api.kavenegar.com/v1/${apiKey}/verify/lookup.json?receptor=${phoneNumber}&token=${code}&template=${template}`
 
         return axios.get(url).then(response => {
@@ -39,16 +38,15 @@ const userSignup = async (user) => {
     }
 }
 
-const userLogin = async (user) => {
+const userLogin = async (phoneNumber, password) => {
     try {
-        const {phoneNumber, password} = user;
         const foundedUser = await prisma.user.findUnique({
             where: {
                 phoneNumber: phoneNumber,
             }
         })
 
-        if (!foundedUser) {
+        if (!foundedUser ) {
             return "this user does not exist";
         }
         const isMatch = await bcrypt.compare(password, foundedUser.password);
@@ -79,9 +77,8 @@ const userLogin = async (user) => {
     }
 }
 
-const userSignupVerification = async (user) => {
+const userSignupVerification = async (phoneNumber, code, password) => {
     try {
-        const {phoneNumber, code, password} = user;
         const data = await SData(phoneNumber);
         if (data) {
             if (Date.now() - data.time > 120000) {
@@ -91,6 +88,7 @@ const userSignupVerification = async (user) => {
             if (data.code == code) {
 
                 SData.clear(phoneNumber);
+
                 const hashedPassword = await bcrypt.hash(password, 10);
                 const result = await prisma.user.create({
                     data: {
@@ -129,9 +127,8 @@ const userSignupVerification = async (user) => {
     }
 }
 
-const userLogout = async (user) => {
+const userLogout = async (id) => {
     try {
-        const {id} = user;
         await prisma.User.update({
             where: {
                 id: id

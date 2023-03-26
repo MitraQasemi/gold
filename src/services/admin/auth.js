@@ -5,9 +5,8 @@ require("dotenv").config({ path: "../.env" });
 
 const prisma = new PrismaClient()
 
-const adminSignup = async (admin) => {
+const adminSignup = async (username, password, permissions) => {
     try {
-        const { username, password, permissions } = admin;
         const result = await prisma.admin.findUnique({
             where: {
                 username: username,
@@ -15,11 +14,11 @@ const adminSignup = async (admin) => {
         })
 
         if (result) {
-            return "this user already exists";
+            return "this admin already exists";
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const permissionsString = JSON.stringify(permissions)
+        const permissionsString = JSON.stringify(permissions);
         const foundAdmin = await prisma.admin.create({
             data: {
                 username,
@@ -51,9 +50,8 @@ const adminSignup = async (admin) => {
     }
 }
 
-const adminLogin = async (admin) => {
+const adminLogin = async (username, password) => {
     try {
-        const { username, password } = admin;
         const foundedUser = await prisma.admin.findUnique({
             where: {
                 username: username,
@@ -61,7 +59,7 @@ const adminLogin = async (admin) => {
         })
 
         if (!foundedUser) {
-            return "this user does not exist";
+            return "this admin does not exist";
         }
         const isMatch = await bcrypt.compare(password, foundedUser.password);
         if (!isMatch) {
@@ -91,9 +89,8 @@ const adminLogin = async (admin) => {
     }
 }
 
-const adminLogout = async (user) => {
+const adminLogout = async (id) => {
     try {
-        const { id } = user;
         await prisma.Admin.update({
             where: {
                 id: id

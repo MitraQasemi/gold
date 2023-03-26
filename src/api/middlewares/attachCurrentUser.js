@@ -5,7 +5,7 @@ const prisma = new PrismaClient
 module.exports = async (req, res, next) => {
     const admin = await prisma.admin.findUnique({
         where: {
-            id: req.admin.id
+            id: req.user.id
         }
     })
 

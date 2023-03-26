@@ -1,32 +1,36 @@
 const express = require("express");
 const route = express.Router();
 
-const jwtMiddleware = require("../../../middlewares/jwtMiddleware");
-const { adminSignup, adminLogin,adminLogout } = require("../../../../services/admin/auth");
+const {isAuth, validate} = require("../../../middlewares");
+const authValidation = require("../../../../validation/adminAuth");
+const {adminSignup, adminLogin, adminLogout} = require("../../../../services/admin/auth");
 
 const func = (app) => {
     app.use(route);
-    route.post("/adminSignup", async (req, res, next) => {
+    route.post("/adminSignup", validate(authValidation.signup), async (req, res, next) => {
         try {
-            const result = await adminSignup(req.body);
+            const {username, password, permissions} = req.body;
+            const result = await adminSignup(username, password, permissions);
             return res.send(result);
         } catch (error) {
             return next(error);
         }
     })
 
-    route.post("/adminLogin", async (req, res, next) => {
+    route.post("/adminLogin", validate(authValidation.login), async (req, res, next) => {
         try {
-            const result = await adminLogin(req.body);
+            const {username, password} = req.body;
+            const result = await adminLogin(username, password);
             return res.send(result);
         } catch (error) {
             return next(error);
         }
     })
 
-    route.post("/adminLogout",jwtMiddleware, async (req, res, next) => {
+    route.post("/adminLogout", isAuth, async (req, res, next) => {
         try {
-            const result = await adminLogout(req.user);
+            const {id} = req.user;
+            const result = await adminLogout(id);
             return res.send(result);
         } catch (error) {
             return next(error);
