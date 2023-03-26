@@ -2,7 +2,7 @@ const express = require("express");
 const route = express.Router();
 const {isAuth, isCan, attachCurrentUser, validate} = require("../../../middlewares");
 
-const adminCrudValidation = require("../../../../services/validation/adminCrud");
+const adminCrudValidation = require("../../../../validation/adminCrud");
 const {getAdmin, createAdmin, editAdmin} = require("../../../../services/admin/adminManage");
 
 const func = (app) => {
