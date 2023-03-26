@@ -1,76 +1,79 @@
 const { PrismaClient } = require("@prisma/client");
 
-const uploader = require("../common/uploader")
-
 const prisma = new PrismaClient
 
-// GET
+// GET One
 
-const getProducts = async (queryObject) => {
-  const query = queryGenerator(queryObject)
-  const result = await prisma.product.findMany({
-    query
-  })
-  return result
-}
-
-// POST
-
-const createProducts = async (req) => {
-
-}
-
-// PUT
-
-const editProducts = async () => { }
-
-// DELETE
-
-const deleteProducts = async (productId) => {
-  const rersult = prisma.product.delete({
+const getOneProduct = async (productId) => {
+  const product = await prisma.product.findUnique({
     where: {
       id: productId
     }
   })
+  return product;
 }
 
-// HELPER
+// GET Many
 
-const queryGenerator = (queryParams) => {
+const getManyProducts = async (queryObject) => {
   const query = {}
-  if (queryParams.cat) {
-    query.where.category = {
-      startsWith: queryParams.cat
+  if (queryObject) {
+    if (queryObject.cat) {
+      query.where.category = {
+        startsWith: queryObject.cat
+      }
     }
-  }
-  if (queryParams.tag) {
-    query.where.tags = {
-      hasEvery: JSON.parse(queryParams.tag)
+    if (queryObject.tag) {
+      query.where.tags = {
+        hasEvery: JSON.parse(queryObject.tag)
+      }
     }
-  }
-  if (queryParams.size && queryParams.page) {
-    query.skip = queryParams.size * queryParams.page;
-    query.take = queryParams.size
-  }
+    if (queryObject.size) {
+      query.skip = Number(queryObject.size * queryObject.page) | 0;
+      query.take = Number(queryObject.size);
+    }
 
-  return query
+  }
+  const products = await prisma.product.findMany(query)
+  return products
+}
+
+// POST
+
+const createProduct = async (productDetails) => {
+  const result = await prisma.product.create({
+    data: productDetails
+  })
+  return result
+}
+
+// PUT
+
+const editProduct = async (productId, data) => {
+  const result = await prisma.product.update({
+    where: {
+      id: productId
+    },
+    data: data
+  })
+  return result
+}
+
+// DELETE
+
+const deleteProduct = async (productId) => {
+  const result = prisma.product.delete({
+    where: {
+      id: productId
+    }
+  })
+  return result;
 }
 
 module.exports = {
-  getProducts,
-  createProducts,
-  editProducts,
-  deleteProducts
+  getOneProduct,
+  getManyProducts,
+  createProduct,
+  editProduct,
+  deleteProduct
 }
-// prisma.product.findMany({
-//   where: {
-//     category: {
-//       startsWith: "/tech"
-//     },
-//     tags: {
-//       hasEvery: ["test", "tag"]
-//     }
-//   },
-//   take: 20,
-//   skip: 16
-// })

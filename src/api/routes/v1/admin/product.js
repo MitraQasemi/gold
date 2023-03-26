@@ -2,16 +2,24 @@ const express = require("express");
 const route = express.Router();
 const { isAuth, isCan, attachCurrentAdmin } = require("../../../middlewares")
 
-const { getProducts, createProducts, editProducts, deleteProducts } = require("../../../../services/admin/productManage")
+const { getOneProduct, getManyProducts, createProduct, editProduct, deleteProduct } = require("../../../../services/admin/productManage");
 
-const uploader = require("../../../../services/common/uploader")
 const func = (app) => {
 
   app.use(route);
 
-  route.get("/product", isAuth, attachCurrentAdmin, isCan("create", "Product"), async (req, res, next) => {
+  route.get("/product/:productId", isAuth, attachCurrentAdmin, isCan("read", "Product"), async (req, res, next) => {
     try {
-      const result = await getProducts(req.query)
+      const result = await getOneProduct(req.params.productId)
+      return res.send(result);
+    } catch (error) {
+      next(error)
+    }
+  })
+
+  route.get("/product", isAuth, attachCurrentAdmin, isCan("read", "Product"), async (req, res, next) => {
+    try {
+      const result = await getManyProducts(req.query)
       return res.send(result)
     } catch (error) {
       return next(error);
@@ -19,40 +27,33 @@ const func = (app) => {
   })
   route.post("/product", isAuth, attachCurrentAdmin, isCan("create", "Product"), async (req, res, next) => {
     try {
-      // const result = await createProduct(req.body)
-      // return res.send(result)
+      const result = await createProduct(req.body);
+      return res.send(result);
     } catch (error) {
-      // return next(error);
+      console.log(error);
+      return next(error);
     }
   })
 
 
-  route.put("/product", isAuth, attachCurrentAdmin, isCan("update", "Product"), async (req, res, next) => {
+  route.put("/product/:productId", isAuth, attachCurrentAdmin, isCan("update", "Product"), async (req, res, next) => {
     try {
-      // const result = await editProduct(req.params.ProductId, req.body)
-      // return res.send(result)
-    } catch (error) {
-      // return next(error);
-    }
-  })
-
-  route.delete("/product/:productId", isAuth, attachCurrentAdmin, isCan("delete", "Product"), async (req, res, next) => {
-    try {
-      const result = await deleteProducts(req.params.productId)
+      const result = await editProduct(req.params.productId, req.body)
       return res.send(result)
     } catch (error) {
       return next(error);
     }
   })
 
-  route.post("/test", async (req, res, next) => {
+  route.delete("/product/:productId", isAuth, attachCurrentAdmin, isCan("delete", "Product"), async (req, res, next) => {
     try {
-      const result = await uploader(req, "products")
-      res.send(result)
+      const result = await deleteProduct(req.params.productId)
+      return res.send(result)
     } catch (error) {
-      next(error)
+      return next(error);
     }
   })
+
 }
 
 module.exports = func;

@@ -39,28 +39,31 @@ model Cart {
 }
 
 model Product {
-  id           String      @id @default(auto()) @map("_id") @db.ObjectId
-  title        String
-  description  String
-  category     String
-  tags         String[]
-  wage         Int
-  weight       Int
-  weightUnit   Int
-  quantity     Int
-  lockQuantity Int
-  discount     Int
-  metaData     MetaData[]
-  installment  Installment
-  varients     Varient[]
-  Cart         Cart[]
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  title          String      @default("product")
+  description    String      @default("")
+  category       String      @default("")
+  tags           String[]
+  image          String[]
+  thumbnailImage String      @default("")
+  wage           Int         @default(0)
+  weight         Int         @default(0)
+  weightUnit     Int         @default(0)
+  quantity       Int         @default(0)
+  lockQuantity   Int         @default(0)
+  discount       Int         @default(0)
+  metaData       MetaData[]
+  installment    Installment
+  varients       Varient[]
+  Cart           Cart[]
 }
 
 model Category {
-  id     String @id @map("_id")
-  name   String
-  parent String
-  slug   String
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  category String @unique
+  parent   String
+  slug     String
 }
 
 type MetaData {
