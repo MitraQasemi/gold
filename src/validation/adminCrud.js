@@ -6,8 +6,8 @@ const create = {
         username: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{5,16}$')).required(),
         password: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,16}$')).required(),
         permissions: joi.array().items(joi.object({
-            action: joi.string().valid(...["create", "read", "update"]).required(),
-            subject: joi.string().valid(...["Admin", "User"]).required()
+            action: joi.string().valid(...["create", "read", "update", "delete"]).required(),
+            subject: joi.string().valid(...["Admin", "User", "Product", "Category"]).required()
         }))
     })
 }
@@ -26,8 +26,8 @@ const update = {
         username: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{5,16}$')),
         password: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,16}$')),
         permissions: joi.array().items(joi.object({
-            action: joi.string().valid(...["create", "read", "update"]).required(),
-            subject: joi.string().valid(...["Admin", "User"]).required()
+            action: joi.string().valid(...["create", "read", "update", "delete"]).required(),
+            subject: joi.string().valid(...["Admin", "User", "Product", "Category"]).required()
         }))
     })
 }

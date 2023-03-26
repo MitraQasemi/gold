@@ -60,10 +60,10 @@ model Product {
 
 model Category {
   id       String @id @default(auto()) @map("_id") @db.ObjectId
-  name     String
+  name     String @default("")
   category String @unique
-  parent   String
-  slug     String
+  parent   String @default("")
+  slug     String @default("")
 }
 
 type MetaData {
