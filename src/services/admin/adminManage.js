@@ -40,10 +40,13 @@ const createAdmin = async (username, password, permissions) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const permissionsString = JSON.stringify(permissions);
-        adminDetails.password = hashedPassword;
-        adminDetails.permissions = permissionsString;
+
         const admin = await prisma.admin.create({
-            data: adminDetails
+            data: {
+                username,
+                password:hashedPassword,
+                permissions:permissionsString
+            }
         });
 
         return admin;
