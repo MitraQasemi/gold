@@ -7,7 +7,7 @@ const {forgetPassword, forgetPasswordVerification} = require("../../../../servic
 
 const func = (app) => {
     app.use(route);
-    route.post("/userSignup",validate(userAuthValidation.signup), async (req, res, next) => {
+    route.post("/user/signup",validate(userAuthValidation.signup), async (req, res, next) => {
         try {
             const {phoneNumber} = req.body;
             const result = await userSignup(phoneNumber);
@@ -17,7 +17,7 @@ const func = (app) => {
         }
     })
 
-    route.post("/userLogin",validate(userAuthValidation.login), async (req, res, next) => {
+    route.post("/user/login",validate(userAuthValidation.login), async (req, res, next) => {
         try {
             const {phoneNumber, password} = req.body;
             const result = await userLogin(phoneNumber, password);
@@ -27,7 +27,7 @@ const func = (app) => {
         }
     })
 
-    route.post("/userSignupVerification",validate(userAuthValidation.signupVerification), async (req, res, next) => {
+    route.post("/user/signup/verification",validate(userAuthValidation.signupVerification), async (req, res, next) => {
         try {
             const {phoneNumber, code, password} = req.body;
             const result = await userSignupVerification(phoneNumber, code, password);
@@ -37,7 +37,7 @@ const func = (app) => {
         }
     })
 
-    route.post("/userLogout", isAuth, async (req, res, next) => {
+    route.post("/user/logout", isAuth, async (req, res, next) => {
         try {
             const {id} = req.user;
             const result = await userLogout(id);
@@ -47,7 +47,7 @@ const func = (app) => {
         }
     })
 
-    route.post("/forgetPassword",validate(userAuthValidation.forgetPassword), async (req, res, next) => {
+    route.post("/user/forgetPassword",validate(userAuthValidation.forgetPassword), async (req, res, next) => {
         try {
             const {phoneNumber} = req.body;
             const result = await forgetPassword(phoneNumber);
@@ -57,7 +57,7 @@ const func = (app) => {
         }
     })
 
-    route.post("/forgetPasswordVerification",validate(userAuthValidation.forgetPasswordVerification), async (req, res, next) => {
+    route.post("user/forgetPassword/verification",validate(userAuthValidation.forgetPasswordVerification), async (req, res, next) => {
         try {
             const {phoneNumber, code, password} = req.body;
             const result = await forgetPasswordVerification(phoneNumber, code, password);

@@ -7,7 +7,7 @@ const {getUser, createUser, editUser, getManyUser} = require("../../../../servic
 
 const func = (app) => {
     app.use(route);
-    route.get("/user/:id", validate(userCrudValidation.read), isAuth, attachCurrentAdmin, isCan("read", "User"), async (req, res, next) => {
+    route.get("/admin/user/:id", validate(userCrudValidation.read), isAuth, attachCurrentAdmin, isCan("read", "User"), async (req, res, next) => {
         try {
             const result = await getUser(req.params.id)
             return res.send(result)
@@ -16,16 +16,17 @@ const func = (app) => {
         }
     })
 
-    route.get("/user", validate(userCrudValidation.readMany), isAuth, attachCurrentAdmin, isCan("read", "User"), async (req, res, next) => {
+    route.get("/admin/user", validate(userCrudValidation.readMany), isAuth, attachCurrentAdmin, isCan("read", "User"), async (req, res, next) => {
         try {
             const result = await getManyUser(req.query)
-            return res.send(result)
+            res.setHeader("count",result.count)
+            return res.send(result.result)
         } catch (error) {
             return next(error);
         }
     })
 
-    route.post("/user", validate(userCrudValidation.create), isAuth, attachCurrentAdmin, isCan("create", "User"), async (req, res, next) => {
+    route.post("/admin/user", validate(userCrudValidation.create), isAuth, attachCurrentAdmin, isCan("create", "User"), async (req, res, next) => {
         try {
             const result = await createUser(req.body)
             return res.send(result)
@@ -35,7 +36,7 @@ const func = (app) => {
     })
 
 
-    route.put("/user/:id", validate(userCrudValidation.update), isAuth, attachCurrentAdmin, isCan("update", "User"), async (req, res, next) => {
+    route.put("/admin/user/:id", validate(userCrudValidation.update), isAuth, attachCurrentAdmin, isCan("update", "User"), async (req, res, next) => {
         try {
             const result = await editUser(req.params.id, req.body)
             return res.send(result)

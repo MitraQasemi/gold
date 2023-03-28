@@ -8,7 +8,7 @@ const func = (app) => {
 
     app.use(route);
 
-    route.get("/product/:id",validate(productCrudValidation.read), isAuth, attachCurrentAdmin, isCan("read", "Product"), async (req, res, next) => {
+    route.get("/admin/product/:id",validate(productCrudValidation.read), isAuth, attachCurrentAdmin, isCan("read", "Product"), async (req, res, next) => {
         try {
             const result = await getOneProduct(req.params.id)
             return res.send(result);
@@ -18,15 +18,16 @@ const func = (app) => {
 
     })
 
-    route.get("/product",validate(productCrudValidation.readMany), isAuth, attachCurrentAdmin, isCan("read", "Product"), async (req, res, next) => {
+    route.get("/admin/product",validate(productCrudValidation.readMany), isAuth, attachCurrentAdmin, isCan("read", "Product"), async (req, res, next) => {
         try {
             const result = await getManyProducts(req.query)
-            return res.send(result)
+            res.setHeader("count",result.count)
+            return res.send(result.result)
         } catch (error) {
             return next(error);
         }
     })
-    route.post("/product",validate(productCrudValidation.create), isAuth, attachCurrentAdmin, isCan("create", "Product"), async (req, res, next) => {
+    route.post("/admin/product",validate(productCrudValidation.create), isAuth, attachCurrentAdmin, isCan("create", "Product"), async (req, res, next) => {
         try {
             const result = await createProduct(req.body);
             return res.send(result);
@@ -36,7 +37,7 @@ const func = (app) => {
     })
 
 
-    route.put("/product/:id",validate(productCrudValidation.update), isAuth, attachCurrentAdmin, isCan("update", "Product"), async (req, res, next) => {
+    route.put("/admin/product/:id",validate(productCrudValidation.update), isAuth, attachCurrentAdmin, isCan("update", "Product"), async (req, res, next) => {
         try {
             const result = await editProduct(req.params.id, req.body)
             return res.send(result)
@@ -45,7 +46,7 @@ const func = (app) => {
         }
     })
 
-    route.delete("/product/:id",validate(productCrudValidation.Delete), isAuth, attachCurrentAdmin, isCan("delete", "Product"), async (req, res, next) => {
+    route.delete("/admin/product/:id",validate(productCrudValidation.Delete), isAuth, attachCurrentAdmin, isCan("delete", "Product"), async (req, res, next) => {
         try {
             const result = await deleteProduct(req.params.id)
             return res.send(result)

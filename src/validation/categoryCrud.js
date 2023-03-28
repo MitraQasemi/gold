@@ -12,8 +12,8 @@ const create = {
 
 const readMany = {
     query: joi.object().keys({
-        size: joi.string().pattern(new RegExp('^[0-9]$')),
-        page: joi.string().pattern(new RegExp('^[0-9]$'))
+        size: joi.string().pattern(new RegExp('^\\d+$')),
+        page: joi.string().pattern(new RegExp('^\\d+$'))
     })
 }
 

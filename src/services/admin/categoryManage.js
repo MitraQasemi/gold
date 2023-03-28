@@ -17,19 +17,29 @@ const getManyCategories = async (queryObject) => {
     const query = {}
     if (queryObject) {
         if (queryObject.size) {
-            query.skip = Number(queryObject.size * queryObject.page) | 0;
+            query.skip = Number(queryObject.size *( queryObject.page-1)) | 0;
             query.take = Number(queryObject.size);
         }
     }
     const result = await prisma.category.findMany(query)
-    return result;
+    const count = await prisma.category.count();
+    return {result: result, count: count};
 }
 
 const createCategory = async (categoryDetails) => {
-    const result = await prisma.category.create({
-        data: categoryDetails
+    const foundedCategory = await prisma.category.findUnique({
+        where : {
+            category : categoryDetails.parent
+        }
     })
-    return result;
+
+    if (foundedCategory || categoryDetails.parent === "/"){
+        const result = await prisma.category.create({
+            data: categoryDetails
+        })
+        return result;
+    }
+    return "this parent does not exist"
 }
 
 const deleteCategory = async (categoryId) => {

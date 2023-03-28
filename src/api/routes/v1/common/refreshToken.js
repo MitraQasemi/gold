@@ -4,10 +4,7 @@ const {AdminRefreshToken, UserRefreshToken} = require("../../../../services/comm
 const func = (app) => {
     app.use(route);
     route.post("/AdminRefreshToken", async (req, res, next) => {
-        const token = req.header("refresh-token");
-        if (!token) {
-            return res.send("no token found")
-        }
+        const token = req.body.token;
         try {
             const result = await AdminRefreshToken(token);
             return res.send(result);
@@ -17,10 +14,7 @@ const func = (app) => {
     })
 
     route.post("/UserRefreshToken", async (req, res, next) => {
-        const token = req.header("refresh-token");
-        if (!token) {
-            return res.send("no token found")
-        }
+        const token = req.body.token;
         try {
             const result = await UserRefreshToken(token);
             return res.send(result);

@@ -7,7 +7,7 @@ const {adminSignup, adminLogin, adminLogout} = require("../../../../services/adm
 
 const func = (app) => {
     app.use(route);
-    route.post("/adminSignup", validate(authValidation.signup), async (req, res, next) => {
+    route.post("/admin/signup", validate(authValidation.signup), async (req, res, next) => {
         try {
             const {username, password, permissions} = req.body;
             const result = await adminSignup(username, password, permissions);
@@ -17,7 +17,7 @@ const func = (app) => {
         }
     })
 
-    route.post("/adminLogin", validate(authValidation.login), async (req, res, next) => {
+    route.post("/admin/login", validate(authValidation.login), async (req, res, next) => {
         try {
             const {username, password} = req.body;
             const result = await adminLogin(username, password);
@@ -27,7 +27,7 @@ const func = (app) => {
         }
     })
 
-    route.post("/adminLogout", isAuth, async (req, res, next) => {
+    route.post("/admin/logout", isAuth, async (req, res, next) => {
         try {
             const {id} = req.user;
             const result = await adminLogout(id);
