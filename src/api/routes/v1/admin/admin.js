@@ -22,7 +22,7 @@ const func = (app) => {
 
     route.get("/admin",validate(adminCrudValidation.readMany), isAuth, attachCurrentAdmin, isCan("read", "Admin"), async (req, res, next) => {
         try {
-            const result = await getManyAdmin(req.params.size,req.params.page)
+            const result = await getManyAdmin(req.query)
             return res.send(result)
         } catch (error) {
             return next(error);

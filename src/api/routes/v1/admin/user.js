@@ -3,7 +3,7 @@ const route = express.Router();
 
 const {isAuth, isCan, attachCurrentAdmin, validate} = require("../../../middlewares");
 const userCrudValidation = require("../../../../validation/userCrud");
-const {getUser, createUser, editUser} = require("../../../../services/admin/userManage");
+const {getUser, createUser, editUser, getManyUser} = require("../../../../services/admin/userManage");
 
 const func = (app) => {
     app.use(route);
@@ -15,6 +15,16 @@ const func = (app) => {
             return next(error);
         }
     })
+
+    route.get("/user", validate(userCrudValidation.readMany), isAuth, attachCurrentAdmin, isCan("read", "User"), async (req, res, next) => {
+        try {
+            const result = await getManyUser(req.query)
+            return res.send(result)
+        } catch (error) {
+            return next(error);
+        }
+    })
+
     route.post("/user", validate(userCrudValidation.create), isAuth, attachCurrentAdmin, isCan("create", "User"), async (req, res, next) => {
         try {
             const result = await createUser(req.body)
