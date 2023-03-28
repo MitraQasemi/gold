@@ -5,7 +5,7 @@ const create = {
     body: joi.object().keys({
         firstName: joi.string(),
         lastName: joi.string(),
-        phoneNumber: joi.string().length(11).pattern(/^[0-9]+$/).required(),
+        phoneNumber: joi.string().length(11).pattern(/^09\d{9}$/).required(),
         password: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,16}$')).required(),
         blocked: joi.bool(),
         age: joi.number(),
@@ -27,8 +27,8 @@ const read = {
 
 const readMany = {
     query: joi.object().keys({
-        size: joi.string().pattern(new RegExp('^[0-9]$')),
-        page: joi.string().pattern(new RegExp('^[0-9]$'))
+        size: joi.string().pattern(new RegExp('^\\d+$')),
+        page: joi.string().pattern(new RegExp('^^\\d+$'))
     })
 }
 const update = {
@@ -38,7 +38,7 @@ const update = {
     body: joi.object().keys({
         firstName: joi.string(),
         lastName: joi.string(),
-        phoneNumber: joi.string().length(11).pattern(/^[0-9]+$/),
+        phoneNumber: joi.string().length(11).pattern(/^09\d{9}$/),
         password: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,16}$')),
         blocked: joi.bool(),
         age: joi.number(),

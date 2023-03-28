@@ -28,12 +28,13 @@ const getManyAdmin = async (queryObject) => {
     const query = {}
     if (queryObject) {
         if (queryObject.size) {
-            query.skip = Number(queryObject.size * queryObject.page) | 0;
+            query.skip = Number(queryObject.size *( queryObject.page-1)) | 0;
             query.take = Number(queryObject.size);
         }
     }
     const result = await prisma.admin.findMany(query)
-    return result;
+    const count = await prisma.admin.count();
+    return {result: result, count: count};
 }
 // POST
 
@@ -55,8 +56,8 @@ const createAdmin = async (username, password, permissions) => {
         const admin = await prisma.admin.create({
             data: {
                 username,
-                password:hashedPassword,
-                permissions:permissionsString
+                password: hashedPassword,
+                permissions: permissionsString
             }
         });
 

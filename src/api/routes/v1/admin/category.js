@@ -9,25 +9,27 @@ const func = (app) => {
 
     app.use(route);
 
-    route.get("/category/:id",validate(categoryCrudValidation.read), isAuth, attachCurrentAdmin, isCan("read", "Category"), async (req, res, next) => {
+    route.get("/admin/category/:id",validate(categoryCrudValidation.read), isAuth, attachCurrentAdmin, isCan("read", "Category"), async (req, res, next) => {
         try {
             const result = await getOneCategory(req.params.id)
+            if (result)
             return res.send(result);
-            ;
+            throw new Error("not found")
         } catch (error) {
             next(error)
         }
     })
 
-    route.get("/category",validate(categoryCrudValidation.readMany), isAuth, attachCurrentAdmin, isCan("read", "Category"), async (req, res, next) => {
+    route.get("/admin/category",validate(categoryCrudValidation.readMany), isAuth, attachCurrentAdmin, isCan("read", "Category"), async (req, res, next) => {
         try {
             const result = await getManyCategories(req.query)
-            return res.send(result)
+            res.setHeader("count",result.count)
+            return res.send(result.result)
         } catch (error) {
             return next(error);
         }
     })
-    route.post("/category",validate(categoryCrudValidation.create), isAuth, attachCurrentAdmin, isCan("create", "Category"), async (req, res, next) => {
+    route.post("/admin/category",validate(categoryCrudValidation.create), isAuth, attachCurrentAdmin, isCan("create", "Category"), async (req, res, next) => {
         try {
             const result = await createCategory(req.body);
             return res.send(result);
@@ -36,7 +38,7 @@ const func = (app) => {
         }
     })
 
-    route.delete("/category/:id",validate(categoryCrudValidation.Delete), isAuth, attachCurrentAdmin, isCan("delete", "Category"), async (req, res, next) => {
+    route.delete("/admin/category/:id",validate(categoryCrudValidation.Delete), isAuth, attachCurrentAdmin, isCan("delete", "Category"), async (req, res, next) => {
         try {
             const result = await deleteCategory(req.params.id)
             return res.send(result);

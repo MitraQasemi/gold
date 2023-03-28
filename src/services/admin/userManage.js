@@ -28,12 +28,13 @@ const getManyUser = async (queryObject) => {
     const query = {}
     if (queryObject) {
         if (queryObject.size) {
-            query.skip = Number(queryObject.size * queryObject.page) | 0;
+            query.skip = Number(queryObject.size *( queryObject.page-1)) | 0;
             query.take = Number(queryObject.size);
         }
     }
-    const result = await prisma.User.findMany(query)
-    return result;
+    const result = await prisma.user.findMany(query)
+    const count = await prisma.user.count();
+    return {result: result, count: count};
 }
 // POST
 

@@ -13,7 +13,7 @@ const AdminRefreshToken = async (token) => {
                 id: id
             }
         })
-        if (!result) {
+        if (!result?.id) {
             return "this refresh token is not valid"
         }
         if (result.refreshToken === token) {
