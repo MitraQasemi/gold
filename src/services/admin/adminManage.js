@@ -24,6 +24,17 @@ const getAdmin = async (adminId) => {
     }
 }
 
+const getManyAdmin = async (queryObject) => {
+    const query = {}
+    if (queryObject) {
+        if (queryObject.size) {
+            query.skip = Number(queryObject.size * queryObject.page) | 0;
+            query.take = Number(queryObject.size);
+        }
+    }
+    const result = await prisma.admin.findMany(query)
+    return result;
+}
 // POST
 
 
@@ -90,4 +101,4 @@ const editAdmin = async (adminId, newDetails) => {
     }
 }
 
-module.exports = {getAdmin, createAdmin, editAdmin}
+module.exports = {getAdmin, createAdmin, editAdmin, getManyAdmin}
