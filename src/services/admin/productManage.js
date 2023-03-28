@@ -29,10 +29,9 @@ const getManyProducts = async (queryObject) => {
             }
         }
         if (queryObject.size) {
-            query.skip = Number(queryObject.size * queryObject.page) | 0;
+            query.skip = Number(queryObject.size * queryObject.page)-1 | 0;
             query.take = Number(queryObject.size);
         }
-
     }
     const products = await prisma.product.findMany(query)
     return products

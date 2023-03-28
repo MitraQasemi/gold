@@ -17,6 +17,12 @@ const read = {
         id: joi.string().hex().length(24)
     })
 }
+const readMany = {
+    query: joi.object().keys({
+        size: joi.string().pattern(new RegExp('^[0-9]$')),
+        page: joi.string().pattern(new RegExp('^[0-9]$'))
+    })
+}
 
 const update = {
     params: joi.object().keys({
@@ -32,4 +38,4 @@ const update = {
     })
 }
 
-module.exports = {create, read, update}
+module.exports = {create, read, update, readMany}

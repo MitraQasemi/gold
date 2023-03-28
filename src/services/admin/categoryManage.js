@@ -8,7 +8,9 @@ const getOneCategory = async (categoryId) => {
             id: categoryId
         }
     })
+    if(result)
     return result;
+    throw new Error("not found")
 }
 
 const getManyCategories = async (queryObject) => {

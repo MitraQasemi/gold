@@ -1,4 +1,3 @@
-
 const {PrismaClient} = require("@prisma/client")
 
 const bcrypt = require("bcrypt")
@@ -25,6 +24,17 @@ const getUser = async (userId) => {
     }
 }
 
+const getManyUser = async (queryObject) => {
+    const query = {}
+    if (queryObject) {
+        if (queryObject.size) {
+            query.skip = Number(queryObject.size * queryObject.page) | 0;
+            query.take = Number(queryObject.size);
+        }
+    }
+    const result = await prisma.User.findMany(query)
+    return result;
+}
 // POST
 
 const createUser = async (userDetails) => {
@@ -62,7 +72,7 @@ const editUser = async (userId, newDetails) => {
                 id: userId
             }
         })
-        if (!user ) {
+        if (!user) {
             return "user does not exist";
         }
         const {password} = newDetails;
@@ -83,4 +93,4 @@ const editUser = async (userId, newDetails) => {
     }
 }
 
-module.exports = {getUser, createUser, editUser}
+module.exports = {getUser, createUser, editUser, getManyUser}

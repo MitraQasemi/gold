@@ -4,7 +4,7 @@ const route = express.Router();
 const {isAuth, isCan, attachCurrentAdmin, validate} = require("../../../middlewares");
 
 const adminCrudValidation = require("../../../../validation/adminCrud");
-const {getAdmin, createAdmin, editAdmin} = require("../../../../services/admin/adminManage");
+const {getAdmin, createAdmin, editAdmin, getManyAdmin} = require("../../../../services/admin/adminManage");
 
 const func = (app) => {
 
@@ -14,6 +14,15 @@ const func = (app) => {
     route.get("/admin/:id",validate(adminCrudValidation.read), isAuth, attachCurrentAdmin, isCan("read", "Admin"), async (req, res, next) => {
         try {
             const result = await getAdmin(req.params.id)
+            return res.send(result)
+        } catch (error) {
+            return next(error);
+        }
+    })
+
+    route.get("/admin",validate(adminCrudValidation.readMany), isAuth, attachCurrentAdmin, isCan("read", "Admin"), async (req, res, next) => {
+        try {
+            const result = await getManyAdmin(req.query)
             return res.send(result)
         } catch (error) {
             return next(error);

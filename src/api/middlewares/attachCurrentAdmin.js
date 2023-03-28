@@ -8,7 +8,6 @@ module.exports = async (req, res, next) => {
             id: req.user.id
         }
     })
-    console.log(admin);
     if (!admin) {
         return res.status(404).send("admin not found")
     }
