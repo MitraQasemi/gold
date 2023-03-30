@@ -2,9 +2,9 @@ const bcrypt = require("bcrypt");
 const JWT = require("jsonwebtoken");
 const axios = require('axios');
 const SData = require('simple-data-storage');
-
-const {PrismaClient} = require('@prisma/client');
-require("dotenv").config({path: "../.env"});
+const { ApiError } = require("../../api/middlewares/error")
+const { PrismaClient } = require('@prisma/client');
+require("dotenv").config({ path: "../.env" });
 
 const prisma = new PrismaClient()
 
@@ -16,12 +16,12 @@ const userSignup = async (phoneNumber) => {
             }
         })
         if (result) {
-            return "this user already exists";
+            throw new ApiError(403, "this user already exists")
         }
 
         const code = Math.floor(Math.random() * (99999 - 9999)) + 9999;
 
-        await SData(phoneNumber, {code: code, time: Date.now()})
+        await SData(phoneNumber, { code: code, time: Date.now() })
 
         const apiKey = "627269524D4A464252476F584B6264684A4D6B6A57387654343461645A713644344C7348674A67567943513D"
         const template = "MicroLearning"
@@ -30,11 +30,11 @@ const userSignup = async (phoneNumber) => {
         return axios.get(url).then(response => {
             return response.data;
         }).catch(error => {
-            console.log(error);
+            throw new ApiError(500, error.message);
         });
 
     } catch (error) {
-        throw error;
+        throw new ApiError(500, error.message);
     }
 }
 
@@ -46,22 +46,22 @@ const userLogin = async (phoneNumber, password) => {
             }
         })
 
-        if (!foundedUser ) {
-            return "this user does not exist";
+        if (!foundedUser) {
+            throw new ApiError(404, "this user does not exist");
         }
         const isMatch = await bcrypt.compare(password, foundedUser.password);
         if (!isMatch) {
-            return "wrong password ";
+            throw new ApiError(403, "wrong password")
         }
 
         const accessToken = JWT.sign({
-                id: foundedUser.id,
-            }, process.env.JWT_SECRET_ACCESS
-            , {expiresIn: 3600000})
+            id: foundedUser.id,
+        }, process.env.JWT_SECRET_ACCESS
+            , { expiresIn: 3600000 })
         const refreshToken = JWT.sign({
-                id: foundedUser.id,
-            }, process.env.JWT_SECRET_REFRESH
-            , {expiresIn: 3600000 * 1000})
+            id: foundedUser.id,
+        }, process.env.JWT_SECRET_REFRESH
+            , { expiresIn: 3600000 * 1000 })
 
         await prisma.user.update({
             where: {
@@ -72,8 +72,9 @@ const userLogin = async (phoneNumber, password) => {
             },
         })
         return accessToken;
+
     } catch (error) {
-        throw error;
+        throw new ApiError(500, error.message);
     }
 }
 
@@ -83,7 +84,7 @@ const userSignupVerification = async (phoneNumber, code, password) => {
         if (data) {
             if (Date.now() - data.time > 120000) {
                 SData.clear(phoneNumber);
-                return "verification failed"
+                throw new ApiError(400, "verification failed");
             }
             if (data.code == code) {
 
@@ -98,13 +99,13 @@ const userSignupVerification = async (phoneNumber, code, password) => {
                 })
 
                 const accessToken = JWT.sign({
-                        id: result.id,
-                    }, process.env.JWT_SECRET_ACCESS
-                    , {expiresIn: 3600000})
+                    id: result.id,
+                }, process.env.JWT_SECRET_ACCESS
+                    , { expiresIn: 3600000 })
                 const refreshToken = JWT.sign({
-                        id: result.id,
-                    }, process.env.JWT_SECRET_REFRESH
-                    , {expiresIn: 3600000 * 1000})
+                    id: result.id,
+                }, process.env.JWT_SECRET_REFRESH
+                    , { expiresIn: 3600000 * 1000 })
 
                 await prisma.User.update({
                     where: {
@@ -117,13 +118,13 @@ const userSignupVerification = async (phoneNumber, code, password) => {
 
                 return accessToken;
             } else {
-                return "verification failed"
+                throw new ApiError(400, "verification failed");
             }
         } else {
-            return "verification failed (undefined code)"
+            throw new ApiError(400, "verification failed(undefined code)");
         }
     } catch (error) {
-        throw error;
+        throw new ApiError(500, error.message);
     }
 }
 
@@ -134,13 +135,13 @@ const userLogout = async (id) => {
                 id: id
             },
             data: {
-                refreshToken:""
+                refreshToken: ""
             }
         })
         return "loged out"
 
     } catch (error) {
-        throw error;
+        throw new ApiError(500, error.message);
     }
 }
-module.exports = {userSignup, userLogin, userSignupVerification, userLogout};
+module.exports = { userSignup, userLogin, userSignupVerification, userLogout };

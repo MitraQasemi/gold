@@ -1,4 +1,5 @@
-const {PrismaClient} = require("@prisma/client")
+const { PrismaClient } = require("@prisma/client")
+const { ApiError } = require("../../api/middlewares/error")
 
 const bcrypt = require("bcrypt")
 
@@ -15,12 +16,12 @@ const getAdmin = async (adminId) => {
         })
 
         if (!admin) {
-            return "admin does not exist"
+            throw new ApiError(404, "this admin does not exist")
         }
 
         return admin;
     } catch (error) {
-        throw error;
+        throw new ApiError(500, error.message);
     }
 }
 
@@ -28,13 +29,13 @@ const getManyAdmin = async (queryObject) => {
     const query = {}
     if (queryObject) {
         if (queryObject.size) {
-            query.skip = Number(queryObject.size *( queryObject.page-1)) | 0;
+            query.skip = Number(queryObject.size * (queryObject.page - 1)) | 0;
             query.take = Number(queryObject.size);
         }
     }
     const result = await prisma.admin.findMany(query)
     const count = await prisma.admin.count();
-    return {result: result, count: count};
+    return { result: result, count: count };
 }
 // POST
 
@@ -47,7 +48,7 @@ const createAdmin = async (username, password, permissions) => {
             }
         })
         if (result) {
-            return "this admin already exists"
+            throw new ApiError(403, "this admin already exists")
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -63,7 +64,7 @@ const createAdmin = async (username, password, permissions) => {
 
         return admin;
     } catch (error) {
-        throw error;
+        throw new ApiError(500, error.message);
     }
 }
 
@@ -77,15 +78,15 @@ const editAdmin = async (adminId, newDetails) => {
             }
         })
         if (!admin) {
-            return "user is not exist";
+            throw new ApiError(404, "this admin does not exist")
         }
 
-        const {password} = newDetails;
+        const { password } = newDetails;
         if (password) {
             const hashedPassword = await bcrypt.hash(password, 10);
             newDetails.password = hashedPassword
         }
-        const {permissions} = newDetails;
+        const { permissions } = newDetails;
         if (permissions) {
             const permissionsString = JSON.stringify(permissions);
             newDetails.permissions = permissionsString;
@@ -98,8 +99,8 @@ const editAdmin = async (adminId, newDetails) => {
 
         return updatedAdmin
     } catch (error) {
-        throw error;
+        throw new ApiError(500, error.message);
     }
 }
 
-module.exports = {getAdmin, createAdmin, editAdmin, getManyAdmin}
+module.exports = { getAdmin, createAdmin, editAdmin, getManyAdmin }

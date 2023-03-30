@@ -1,6 +1,6 @@
 const express = require("express");
 const route = express.Router();
-
+const { ApiError } = require("../../../middlewares/error");
 const uploader = require("../../../../services/common/uploader")
 
 const func = (app) => {
@@ -11,8 +11,8 @@ const func = (app) => {
       .then((result) => {
         res.send(result[result.length - 1]);
       })
-      .catch((err) => {
-        next(err)
+      .catch((error) => {
+        next(new ApiError(500, error.message));
       })
   })
 

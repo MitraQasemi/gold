@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const axios = require('axios');
 const SData = require('simple-data-storage');
-
+const { ApiError } = require("../../api/middlewares/error");
 const {PrismaClient} = require('@prisma/client');
 const JWT = require("jsonwebtoken");
 require("dotenv").config({path: "../.env"});
@@ -18,7 +18,7 @@ const forgetPassword = async (phoneNumber) => {
         })
 
         if (!result) {
-            return "this user does not exists";
+            throw new ApiError(404, "this user does not exist");
         }
 
         const code = Math.floor(Math.random() * (99999 - 9999)) + 9999;
@@ -31,11 +31,11 @@ const forgetPassword = async (phoneNumber) => {
         return axios.get(url).then(response => {
             return response.data;
         }).catch(error => {
-            console.log(error);
+            throw new ApiError(500, error.message);
         });
 
     } catch (error) {
-        throw error;
+        throw new ApiError(500, error.message);
     }
 }
 
@@ -45,7 +45,7 @@ const forgetPasswordVerification = async (phoneNumber, code, password) => {
         if (data) {
             if (Date.now() - data.time > 120000) {
                 SData.clear(phoneNumber);
-                return "verification failed"
+                throw new ApiError(400, "verification failed");
             }
 
             if (data.code == code) {
@@ -79,13 +79,13 @@ const forgetPasswordVerification = async (phoneNumber, code, password) => {
 
                 return accessToken;
             } else {
-                return "verification failed"
+                throw new ApiError(400, "verification failed");
             }
         } else {
-            return "verification failed (undefined code)"
+            throw new ApiError(400, "verification failed(undefined code)");
         }
     } catch (error) {
-        throw error;
+        throw new ApiError(500, error.message);
     }
 }
 module.exports = {forgetPassword, forgetPasswordVerification};

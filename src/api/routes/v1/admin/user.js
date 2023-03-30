@@ -1,6 +1,6 @@
 const express = require("express");
 const route = express.Router();
-
+const { ApiError } = require("../../../middlewares/error");
 const {isAuth, isCan, attachCurrentAdmin, validate} = require("../../../middlewares");
 const userCrudValidation = require("../../../../validation/userCrud");
 const {getUser, createUser, editUser, getManyUser} = require("../../../../services/admin/userManage");
@@ -12,7 +12,7 @@ const func = (app) => {
             const result = await getUser(req.params.id)
             return res.send(result)
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -22,7 +22,7 @@ const func = (app) => {
             res.setHeader("count",result.count)
             return res.send(result.result)
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -31,7 +31,7 @@ const func = (app) => {
             const result = await createUser(req.body)
             return res.send(result)
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -41,7 +41,7 @@ const func = (app) => {
             const result = await editUser(req.params.id, req.body)
             return res.send(result)
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 }

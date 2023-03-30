@@ -1,6 +1,7 @@
 const express = require("express");
 const httpStatus = require('http-status-codes');
-require("dotenv").config({path:"../.env"});
+const { errorHandler } = require("../api/middlewares/error")
+require("dotenv").config({ path: "../.env" });
 
 const routes = require("../api/routes/v1");
 
@@ -13,18 +14,10 @@ const expressLoader = async (app) => {
     })
 
     app.use((req, res, next) => {
-        const err = new Error('Not Found');
-        err['status'] = 404;
-        next(err);
+        next(new ApiError(httpStatus.NOT_FOUND, "Not found"));
     });
 
-    app.use((err, req, res, next) => {
-        res.status(err.status || 500);
-        res.json({
-            errors: {
-                message: err.message,
-            },
-        });
-    });
+    app.use(errorHandler);
+
 }
 module.exports = expressLoader;

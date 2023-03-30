@@ -1,5 +1,6 @@
 const express = require("express");
 const route = express.Router();
+const { ApiError } = require("../../../middlewares/error");
 const {AdminRefreshToken, UserRefreshToken} = require("../../../../services/common/refreshToken")
 const func = (app) => {
     app.use(route);
@@ -9,7 +10,7 @@ const func = (app) => {
             const result = await AdminRefreshToken(token);
             return res.send(result);
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -19,7 +20,7 @@ const func = (app) => {
             const result = await UserRefreshToken(token);
             return res.send(result);
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 }

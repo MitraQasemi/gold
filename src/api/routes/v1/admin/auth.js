@@ -1,6 +1,6 @@
 const express = require("express");
 const route = express.Router();
-
+const { ApiError } = require("../../../middlewares/error");
 const {isAuth, validate} = require("../../../middlewares");
 const authValidation = require("../../../../validation/adminAuth");
 const {adminSignup, adminLogin, adminLogout} = require("../../../../services/admin/auth");
@@ -13,7 +13,7 @@ const func = (app) => {
             const result = await adminSignup(username, password, permissions);
             return res.send(result);
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -23,7 +23,7 @@ const func = (app) => {
             const result = await adminLogin(username, password);
             return res.send(result);
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -33,7 +33,7 @@ const func = (app) => {
             const result = await adminLogout(id);
             return res.send(result);
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 }

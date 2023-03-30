@@ -1,5 +1,5 @@
 const {PrismaClient} = require(".prisma/client");
-
+const { ApiError } = require("./error");
 const prisma = new PrismaClient
 
 module.exports = async (req, res, next) => {
@@ -9,7 +9,7 @@ module.exports = async (req, res, next) => {
         }
     })
     if (!admin) {
-        return res.status(404).send("admin not found")
+        throw new ApiError(404, "this admin does not exist")
     }
 
     req.admin = admin

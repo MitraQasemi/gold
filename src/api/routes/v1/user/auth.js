@@ -1,5 +1,6 @@
 const express = require("express");
 const route = express.Router();
+const { ApiError } = require("../../../middlewares/error");
 const {isAuth, validate} = require("../../../middlewares");
 const userAuthValidation = require("../../../../validation/userAuth")
 const {userSignupVerification, userSignup, userLogin, userLogout} = require("../../../../services/user/auth");
@@ -13,7 +14,7 @@ const func = (app) => {
             const result = await userSignup(phoneNumber);
             return res.send(result);
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -23,7 +24,7 @@ const func = (app) => {
             const result = await userLogin(phoneNumber, password);
             return res.send(result);
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -33,7 +34,7 @@ const func = (app) => {
             const result = await userSignupVerification(phoneNumber, code, password);
             return res.send(result);
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -43,7 +44,7 @@ const func = (app) => {
             const result = await userLogout(id);
             return res.send(result);
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -53,7 +54,7 @@ const func = (app) => {
             const result = await forgetPassword(phoneNumber);
             return res.send(result);
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -63,7 +64,7 @@ const func = (app) => {
             const result = await forgetPasswordVerification(phoneNumber, code, password);
             return res.send(result);
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 }

@@ -2,7 +2,7 @@ const express = require("express");
 const route = express.Router();
 
 const {isAuth, isCan, attachCurrentAdmin, validate} = require("../../../middlewares");
-
+const { ApiError } = require("../../../middlewares/error");
 const adminCrudValidation = require("../../../../validation/adminCrud");
 const {getAdmin, createAdmin, editAdmin, getManyAdmin} = require("../../../../services/admin/adminManage");
 
@@ -16,7 +16,7 @@ const func = (app) => {
             const result = await getAdmin(req.params.id)
             return res.send(result)
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -26,7 +26,7 @@ const func = (app) => {
             res.setHeader("count",result.count)
             return res.send(result.result)
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -36,7 +36,7 @@ const func = (app) => {
             const result = await createAdmin(username, password, permissions)
             return res.send(result)
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -45,7 +45,7 @@ const func = (app) => {
             const result = await editAdmin(req.params.id, req.body)
             return res.send(result)
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 }

@@ -1,4 +1,5 @@
 const JWT = require("jsonwebtoken");
+const { ApiError } = require("../../api/middlewares/error")
 
 require("dotenv").config({path: "../.env"});
 
@@ -14,7 +15,7 @@ const AdminRefreshToken = async (token) => {
             }
         })
         if (!result?.id) {
-            return "this refresh token is not valid"
+            throw new ApiError(500, "this token is not valid");
         }
         if (result.refreshToken === token) {
 
@@ -24,11 +25,11 @@ const AdminRefreshToken = async (token) => {
                 , {expiresIn: 3600000})
             return accessToken;
         } else {
-            return "refresh token did not match"
+            throw new ApiError(403, "token did not match");
         }
 
     } catch (error) {
-        throw error;
+        throw new ApiError(500, error.message);
     }
 }
 
@@ -41,8 +42,8 @@ const UserRefreshToken = async (token) => {
                 id: id
             }
         })
-        if (!result) {
-            return "this refresh token is not valid"
+        if (!result?.id) {
+            throw new ApiError(500, "this token is not valid");
         }
         if (result.refreshToken === token) {
 
@@ -52,11 +53,11 @@ const UserRefreshToken = async (token) => {
                 , {expiresIn: 3600000})
             return accessToken;
         } else {
-            return "refresh token did not match"
+            throw new ApiError(403, "token did not match");
         }
 
     } catch (error) {
-        throw error;
+        throw new ApiError(500, error.message);
     }
 }
 module.exports = {AdminRefreshToken, UserRefreshToken};

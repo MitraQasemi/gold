@@ -2,7 +2,7 @@ const express = require("express");
 const route = express.Router();
 const {isAuth, isCan, attachCurrentAdmin, validate} = require("../../../middlewares")
 const categoryCrudValidation = require("../../../../validation/categoryCrud");
-
+const { ApiError } = require("../../../middlewares/error");
 const {getOneCategory, getManyCategories, createCategory, deleteCategory} = require("../../../../services/admin/categoryManage");
 
 const func = (app) => {
@@ -16,7 +16,7 @@ const func = (app) => {
             return res.send(result);
             throw new Error("not found")
         } catch (error) {
-            next(error)
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -26,7 +26,7 @@ const func = (app) => {
             res.setHeader("count",result.count)
             return res.send(result.result)
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
     route.post("/admin/category",validate(categoryCrudValidation.create), isAuth, attachCurrentAdmin, isCan("create", "Category"), async (req, res, next) => {
@@ -34,7 +34,7 @@ const func = (app) => {
             const result = await createCategory(req.body);
             return res.send(result);
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -43,7 +43,7 @@ const func = (app) => {
             const result = await deleteCategory(req.params.id)
             return res.send(result);
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 }

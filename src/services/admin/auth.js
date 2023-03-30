@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
 const JWT = require("jsonwebtoken");
 const { PrismaClient } = require('@prisma/client')
+const { ApiError } = require("../../api/middlewares/error")
+
 require("dotenv").config({ path: "../.env" });
 
 const prisma = new PrismaClient()
@@ -14,7 +16,7 @@ const adminSignup = async (username, password, permissions) => {
         })
 
         if (result) {
-            return "this admin already exists";
+            throw new ApiError(403, "this admin already exists")
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -46,7 +48,7 @@ const adminSignup = async (username, password, permissions) => {
 
         return accessToken;
     } catch (error) {
-        throw error;
+        throw new ApiError(500, error.message);
     }
 }
 
@@ -59,11 +61,11 @@ const adminLogin = async (username, password) => {
         })
 
         if (!foundedUser) {
-            return "this admin does not exist";
+            throw new ApiError(404, "this admin does not exist")
         }
         const isMatch = await bcrypt.compare(password, foundedUser.password);
         if (!isMatch) {
-            return "wrong password ";
+            throw new ApiError(403, "wrong password")
         }
 
         const accessToken = JWT.sign({
@@ -85,7 +87,7 @@ const adminLogin = async (username, password) => {
         })
         return accessToken;
     } catch (error) {
-        throw error;
+        throw new ApiError(500, error.message);
     }
 }
 
@@ -102,7 +104,7 @@ const adminLogout = async (id) => {
         return "loged out"
 
     } catch (error) {
-        throw error;
+        throw new ApiError(500, error.message);
     }
 }
 module.exports = { adminSignup, adminLogin, adminLogout };

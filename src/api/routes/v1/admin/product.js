@@ -1,5 +1,6 @@
 const express = require("express");
 const route = express.Router();
+const { ApiError } = require("../../../middlewares/error");
 const {isAuth, isCan, attachCurrentAdmin, validate} = require("../../../middlewares")
 const productCrudValidation = require("../../../../validation/productCrud");
 const {getOneProduct, getManyProducts, createProduct, editProduct, deleteProduct} = require("../../../../services/admin/productManage");
@@ -13,7 +14,7 @@ const func = (app) => {
             const result = await getOneProduct(req.params.id)
             return res.send(result);
         } catch (error) {
-            return next(error)
+            return next( new ApiError(500, error.message));
         }
 
     })
@@ -24,7 +25,7 @@ const func = (app) => {
             res.setHeader("count",result.count)
             return res.send(result.result)
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
     route.post("/admin/product",validate(productCrudValidation.create), isAuth, attachCurrentAdmin, isCan("create", "Product"), async (req, res, next) => {
@@ -32,7 +33,7 @@ const func = (app) => {
             const result = await createProduct(req.body);
             return res.send(result);
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -42,7 +43,7 @@ const func = (app) => {
             const result = await editProduct(req.params.id, req.body)
             return res.send(result)
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
@@ -51,7 +52,7 @@ const func = (app) => {
             const result = await deleteProduct(req.params.id)
             return res.send(result)
         } catch (error) {
-            return next(error);
+            return next( new ApiError(500, error.message));
         }
     })
 
