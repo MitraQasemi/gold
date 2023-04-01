@@ -61,11 +61,11 @@ const adminLogin = async (username, password) => {
         })
 
         if (!foundedUser) {
-            throw new ApiError(404, "this admin does not exist")
+            throw new ApiError(404, "wrong password or username")
         }
         const isMatch = await bcrypt.compare(password, foundedUser.password);
         if (!isMatch) {
-            throw new ApiError(403, "wrong password")
+            throw new ApiError(403, "wrong password or username")
         }
 
         const accessToken = JWT.sign({
