@@ -2,7 +2,7 @@ const express = require("express");
 const httpStatus = require('http-status-codes');
 const { errorHandler } = require("../api/middlewares/error")
 require("dotenv").config({ path: "../.env" });
-
+const {ApiError} = require("../api/middlewares/error")
 const routes = require("../api/routes/v1");
 
 const expressLoader = async (app) => {

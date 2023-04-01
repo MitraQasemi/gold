@@ -2,9 +2,9 @@ const bcrypt = require("bcrypt");
 const axios = require('axios');
 const SData = require('simple-data-storage');
 const { ApiError } = require("../../api/middlewares/error");
-const {PrismaClient} = require('@prisma/client');
+const { PrismaClient } = require('@prisma/client');
 const JWT = require("jsonwebtoken");
-require("dotenv").config({path: "../.env"});
+require("dotenv").config({ path: "../.env" });
 
 const prisma = new PrismaClient()
 
@@ -17,12 +17,16 @@ const forgetPassword = async (phoneNumber) => {
             }
         })
 
-        if (!result) {
+        if (result) {
+            if (result.blocked) {
+                throw new ApiError(403, "this user is blocked");
+            }
+        }else{
             throw new ApiError(404, "this user does not exist");
         }
 
         const code = Math.floor(Math.random() * (99999 - 9999)) + 9999;
-        await SData(phoneNumber, {code: code, time: Date.now()})
+        await SData(phoneNumber, { code: code, time: Date.now() })
 
         const apiKey = "627269524D4A464252476F584B6264684A4D6B6A57387654343461645A713644344C7348674A67567943513D"
         const template = "chalak"
@@ -59,13 +63,13 @@ const forgetPasswordVerification = async (phoneNumber, code, password) => {
                     }
                 })
                 const accessToken = JWT.sign({
-                        id: result.id,
-                    }, process.env.JWT_SECRET_ACCESS
-                    , {expiresIn: 3600000})
+                    id: result.id,
+                }, process.env.JWT_SECRET_ACCESS
+                    , { expiresIn: 3600000 })
                 const refreshToken = JWT.sign({
-                        id: result.id,
-                    }, process.env.JWT_SECRET_REFRESH
-                    , {expiresIn: 3600000 * 1000})
+                    id: result.id,
+                }, process.env.JWT_SECRET_REFRESH
+                    , { expiresIn: 3600000 * 1000 })
 
                 await prisma.user.update({
                     where: {
@@ -73,11 +77,11 @@ const forgetPasswordVerification = async (phoneNumber, code, password) => {
                     },
                     data: {
                         password: hashedPassword,
-                        refreshToken:refreshToken
+                        refreshToken: refreshToken
                     },
                 })
 
-                return accessToken;
+                return { accessToken: accessToken };
             } else {
                 throw new ApiError(400, "verification failed");
             }
@@ -88,4 +92,4 @@ const forgetPasswordVerification = async (phoneNumber, code, password) => {
         throw new ApiError(500, error.message);
     }
 }
-module.exports = {forgetPassword, forgetPasswordVerification};
+module.exports = { forgetPassword, forgetPasswordVerification };

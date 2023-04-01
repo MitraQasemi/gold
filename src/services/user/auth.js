@@ -16,7 +16,7 @@ const userSignup = async (phoneNumber) => {
             }
         })
         if (result) {
-            throw new ApiError(403, "this user already exists")
+            throw new ApiError(403, "this user already exists");
         }
 
         const code = Math.floor(Math.random() * (99999 - 9999)) + 9999;
@@ -45,10 +45,14 @@ const userLogin = async (phoneNumber, password) => {
                 phoneNumber: phoneNumber,
             }
         })
-
-        if (!foundedUser) {
+        if (foundedUser) {
+            if (foundedUser.blocked) {
+                throw new ApiError(403, "this user is blocked");
+            }
+        }else{
             throw new ApiError(404, "this user does not exist");
         }
+
         const isMatch = await bcrypt.compare(password, foundedUser.password);
         if (!isMatch) {
             throw new ApiError(403, "wrong password")
@@ -71,7 +75,7 @@ const userLogin = async (phoneNumber, password) => {
                 refreshToken: refreshToken,
             },
         })
-        return accessToken;
+        return { accessToken: accessToken, refreshToken: refreshToken };
 
     } catch (error) {
         throw new ApiError(500, error.message);
@@ -116,7 +120,7 @@ const userSignupVerification = async (phoneNumber, code, password) => {
                     }
                 })
 
-                return accessToken;
+                return { accessToken: accessToken, refreshToken: refreshToken };
             } else {
                 throw new ApiError(400, "verification failed");
             }

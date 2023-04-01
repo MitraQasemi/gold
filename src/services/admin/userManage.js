@@ -40,7 +40,6 @@ const getManyUser = async (queryObject) => {
     } catch (error) {
         throw new ApiError(500, error.message);
     }
-
 }
 // POST
 

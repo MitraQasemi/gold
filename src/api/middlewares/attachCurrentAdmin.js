@@ -9,10 +9,9 @@ module.exports = async (req, res, next) => {
         }
     })
     if (!admin) {
-        throw new ApiError(404, "this admin does not exist")
+        return next (new ApiError(404, "this admin does not exist"));
     }
 
     req.admin = admin
-
     return next()
 }

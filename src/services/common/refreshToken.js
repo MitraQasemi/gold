@@ -1,9 +1,9 @@
 const JWT = require("jsonwebtoken");
 const { ApiError } = require("../../api/middlewares/error")
 
-require("dotenv").config({path: "../.env"});
+require("dotenv").config({ path: "../.env" });
 
-const {PrismaClient} = require('@prisma/client');
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient()
 const AdminRefreshToken = async (token) => {
     try {
@@ -20,10 +20,15 @@ const AdminRefreshToken = async (token) => {
         if (result.refreshToken === token) {
 
             const accessToken = await JWT.sign({
-                    id: id
-                }, process.env.JWT_SECRET_ACCESS
-                , {expiresIn: 3600000})
-            return accessToken;
+                id: id
+            }, process.env.JWT_SECRET_ACCESS
+                , { expiresIn: 3600000 })
+
+            const refreshToken = await JWT.sign({
+                id: id
+            }, process.env.JWT_SECRET_REFRESH
+                , { expiresIn: 3600000 * 1000 })
+            return { accessToken: accessToken, refreshToken: refreshToken };
         } else {
             throw new ApiError(403, "token did not match");
         }
@@ -42,16 +47,25 @@ const UserRefreshToken = async (token) => {
                 id: id
             }
         })
+        if (result) {
+            if (result.blocked) {
+                throw new ApiError(403, "this user is blocked");
+            }
+        }
         if (!result?.id) {
             throw new ApiError(500, "this token is not valid");
         }
         if (result.refreshToken === token) {
 
             const accessToken = await JWT.sign({
-                    id: id
-                }, process.env.JWT_SECRET_ACCESS
-                , {expiresIn: 3600000})
-            return accessToken;
+                id: id
+            }, process.env.JWT_SECRET_ACCESS
+                , { expiresIn: 3600000 })
+            const refreshToken = await JWT.sign({
+                id: id
+            }, process.env.JWT_SECRET_REFRESH
+                , { expiresIn: 3600000 * 1000 })
+            return { accessToken: accessToken, refreshToken: refreshToken };
         } else {
             throw new ApiError(403, "token did not match");
         }
@@ -60,4 +74,4 @@ const UserRefreshToken = async (token) => {
         throw new ApiError(500, error.message);
     }
 }
-module.exports = {AdminRefreshToken, UserRefreshToken};
+module.exports = { AdminRefreshToken, UserRefreshToken };

@@ -1,5 +1,6 @@
 const express = require("express");
 const route = express.Router();
+const lodash = require("lodash");
 const { ApiError } = require("../../../middlewares/error");
 const {isAuth, isCan, attachCurrentAdmin, validate} = require("../../../middlewares");
 const userCrudValidation = require("../../../../validation/userCrud");
@@ -10,7 +11,8 @@ const func = (app) => {
     route.get("/admin/user/:id", validate(userCrudValidation.read), isAuth, attachCurrentAdmin, isCan("read", "User"), async (req, res, next) => {
         try {
             const result = await getUser(req.params.id)
-            return res.send(result)
+            const newResult = lodash.omit(result, ["password", "refreshToken"]);
+            return res.send(newResult);
         } catch (error) {
             return next( new ApiError(500, error.message));
         }
@@ -20,7 +22,8 @@ const func = (app) => {
         try {
             const result = await getManyUser(req.query)
             res.setHeader("count",result.count)
-            return res.send(result.result)
+            const newResult = result.result.map((item) => lodash.omit(item, ["password", "refreshToken"]))
+            return res.send(newResult);
         } catch (error) {
             return next( new ApiError(500, error.message));
         }
@@ -29,7 +32,8 @@ const func = (app) => {
     route.post("/admin/user", validate(userCrudValidation.create), isAuth, attachCurrentAdmin, isCan("create", "User"), async (req, res, next) => {
         try {
             const result = await createUser(req.body)
-            return res.send(result)
+            const newResult = lodash.omit(result, ["password", "refreshToken"]);
+            return res.send(newResult);
         } catch (error) {
             return next( new ApiError(500, error.message));
         }
@@ -39,7 +43,8 @@ const func = (app) => {
     route.put("/admin/user/:id", validate(userCrudValidation.update), isAuth, attachCurrentAdmin, isCan("update", "User"), async (req, res, next) => {
         try {
             const result = await editUser(req.params.id, req.body)
-            return res.send(result)
+            const newResult = lodash.omit(result, ["password", "refreshToken"]);
+            return res.send(newResult);
         } catch (error) {
             return next( new ApiError(500, error.message));
         }

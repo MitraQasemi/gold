@@ -85,7 +85,7 @@ const adminLogin = async (username, password) => {
                 refreshToken: refreshToken,
             },
         })
-        return accessToken;
+        return { accessToken: accessToken, refreshToken: refreshToken };
     } catch (error) {
         throw new ApiError(500, error.message);
     }

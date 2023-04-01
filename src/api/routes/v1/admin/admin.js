@@ -1,51 +1,55 @@
 const express = require("express");
 const route = express.Router();
-
-const {isAuth, isCan, attachCurrentAdmin, validate} = require("../../../middlewares");
+const lodash = require("lodash");
+const { isAuth, isCan, attachCurrentAdmin, validate } = require("../../../middlewares");
 const { ApiError } = require("../../../middlewares/error");
 const adminCrudValidation = require("../../../../validation/adminCrud");
-const {getAdmin, createAdmin, editAdmin, getManyAdmin} = require("../../../../services/admin/adminManage");
+const { getAdmin, createAdmin, editAdmin, getManyAdmin } = require("../../../../services/admin/adminManage");
 
 const func = (app) => {
 
     app.use(route);
 
 
-    route.get("/admin/:id",validate(adminCrudValidation.read), isAuth, attachCurrentAdmin, isCan("read", "Admin"), async (req, res, next) => {
+    route.get("/admin/:id", validate(adminCrudValidation.read), isAuth, attachCurrentAdmin, isCan("read", "Admin"), async (req, res, next) => {
         try {
             const result = await getAdmin(req.params.id)
-            return res.send(result)
+            const newResult = lodash.omit(result, ["password", "refreshToken"]);
+            return res.send(newResult);
         } catch (error) {
-            return next( new ApiError(500, error.message));
+            return next(new ApiError(500, error.message));
         }
     })
 
-    route.get("/admin",validate(adminCrudValidation.readMany), isAuth, attachCurrentAdmin, isCan("read", "Admin"), async (req, res, next) => {
+    route.get("/admin", validate(adminCrudValidation.readMany), isAuth, attachCurrentAdmin, isCan("read", "Admin"), async (req, res, next) => {
         try {
-            const result = await getManyAdmin(req.query)
-            res.setHeader("count",result.count)
-            return res.send(result.result)
+            const result = await getManyAdmin(req.query);
+            res.setHeader("count", result.count);
+            const newResult = result.result.map((item) => lodash.omit(item, ["password", "refreshToken"]))
+            return res.send(newResult);
         } catch (error) {
-            return next( new ApiError(500, error.message));
+            return next(new ApiError(500, error.message));
         }
     })
 
-    route.post("/admin",validate(adminCrudValidation.create), isAuth, attachCurrentAdmin, isCan("create", "Admin"), async (req, res, next) => {
+    route.post("/admin", validate(adminCrudValidation.create), isAuth, attachCurrentAdmin, isCan("create", "Admin"), async (req, res, next) => {
         try {
-            const {username, password, permissions} = req.body;
+            const { username, password, permissions } = req.body;
             const result = await createAdmin(username, password, permissions)
-            return res.send(result)
+            const newResult = lodash.omit(result, ["password", "refreshToken"]);
+            return res.send(newResult);
         } catch (error) {
-            return next( new ApiError(500, error.message));
+            return next(new ApiError(500, error.message));
         }
     })
 
-    route.put("/admin/:id",validate(adminCrudValidation.update), isAuth, attachCurrentAdmin, isCan("update", "Admin"), async (req, res, next) => {
+    route.put("/admin/:id", validate(adminCrudValidation.update), isAuth, attachCurrentAdmin, isCan("update", "Admin"), async (req, res, next) => {
         try {
             const result = await editAdmin(req.params.id, req.body)
-            return res.send(result)
+            const newResult = lodash.omit(result, ["password", "refreshToken"]);
+            return res.send(newResult);
         } catch (error) {
-            return next( new ApiError(500, error.message));
+            return next(new ApiError(500, error.message));
         }
     })
 }

@@ -28,12 +28,12 @@ const errorHandler = (err, req, res, next) => {
             stack: err.stack,
         }),
     };
-
+    
     if (process.env.ENVIRONMENT === "development") {
-        console.error(err);
+        
     }
-
     res.status(statusCode).send(response);
+    
 };
 
 module.exports = { errorHandler, ApiError }

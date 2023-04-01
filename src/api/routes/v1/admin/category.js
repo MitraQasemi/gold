@@ -14,7 +14,6 @@ const func = (app) => {
             const result = await getOneCategory(req.params.id)
             if (result)
             return res.send(result);
-            throw new Error("not found")
         } catch (error) {
             return next( new ApiError(500, error.message));
         }
