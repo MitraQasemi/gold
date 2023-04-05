@@ -9,18 +9,21 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  firstName    String    @default("")
-  lastName     String    @default("")
-  phoneNumber  String    @unique
-  password     String
-  refreshToken String    @default("")
-  blocked      Boolean   @default(false)
-  age          Int       @default(0)
-  balance      Int       @default(0)
-  countryCode  Int       @default(0)
-  addresses    Address[]
-  Cart         Cart?
+  id                String             @id @default(auto()) @map("_id") @db.ObjectId
+  firstName         String             @default("")
+  lastName          String             @default("")
+  phoneNumber       String             @unique
+  password          String
+  refreshToken      String             @default("")
+  blocked           Boolean            @default(false)
+  age               Int                @default(0)
+  walletBalance     Int                @default(0)
+  goldBalance       Float              @default(0.000)
+  countryCode       Int                @default(0)
+  addresses         Address[]
+  Cart              Cart?
+  goldTransaction   goldTransaction?
+  walletTransaction walletTransaction?
 }
 
 type Address {
@@ -89,9 +92,48 @@ type Varient {
 }
 
 model Admin {
-  id           String  @id @default(auto()) @map("_id") @db.ObjectId
-  username     String  @unique
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  username     String @unique
   password     String
-  permissions  String  @default("[]")
-  refreshToken String  @default("")
+  permissions  String @default("[]")
+  refreshToken String @default("")
+}
+
+model config {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  startAt   String @default("")
+  endAt     String @default("")
+  maxWeight Float  @default(0.000)
+}
+
+model goldTransaction {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @unique @db.ObjectId
+  user           User     @relation(fields: [userId], references: [id])
+  date           DateTime @default(now())
+  expense        Int
+  status         String
+  paymentGateway String
+  details        String
+}
+
+model walletTransaction {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @unique @db.ObjectId
+  user           User     @relation(fields: [userId], references: [id])
+  date           DateTime @default(now())
+  expense        Int
+  status         String
+  paymentGateway String
+  title          String
+  weight         Float
+  quotation      Float
+  details        String
+}
+
+model goldPrice {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  date          DateTime @default(now())
+  buyQuotation  Float
+  sellQuotation Float
 }
