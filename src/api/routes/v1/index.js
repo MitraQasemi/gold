@@ -7,7 +7,7 @@ const userManageRoutes = require("./admin/user");
 const refreshToken = require("./common/refreshToken");
 const uploadRoute = require("./common/upload");
 const adminMange = require("./admin/admin");
-
+const gold = require("./user/gold")
 const express = require("express");
 
 const api = () => {
@@ -22,6 +22,7 @@ const api = () => {
     uploadRoute(router);
     userManageRoutes(router);
     adminMange(router);
+    gold(router);
     return router;
 }
 module.exports = api;
