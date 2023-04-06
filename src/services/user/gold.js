@@ -7,11 +7,11 @@ const prisma = new PrismaClient()
 
 
 const computing = async (type, weight, price) => {
-    try {
+  try {   
         
-    } catch (error) {
+  } catch (error) {
         throw new ApiError(500, error.message);
-    }
+  }
 }
 
 module.exports = { computing};
