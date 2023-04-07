@@ -1,12 +1,11 @@
-const joi = require('joi');
-
+const joi = require("joi");
 
 const computing = {
-    body: joi.object().keys({
-        type: joi.string().required(),
-        weight: joi.decimal(),
-        price: joi.number()
-    })
-}
+  body: joi.object().keys({
+    type: joi.string().required(),
+    weight: joi.number(),
+    price: joi.number(),
+  }),
+};
 
-module.exports = { computing }
+module.exports = { computing };

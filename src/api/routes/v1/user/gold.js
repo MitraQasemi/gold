@@ -7,7 +7,7 @@ const { computing } = require("../../../../services/user/gold")
 
 const func = (app) => {
     app.use(route);
-    route.post("/user/computing", isAuth, validate(computingValidation.computing), async (req, res) => {
+    route.post("/user/computing", isAuth, validate(computingValidation.computing), async (req, res, next) => {
         try {
             const { type, weight, price } = req.body;
             const result = await computing(type, weight, price);
