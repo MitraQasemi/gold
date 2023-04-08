@@ -1,7 +1,10 @@
 const axios = require("axios");
+const moment = require("jalali-moment");
 const { ApiError } = require("../../api/middlewares/error");
 const { PrismaClient } = require("@prisma/client");
 require("dotenv").config({ path: "../.env" });
+
+moment.locale("fa");
 
 const prisma = new PrismaClient();
 
@@ -28,4 +31,34 @@ const computing = async (type, weight, price) => {
   }
 };
 
-module.exports = { computing };
+const buyGold = async () => {
+  const now = moment();
+  const currentHouer = now.hours();
+
+  const config = await prisma.config.findFirstOrThrow({});
+
+  const currentLimitation = config.goldPurchaseLimit.find(
+    (Lim) => Lim.startAt <= currentHouer && Lim.endAt > currentHouer
+  );
+  const startAt = moment(`${currentLimitation.startAt}`, "HH");
+  const endAt = moment(`${currentLimitation.endAt}`, "HH");
+
+  const totalPurchasedGold = await prisma.goldTransaction.aggregate({
+    where: {
+      date: {
+        gte: startAt,
+        lt: endAt,
+      },
+    },
+    _sum: {
+      expense: true,
+    },
+  });
+
+  if (currentLimitation.weightLimit >= totalPurchasedGold) {
+    // ETC
+  } else {
+    throw new ApiError(403, "you can't buy gold anymore");
+  }
+};
+module.exports = { computing, buyGold };
