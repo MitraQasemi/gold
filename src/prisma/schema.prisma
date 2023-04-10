@@ -100,9 +100,9 @@ model Admin {
 }
 
 type Limitation {
-  startAt     String
-  endAt       String
-  weightLimit Int
+  startAt     String @default("00:00")
+  endAt       String @default("00:00")
+  weightLimit Int    @default(0)
 }
 
 model config {

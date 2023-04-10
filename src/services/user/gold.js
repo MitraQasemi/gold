@@ -31,20 +31,22 @@ const computing = async (type, weight, price) => {
   }
 };
 
-const buyGold = async () => {
+const buyGold = async (userId) => {
   const now = moment();
-  const currentHouer = now.hours();
+  const currentHouer = now.format("HH:mm");
 
   const config = await prisma.config.findFirstOrThrow({});
 
   const currentLimitation = config.goldPurchaseLimit.find(
     (Lim) => Lim.startAt <= currentHouer && Lim.endAt > currentHouer
   );
-  const startAt = moment(`${currentLimitation.startAt}`, "HH");
-  const endAt = moment(`${currentLimitation.endAt}`, "HH");
+
+  const startAt = moment(`${currentLimitation.startAt}`, "HH:mm").toISOString();
+  const endAt = moment(`${currentLimitation.endAt}`, "HH:mm").toISOString();
 
   const totalPurchasedGold = await prisma.goldTransaction.aggregate({
     where: {
+      userId: userId,
       date: {
         gte: startAt,
         lt: endAt,
@@ -55,7 +57,7 @@ const buyGold = async () => {
     },
   });
 
-  if (currentLimitation.weightLimit >= totalPurchasedGold) {
+  if (currentLimitation.weightLimit >= totalPurchasedGold._sum.expense) {
     // ETC
   } else {
     throw new ApiError(403, "you can't buy gold anymore");
