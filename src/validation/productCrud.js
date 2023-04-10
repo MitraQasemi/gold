@@ -39,7 +39,7 @@ const create = {
 const read = {
     params: joi.object().keys({
         id: joi.string().hex().length(24)
-    })
+    }).required()
 }
 
 const readMany = {
@@ -52,7 +52,7 @@ const readMany = {
 const update = {
     params: joi.object().keys({
         id: joi.string().hex().length(24)
-    }),
+    }).required(),
     body: joi.object().keys({
         title: joi.string().max(1000),
         description: joi.string().max(1000),
@@ -90,6 +90,6 @@ const update = {
 const Delete = {
     params: joi.object().keys({
         id: joi.string().hex().length(24)
-    })
+    }).required()
 }
 module.exports = {create, read, update, Delete, readMany}

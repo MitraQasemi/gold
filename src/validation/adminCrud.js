@@ -15,7 +15,7 @@ const create = {
 const read = {
     params: joi.object().keys({
         id: joi.string().hex().length(24)
-    })
+    }).required()
 }
 const readMany = {
     query: joi.object().keys({
@@ -27,7 +27,7 @@ const readMany = {
 const update = {
     params: joi.object().keys({
         id: joi.string().hex().length(24)
-    }),
+    }).required(),
     body: joi.object().keys({
         username: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{5,16}$')),
         password: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,16}$')),

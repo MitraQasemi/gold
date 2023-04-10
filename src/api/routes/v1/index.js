@@ -1,4 +1,4 @@
-const adminAuthRoutes = require("./admin/auth.js");
+const adminAuthRoutes = require("./admin/auth");
 const userManagingRoutes = require("./admin/user");
 const productManagingRoutes = require("./admin/product");
 const categoryManageRoutes = require("./admin/category")
@@ -8,6 +8,7 @@ const refreshToken = require("./common/refreshToken");
 const uploadRoute = require("./common/upload");
 const adminMange = require("./admin/admin");
 const gold = require("./user/gold")
+const config = require("./admin/config")
 const express = require("express");
 
 const api = () => {
@@ -23,6 +24,7 @@ const api = () => {
     userManageRoutes(router);
     adminMange(router);
     gold(router);
+    config(router);
     return router;
 }
 module.exports = api;
