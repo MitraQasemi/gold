@@ -48,7 +48,7 @@ const createCategory = async (categoryDetails) => {
             const result = await prisma.category.create({
                 data: categoryDetails
             })
-            return result;
+            return result;  
         }
         throw new ApiError(404, "this parent does not exist")
 
