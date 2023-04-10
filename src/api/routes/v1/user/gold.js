@@ -3,7 +3,7 @@ const route = express.Router();
 const { ApiError } = require("../../../middlewares/error");
 const { isAuth, validate } = require("../../../middlewares");
 const computingValidation = require("../../../../validation/gold")
-const { computing } = require("../../../../services/user/gold")
+const { computing, buyGold} = require("../../../../services/user/gold")
 
 const func = (app) => {
     app.use(route);
@@ -17,6 +17,16 @@ const func = (app) => {
         }
     })
 
-}
+    route.post("/user/buyGold", isAuth, async (req, res, next) => {
+      try {;
+        const result = await buyGold(req.user.id);
+        return res.send(result);
+      } catch (error) {
+        console.log(error);
+        return next(new ApiError(error.statusCode, error.message));
+      }
+    }
+  );
+};
 
 module.exports = func;
