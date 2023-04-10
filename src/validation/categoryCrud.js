@@ -20,13 +20,13 @@ const readMany = {
 const read = {
     params: joi.object().keys({
         id: joi.string().hex().length(24)
-    })
+    }).required()
 }
 
 const Delete = {
     params: joi.object().keys({
         id: joi.string().hex().length(24)
-    })
+    }).required()
 }
 
 module.exports = {create, readMany, read, Delete}
