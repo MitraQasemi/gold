@@ -9,8 +9,8 @@ const func = (app) => {
     app.use(route);
     route.post("/user/computing", isAuth, validate(computingValidation.computing), async (req, res, next) => {
         try {
-            const { type, weight, price } = req.body;
-            const result = await computing(type, weight, price);
+            const { type, value } = req.body;
+            const result = await computing(type, value);
             return res.send(result);
         } catch (error) {
             return next(new ApiError(500, error.message));
@@ -19,7 +19,7 @@ const func = (app) => {
 
     route.post("/user/buyGold", isAuth, async (req, res, next) => {
       try {;
-        const result = await buyGold(req.user.id);
+        const result = await buyGold(req.user.id, req.body);
         return res.send(result);
       } catch (error) {
         console.log(error);
