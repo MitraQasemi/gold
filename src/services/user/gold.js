@@ -70,23 +70,23 @@ const buyGold = async (userId, body) => {
   });
 
   if (currentLimitation.weightLimit >= totalPurchasedGold._sum.expense) {
-    return prisma.$transaction(async (prisma) => {
-      
-      const price = body.type === "buy-price" ? body.value : await computing(body.type, body.value);
+    const transactionResult = await prisma.$transaction(async (prisma) => {
 
-      const weight = await computing("buy-price", price);
+      const price = body.type === "buy-price" ? body.value : await computing(body.type, body.value);
 
       const user = await prisma.user.findUniqueOrThrow({
         where: {
           id: userId,
         },
       });
-
+      
       if (user.walletBalance < price) {
         throw new ApiError(403, "your wallet balance is not enough");
       }
+      
+      const weight = await computing("buy-price", price);
 
-      await prisma.user.update({
+      const updatedUser = await prisma.user.update({
         where: {
           id: userId,
         },
@@ -100,7 +100,7 @@ const buyGold = async (userId, body) => {
         },
       });
 
-      await prisma.goldTransaction.create({
+      const goldTransaction = await prisma.goldTransaction.create({
         data: {
           userId: user.id,
           date: moment().toISOString(),
@@ -111,7 +111,7 @@ const buyGold = async (userId, body) => {
         },
       });
 
-      await prisma.walletTransaction.create({
+      const walletTransaction = await prisma.walletTransaction.create({
         data: {
           userId: user.id,
           date: moment().toISOString(),
@@ -120,11 +120,15 @@ const buyGold = async (userId, body) => {
           paymentGateway: "place holder",
           title: "place holder",
           weight: weight,
-          quotation: 0.00, // 👈 place holder
+          quotation: 0.0, // 👈 place holder
           details: "place holder",
         },
       });
+
+      return { updatedUser, goldTransaction, walletTransaction };
     });
+
+    return transactionResult;
   } else {
     throw new ApiError(403, "you can't buy gold anymore");
   }
