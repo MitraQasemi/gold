@@ -26,23 +26,7 @@ const computing = async (type, value) => {
     throw new ApiError(400, "bad request");
   }
 };
-/**
-     const currentPrice = await prisma.goldPrice.findFirst();
-    if (type === "se-we" && weight) {
-      const totalPrice = currentPrice.sellQuotation * weight;
-      return totalPrice.toFixed(3);
-    } else if (type === "bu-we" && weight) {
-      const totalPrice = currentPrice.buyQuotation * weight;
-      return totalPrice.toFixed(3);
-    } else if (type === "se-pr" && price) {
-      const totalWeight = price / currentPrice.sellQuotation;
-      return totalWeight.toFixed(3);
-    } else if (type === "bu-pr" && price) {
-      const totalWeight = price / currentPrice.buyQuotation;
-      return totalWeight.toFixed(3);
-    } else {
-      return "there is no valid parameters";
- */
+
 const buyGold = async (userId, body) => {
   const now = moment();
   const currentHouer = now.format("HH:mm");
