@@ -9,6 +9,7 @@ const uploadRoute = require("./common/upload");
 const adminMange = require("./admin/admin");
 const gold = require("./user/gold")
 const config = require("./admin/config")
+const goldPrice = require("./admin/goldprice")
 const express = require("express");
 
 const api = () => {
@@ -25,6 +26,7 @@ const api = () => {
     adminMange(router);
     gold(router);
     config(router);
+    goldPrice(router);
     return router;
 }
 module.exports = api;
