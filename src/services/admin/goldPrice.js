@@ -1,6 +1,6 @@
 const { PrismaClient } = require("@prisma/client")
 const { ApiError } = require("../../api/middlewares/error")
-const moment = require("jalali-moment");
+const moment = require("moment");
 moment.locale("fa");
 const prisma = new PrismaClient()
 
