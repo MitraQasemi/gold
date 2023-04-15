@@ -4,7 +4,7 @@ const jobsLoader = require("./goldPriceJob");
 const loader = async (app) => {
     await expressLoader(app);
     console.log("express loaded");
-    await jobsLoader();
+    jobsLoader();
     console.log("jobs loaded");
 }
 

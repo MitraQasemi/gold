@@ -17,7 +17,7 @@ model User {
   refreshToken      String             @default("")
   blocked           Boolean            @default(false)
   age               Int                @default(0)
-  walletBalance     Int                @default(0)
+  walletBalance     Float                @default(0)
   goldBalance       Float              @default(0.000)
   countryCode       Int                @default(0)
   addresses         Address[]
@@ -49,9 +49,9 @@ model Product {
   tags           String[]
   image          String[]
   thumbnailImage String      @default("")
-  wage           Int         @default(0)
-  weight         Int         @default(0)
-  weightUnit     Int         @default(0)
+  wage           Float         @default(0)
+  weight         Float       @default(0.000)
+  weightUnit     String         @default("")
   quantity       Int         @default(0)
   lockQuantity   Int         @default(0)
   discount       Int         @default(0)
@@ -76,15 +76,15 @@ type MetaData {
 
 type Installment {
   available Boolean
-  minWeight Int
+  minWeight Float
   deadLine  Int
 }
 
 type Varient {
   varientId    String      @db.ObjectId
   varients     String[]
-  wage         Int
-  weight       Int
+  wage         Float
+  weight       Float
   quantity     Int
   lockQuantity Int
   discount     Int
@@ -100,9 +100,9 @@ model Admin {
 }
 
 type Limitation {
-  startAt     String @default("00:00")
+  startAt     String @default("00:`")
   endAt       String @default("00:00")
-  weightLimit Int    @default(0)
+  weightLimit Float    @default(0)
 }
 
 model config {
@@ -115,7 +115,7 @@ model goldTransaction {
   userId         String   @unique @db.ObjectId
   user           User     @relation(fields: [userId], references: [id])
   date           DateTime @default(now())
-  expense        Int
+  expense        Float
   status         String
   paymentGateway String
   details        String
@@ -126,7 +126,7 @@ model walletTransaction {
   userId         String   @unique @db.ObjectId
   user           User     @relation(fields: [userId], references: [id])
   date           DateTime @default(now())
-  expense        Int
+  expense        Float
   status         String
   paymentGateway String
   title          String
@@ -138,6 +138,6 @@ model walletTransaction {
 model goldPrice {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   date          DateTime @default(now())
-  buyQuotation  Int
-  sellQuotation Int
+  buyQuotation  Float
+  sellQuotation Float
 }
