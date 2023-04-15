@@ -8,26 +8,7 @@ moment.locale("fa");
 
 const prisma = new PrismaClient();
 
-const computing = async (type, value) => {
-  const currentPrice = await prisma.goldPrice.findFirst();
-  if (type === "sell-weight") {
-    const totalPrice = currentPrice.sellQuotation * value;
-    return totalPrice;
-  } else if (type === "sell-price") {
-    const totalWeight = value / currentPrice.sellQuotation;
-    return totalWeight;
-  } else if (type === "buy-weight") {
-    const totalPrice = currentPrice.buyQuotation * value;
-    return totalPrice;
-  } else if (type === "buy-price") {
-    const totalWeight = value / currentPrice.buyQuotation;
-    return totalWeight;
-  } else {
-    throw new ApiError(400, "bad request");
-  }
-};
-
-const buyGold = async (userId, body) => {
+const checkAllow = async (userId) => {
   const now = moment();
   const currentHouer = now.format("HH:mm");
 
@@ -52,8 +33,30 @@ const buyGold = async (userId, body) => {
       expense: true,
     },
   });
-  const allowedWeight =
-    currentLimitation.weightLimit - totalPurchasedGold._sum.expense;
+  return currentLimitation.weightLimit - totalPurchasedGold._sum.expense;
+};
+
+const computing = async (type, value) => {
+  const currentPrice = await prisma.goldPrice.findFirst();
+  if (type === "sell-weight") {
+    const totalPrice = currentPrice.sellQuotation * value;
+    return totalPrice;
+  } else if (type === "sell-price") {
+    const totalWeight = value / currentPrice.sellQuotation;
+    return totalWeight;
+  } else if (type === "buy-weight") {
+    const totalPrice = currentPrice.buyQuotation * value;
+    return totalPrice;
+  } else if (type === "buy-price") {
+    const totalWeight = value / currentPrice.buyQuotation;
+    return totalWeight;
+  } else {
+    throw new ApiError(400, "bad request");
+  }
+};
+
+const buyGold = async (userId, body) => {
+  const allowedWeight = await checkAllow(userId);
   const requestedWeight =
     body.type === "buy-weight"
       ? body.value
@@ -123,7 +126,6 @@ const buyGold = async (userId, body) => {
   return transactionResult;
 };
 
-const sellGold = async () => {
-  // etc
-};
-module.exports = { computing, buyGold };
+const sellGold = async () => {};
+
+module.exports = { computing, buyGold, sellGold };
