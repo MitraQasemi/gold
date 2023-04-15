@@ -2,7 +2,7 @@ const express = require("express");
 const route = express.Router();
 const { isAuth, isCan, attachCurrentAdmin, validate } = require("../../../middlewares")
 const { ApiError } = require("../../../middlewares/error");
-const { goldPrice } = require("../../../../services/admin/goldprice");
+const { goldPrice } = require("../../../../services/admin/goldPrice");
 
 const func = (app) => {
 

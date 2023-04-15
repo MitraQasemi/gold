@@ -11,17 +11,17 @@ const prisma = new PrismaClient();
 const computing = async (type, value) => {
   const currentPrice = await prisma.goldPrice.findFirst();
   if (type === "sell-weight") {
-    const totalPrice = currentPrice.sellQuotation * value;
-    return totalPrice.toFixed(3);
+    const totalPrice = Number(currentPrice.sellQuotation * value);
+    return totalPrice;
   } else if (type === "sell-price") {
-    const totalWeight = value / currentPrice.sellQuotation;
-    return totalWeight.toFixed(3);
+    const totalWeight = Number(value / currentPrice.sellQuotation);
+    return totalWeight;
   } else if (type === "buy-weight") {
-    const totalPrice = currentPrice.buyQuotation * value;
-    return totalPrice.toFixed(3);
+    const totalPrice = Number(currentPrice.buyQuotation * value);
+    return totalPrice;
   } else if (type === "buy-price") {
-    const totalWeight = value / currentPrice.buyQuotation;
-    return totalWeight.toFixed(3);
+    const totalWeight = Number(value / currentPrice.buyQuotation);
+    return totalWeight;
   } else {
     throw new ApiError(400, "bad request");
   }
@@ -52,8 +52,10 @@ const buyGold = async (userId, body) => {
       expense: true,
     },
   });
+  const allowedValue = currentLimitation.weightLimit - totalPurchasedGold._sum.expense;
+  const requestedWeight = body.type === "buy-weight" ? body.value : await computing(body.type, body.value);
 
-  if (currentLimitation.weightLimit >= totalPurchasedGold._sum.expense) {
+  if (allowedValue >= requestedWeight) {
     const transactionResult = await prisma.$transaction(async (prisma) => {
 
       const price = body.type === "buy-price" ? body.value : await computing(body.type, body.value);
@@ -63,12 +65,10 @@ const buyGold = async (userId, body) => {
           id: userId,
         },
       });
-      
+
       if (user.walletBalance < price) {
         throw new ApiError(403, "your wallet balance is not enough");
       }
-      
-      const weight = await computing("buy-price", price);
 
       const updatedUser = await prisma.user.update({
         where: {
@@ -76,7 +76,7 @@ const buyGold = async (userId, body) => {
         },
         data: {
           goldBalance: {
-            increment: weight,
+            increment: requestedWeight,
           },
           walletBalance: {
             decrement: price,
@@ -88,7 +88,7 @@ const buyGold = async (userId, body) => {
         data: {
           userId: user.id,
           date: moment().toISOString(),
-          expense: weight,
+          expense: requestedWeight,
           status: "place holder",
           paymentGateway: "place holder",
           details: "place holder",
@@ -103,7 +103,7 @@ const buyGold = async (userId, body) => {
           status: "place holder",
           paymentGateway: "place holder",
           title: "place holder",
-          weight: weight,
+          weight: requestedWeight,
           quotation: 0.0, // 👈 place holder
           details: "place holder",
         },
