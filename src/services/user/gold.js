@@ -1,5 +1,5 @@
 const axios = require("axios");
-const moment = require("moment");
+const moment = require("jalali-moment");
 const { ApiError } = require("../../api/middlewares/error");
 const { PrismaClient } = require("@prisma/client");
 require("dotenv").config({ path: "../.env" });
