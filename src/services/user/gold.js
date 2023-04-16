@@ -56,14 +56,14 @@ const computing = async (type, value) => {
 };
 
 const buyGold = async (userId, body) => {
-  const allowedWeight = await checkAllow(userId);
+  const purchaseableWeight = await checkAllow(userId);
   const requestedWeight =
     body.type === "buy-weight"
       ? body.value
       : await computing(body.type, body.value);
 
-  if (allowedWeight < requestedWeight) {
-    throw new ApiError(403, "you can't buy gold anymore");
+  if (purchaseableWeight < requestedWeight) {
+    throw new ApiError(403, "you can't buy gold anymore today");
   }
   const transactionResult = await prisma.$transaction(async (prisma) => {
     const price =
@@ -99,6 +99,7 @@ const buyGold = async (userId, body) => {
       data: {
         userId: user.id,
         date: moment().toISOString(),
+        transactionType: "buy",
         expense: requestedWeight,
         status: "place holder",
         paymentGateway: "place holder",
@@ -110,6 +111,7 @@ const buyGold = async (userId, body) => {
       data: {
         userId: user.id,
         date: moment().toISOString(),
+        transactionType: "buy",
         expense: price,
         status: "place holder",
         paymentGateway: "place holder",
@@ -126,6 +128,77 @@ const buyGold = async (userId, body) => {
   return transactionResult;
 };
 
-const sellGold = async () => {};
+const sellGold = async (userId, body) => {
+  const salableWeight = await checkAllow(userId);
+  const requestedWeight =
+    body.type === "sell-weight"
+      ? body.value
+      : await computing(body.type, body.value);
+
+  if (salableWeight < requestedWeight) {
+    throw new ApiError(403, "you can't sell gold anymore today");
+  }
+  const transactionResult = await prisma.$transaction(async (prisma) => {
+    const user = await prisma.user.findUniqueOrThrow({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (user.goldBalance < requestedWeight) {
+      throw new ApiError(403, "your gold balance is not enough");
+    }
+
+    const price =
+      body.type === "sell-price"
+        ? body.value
+        : await computing(body.type, body.value);
+
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        goldBalance: {
+          decrement: requestedWeight,
+        },
+        walletBalance: {
+          increment: price,
+        },
+      },
+    });
+
+    const goldTransaction = await prisma.goldTransaction.create({
+      data: {
+        userId: user.id,
+        date: moment().toISOString(),
+        transactionType: "sell",
+        expense: requestedWeight,
+        status: "place holder",
+        paymentGateway: "place holder",
+        details: "place holder",
+      },
+    });
+
+    const walletTransaction = await prisma.walletTransaction.create({
+      data: {
+        userId: user.id,
+        date: moment().toISOString(),
+        transactionType: "sell",
+        expense: price,
+        status: "place holder",
+        paymentGateway: "place holder",
+        title: "place holder",
+        weight: requestedWeight,
+        quotation: 0.0, // 👈 place holder
+        details: "place holder",
+      },
+    });
+
+    return { updatedUser, goldTransaction, walletTransaction };
+  });
+
+  return transactionResult;
+};
 
 module.exports = { computing, buyGold, sellGold };

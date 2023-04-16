@@ -17,7 +17,7 @@ model User {
   refreshToken      String             @default("")
   blocked           Boolean            @default(false)
   age               Int                @default(0)
-  walletBalance     Float                @default(0)
+  walletBalance     Float              @default(0)
   goldBalance       Float              @default(0.000)
   countryCode       Int                @default(0)
   addresses         Address[]
@@ -49,9 +49,9 @@ model Product {
   tags           String[]
   image          String[]
   thumbnailImage String      @default("")
-  wage           Float         @default(0)
+  wage           Float       @default(0)
   weight         Float       @default(0.000)
-  weightUnit     String         @default("")
+  weightUnit     String      @default("")
   quantity       Int         @default(0)
   lockQuantity   Int         @default(0)
   discount       Int         @default(0)
@@ -102,7 +102,7 @@ model Admin {
 type Limitation {
   startAt     String @default("00:`")
   endAt       String @default("00:00")
-  weightLimit Float    @default(0)
+  weightLimit Float  @default(0)
 }
 
 model config {
@@ -111,28 +111,30 @@ model config {
 }
 
 model goldTransaction {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String   @unique @db.ObjectId
-  user           User     @relation(fields: [userId], references: [id])
-  date           DateTime @default(now())
-  expense        Float
-  status         String
-  paymentGateway String
-  details        String
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @unique @db.ObjectId
+  user            User     @relation(fields: [userId], references: [id])
+  date            DateTime @default(now())
+  transactionType String   @default("")
+  expense         Float
+  status          String
+  paymentGateway  String
+  details         String
 }
 
 model walletTransaction {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String   @unique @db.ObjectId
-  user           User     @relation(fields: [userId], references: [id])
-  date           DateTime @default(now())
-  expense        Float
-  status         String
-  paymentGateway String
-  title          String
-  weight         Float
-  quotation      Float
-  details        String
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @unique @db.ObjectId
+  user            User     @relation(fields: [userId], references: [id])
+  date            DateTime @default(now())
+  transactionType String   @default("")
+  expense         Float
+  status          String
+  paymentGateway  String
+  title           String
+  weight          Float
+  quotation       Float
+  details         String
 }
 
 model goldPrice {
