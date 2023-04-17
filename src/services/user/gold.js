@@ -8,7 +8,7 @@ moment.locale("fa");
 
 const prisma = new PrismaClient();
 
-const checkAllow = async (userId) => {
+const checkAllow = async (userId, transactionType) => {
   const now = moment();
   const currentHouer = now.format("HH:mm");
 
@@ -23,7 +23,8 @@ const checkAllow = async (userId) => {
 
   const totalPurchasedGold = await prisma.goldTransaction.aggregate({
     where: {
-      userId: userId,
+      userId,
+      transactionType,
       date: {
         gte: startAt,
         lt: endAt,
@@ -56,7 +57,7 @@ const computing = async (type, value) => {
 };
 
 const buyGold = async (userId, body) => {
-  const purchaseableWeight = await checkAllow(userId);
+  const purchaseableWeight = await checkAllow(userId, "buy");
   const requestedWeight =
     body.type === "buy-weight"
       ? body.value
@@ -107,29 +108,14 @@ const buyGold = async (userId, body) => {
       },
     });
 
-    const walletTransaction = await prisma.walletTransaction.create({
-      data: {
-        userId: user.id,
-        date: moment().toISOString(),
-        transactionType: "buy",
-        expense: price,
-        status: "place holder",
-        paymentGateway: "place holder",
-        title: "place holder",
-        weight: requestedWeight,
-        quotation: 0.0, // 👈 place holder
-        details: "place holder",
-      },
-    });
-
-    return { updatedUser, goldTransaction, walletTransaction };
+    return { updatedUser, goldTransaction };
   });
 
   return transactionResult;
 };
 
 const sellGold = async (userId, body) => {
-  const salableWeight = await checkAllow(userId);
+  const salableWeight = await checkAllow(userId, "sell");
   const requestedWeight =
     body.type === "sell-weight"
       ? body.value
@@ -180,22 +166,7 @@ const sellGold = async (userId, body) => {
       },
     });
 
-    const walletTransaction = await prisma.walletTransaction.create({
-      data: {
-        userId: user.id,
-        date: moment().toISOString(),
-        transactionType: "sell",
-        expense: price,
-        status: "place holder",
-        paymentGateway: "place holder",
-        title: "place holder",
-        weight: requestedWeight,
-        quotation: 0.0, // 👈 place holder
-        details: "place holder",
-      },
-    });
-
-    return { updatedUser, goldTransaction, walletTransaction };
+    return { updatedUser, goldTransaction };
   });
 
   return transactionResult;
