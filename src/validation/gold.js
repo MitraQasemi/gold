@@ -3,7 +3,7 @@ const joi = require("joi");
 const computing = {
   body: joi.object().keys({
     type: joi.string().pattern(/^(buy|sell)-(weight|price)$/i).required(),
-    value: joi.number().precision(2).strict(),
+    value: joi.number().precision(2).strict().required(),
   }),
 };
 

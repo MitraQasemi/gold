@@ -38,19 +38,23 @@ const checkAllow = async (userId, transactionType) => {
 };
 
 const computing = async (type, value) => {
-  const currentPrice = await prisma.goldPrice.findFirst();
+  const currentPrice = await prisma.goldPrice.findFirstOrThrow({
+    orderBy: {
+      date: "desc",
+    },
+  });
   if (type === "sell-weight") {
     const totalPrice = currentPrice.sellQuotation * value;
-    return totalPrice;
+    return { totalPrice };
   } else if (type === "sell-price") {
     const totalWeight = value / currentPrice.sellQuotation;
-    return totalWeight;
+    return { totalWeight };
   } else if (type === "buy-weight") {
     const totalPrice = currentPrice.buyQuotation * value;
-    return totalPrice;
+    return { totalPrice };
   } else if (type === "buy-price") {
     const totalWeight = value / currentPrice.buyQuotation;
-    return totalWeight;
+    return { totalWeight };
   } else {
     throw new ApiError(400, "bad request");
   }
