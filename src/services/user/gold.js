@@ -9,8 +9,8 @@ moment.locale("fa");
 const prisma = new PrismaClient();
 
 const checkAllow = async (userId) => {
-  const now = moment();
-  const currentHouer = now.format("HH:mm");
+    const now = moment();
+    const currentHouer = now.format("HH:mm");
 
   const config = await prisma.config.findFirstOrThrow();
 
@@ -21,18 +21,19 @@ const checkAllow = async (userId) => {
   const startAt = moment(`${currentLimitation.startAt}`, "HH:mm").toISOString();
   const endAt = moment(`${currentLimitation.endAt}`, "HH:mm").toISOString();
 
-  const totalPurchasedGold = await prisma.goldTransaction.aggregate({
-    where: {
-      userId: userId,
-      date: {
-        gte: startAt,
-        lt: endAt,
+    const totalPurchasedGold = await prisma.goldTransaction.aggregate({
+      where: {
+        userId: userId,
+        date: {
+          gte: startAt
+          ,
+          lt: endAt,
+        },
       },
-    },
-    _sum: {
-      expense: true,
-    },
-  });
+      _sum: {
+        expense: true,
+      },
+    });
   return currentLimitation.weightLimit - totalPurchasedGold._sum.expense;
 };
 
