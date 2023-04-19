@@ -45,16 +45,16 @@ const computing = async (type, value) => {
   });
   if (type === "sell-weight") {
     const totalPrice = currentPrice.sellQuotation * value;
-    return { totalPrice };
+    return Math.round(totalPrice);
   } else if (type === "sell-price") {
     const totalWeight = value / currentPrice.sellQuotation;
-    return { totalWeight };
+    return Number(totalWeight.toFixed(3));
   } else if (type === "buy-weight") {
     const totalPrice = currentPrice.buyQuotation * value;
-    return { totalPrice };
+    return Math.round(totalPrice);
   } else if (type === "buy-price") {
     const totalWeight = value / currentPrice.buyQuotation;
-    return { totalWeight };
+    return Number(totalWeight.toFixed(3));
   } else {
     throw new ApiError(400, "bad request");
   }
