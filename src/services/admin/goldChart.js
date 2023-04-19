@@ -14,7 +14,6 @@ const goldChart = async () => {
               year: { $year: "$date" },
               month: { $month: "$date" },
               day: { $dayOfMonth: "$date" },
-              hour: { $hour: "$date" }
             }, averageField: { $avg: "$buyQuotation" }
           },
         },
@@ -23,7 +22,6 @@ const goldChart = async () => {
             "_id.year": -1,
             "_id.month": -1,
             "_id.day": -1,
-            "_id.hour":-1
           }
         },
         {
