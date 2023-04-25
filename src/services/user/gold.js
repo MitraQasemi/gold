@@ -20,7 +20,7 @@ const checkAllow = async (userId, transactionType) => {
 
   const startAt = moment(`${currentLimitation.startAt}`, "HH:mm").toISOString();
   const endAt = moment(`${currentLimitation.endAt}`, "HH:mm").toISOString();
-
+  
   const totalPurchasedGold = await prisma.goldTransaction.aggregate({
     where: {
       userId,
@@ -29,10 +29,11 @@ const checkAllow = async (userId, transactionType) => {
         gte: startAt,
         lt: endAt,
       },
-      _sum: {
-        expense: true,
-      },
-    });
+    },
+    _sum: {
+      expense: true,
+    },
+  });
   return currentLimitation.weightLimit - totalPurchasedGold._sum.expense;
 };
 
