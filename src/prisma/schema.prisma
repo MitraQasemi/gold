@@ -17,7 +17,7 @@ model User {
   refreshToken      String             @default("")
   blocked           Boolean            @default(false)
   age               Int                @default(0)
-  walletBalance     Float              @default(0)
+  walletBalance     Int                @default(0)
   goldBalance       Float              @default(0.000)
   countryCode       Int                @default(0)
   addresses         Address[]
@@ -128,7 +128,7 @@ model walletTransaction {
   user            User     @relation(fields: [userId], references: [id])
   date            DateTime @default(now())
   transactionType String   @default("")
-  expense         Float
+  expense         Int
   status          String
   paymentGateway  String
   title           String
@@ -141,6 +141,6 @@ model goldPrice {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
    
   date          DateTime @default(now())
-  buyQuotation  Float
-  sellQuotation Float
+  buyQuotation  Int
+  sellQuotation Int
 }

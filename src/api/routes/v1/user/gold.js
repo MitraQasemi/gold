@@ -15,9 +15,9 @@ const func = (app) => {
       try {
         const { type, value } = req.body;
         const result = await computing(type, value);
-        return res.send(result);
+        return res.send({ result });
       } catch (error) {
-        return next(new ApiError(500, error.message));
+        return next(new ApiError(error.statusCode, error.message));
       }
     }
   );
@@ -35,7 +35,7 @@ const func = (app) => {
 
   route.post( "/user/sellGold", isAuth, validate(goldValidation.sellGold), async (req, res, next) => {
       try {
-        const result = await sellGold(req.user.id, req.body)
+        const result = await sellGold(req.user.id, req.body);
         return res.send(result);
       } catch (error) {
         console.log(error);
