@@ -2,15 +2,15 @@ const express = require("express");
 const route = express.Router();
 const { isAuth, isCan, attachCurrentAdmin, validate } = require("../../../middlewares")
 const { ApiError } = require("../../../middlewares/error");
-const { goldPrice } = require("../../../../services/admin/goldPrice");
+const { goldChart } = require("../../../../services/admin/goldChart");
 
 const func = (app) => {
 
     app.use(route);
-    route.post("/goldPrice", isAuth, attachCurrentAdmin, isCan("update", "goldPrice"), async (req, res, next) => {
+    route.get("/goldChart", async (req, res, next) => {
         try {
-            const result = await goldPrice();
-            return res.send(result)
+            const result = await goldChart();
+            return res.send(result);
         } catch (error) {
             return next(new ApiError(500, error.message));
         }

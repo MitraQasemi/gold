@@ -29,11 +29,10 @@ const checkAllow = async (userId, transactionType) => {
         gte: startAt,
         lt: endAt,
       },
-    },
-    _sum: {
-      expense: true,
-    },
-  });
+      _sum: {
+        expense: true,
+      },
+    });
   return currentLimitation.weightLimit - totalPurchasedGold._sum.expense;
 };
 

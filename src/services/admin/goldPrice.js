@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client")
 const { ApiError } = require("../../api/middlewares/error")
+const axios = require('axios');
 const moment = require("jalali-moment");
 moment.locale("fa");
 const prisma = new PrismaClient()
@@ -11,7 +12,6 @@ const goldPrice = async () => {
             buyQuotation: 1000,
             sellQuotation: 800
         }
-
         await prisma.goldPrice.create({
             data: data
         })
