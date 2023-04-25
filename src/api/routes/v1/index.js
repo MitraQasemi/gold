@@ -7,9 +7,10 @@ const userManageRoutes = require("./admin/user");
 const refreshToken = require("./common/refreshToken");
 const uploadRoute = require("./common/upload");
 const adminMange = require("./admin/admin");
-const gold = require("./user/gold")
-const config = require("./admin/config")
-const goldPrice = require("./admin/goldprice")
+const gold = require("./user/gold");
+const config = require("./admin/config");
+const goldPrice = require("./admin/goldprice");
+const goldChart = require("./admin/goldChart");
 const express = require("express");
 
 const api = () => {
@@ -27,6 +28,7 @@ const api = () => {
     gold(router);
     config(router);
     goldPrice(router);
+    goldChart(router);
     return router;
 }
 module.exports = api;
