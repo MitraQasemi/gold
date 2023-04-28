@@ -8,6 +8,7 @@ const refreshToken = require("./common/refreshToken");
 const uploadRoute = require("./common/upload");
 const adminMange = require("./admin/admin");
 const gold = require("./user/gold");
+const product = require("./user/product")
 const config = require("./admin/config");
 const goldPrice = require("./admin/goldprice");
 const goldChart = require("./admin/goldChart");
@@ -26,6 +27,7 @@ const api = () => {
     userManageRoutes(router);
     adminMange(router);
     gold(router);
+    product(router);
     config(router);
     goldPrice(router);
     goldChart(router);

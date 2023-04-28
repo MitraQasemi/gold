@@ -5,7 +5,6 @@ const prisma = new PrismaClient()
 
 const createConfig = async (configDetails) => {
     try {
-        console.log(configDetails);
         const result = await prisma.config.create({
             data: configDetails
         })

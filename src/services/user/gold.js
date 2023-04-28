@@ -2,7 +2,6 @@ const axios = require("axios");
 const moment = require("jalali-moment");
 const { ApiError } = require("../../api/middlewares/error");
 const { PrismaClient } = require("@prisma/client");
-require("dotenv").config({ path: "../.env" });
 
 moment.locale("fa");
 
@@ -20,7 +19,7 @@ const checkAllow = async (userId, transactionType) => {
 
   const startAt = moment(`${currentLimitation.startAt}`, "HH:mm").toISOString();
   const endAt = moment(`${currentLimitation.endAt}`, "HH:mm").toISOString();
-  
+
   const totalPurchasedGold = await prisma.goldTransaction.aggregate({
     where: {
       userId,
@@ -71,10 +70,18 @@ const buyGold = async (userId, body) => {
     throw new ApiError(403, "you can't buy gold anymore today");
   }
   const transactionResult = await prisma.$transaction(async (prisma) => {
+    const config = await prisma.config.findFirstOrThrow();
+
     const price =
       body.type === "buy-price"
         ? body.value
         : await computing(body.type, body.value);
+
+    if (config.minPrice > price) {
+      throw new ApiError(403, "the price is less than minimum price");
+    }
+
+    price += config.commission;
 
     const user = await prisma.user.findUniqueOrThrow({
       where: {
@@ -139,10 +146,14 @@ const sellGold = async (userId, body) => {
       throw new ApiError(403, "your gold balance is not enough");
     }
 
+    const config = await prisma.config.findFirstOrThrow();
+
     const price =
       body.type === "sell-price"
         ? body.value
         : await computing(body.type, body.value);
+
+    price -= config.commission;
 
     const updatedUser = await prisma.user.update({
       where: {
