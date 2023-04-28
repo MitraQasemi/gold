@@ -54,7 +54,7 @@ model Product {
   weightUnit     String      @default("")
   quantity       Int         @default(0)
   lockQuantity   Int         @default(0)
-  discount       Int         @default(0)
+  discount       Float       @default(0)
   metaData       MetaData[]
   installment    Installment
   varients       Varient[]
@@ -100,7 +100,7 @@ model Admin {
 }
 
 type Limitation {
-  startAt     String @default("00:`")
+  startAt     String @default("00:00")
   endAt       String @default("00:00")
   weightLimit Float  @default(0)
 }
@@ -108,6 +108,8 @@ type Limitation {
 model config {
   id                String       @id @default(auto()) @map("_id") @db.ObjectId
   goldPurchaseLimit Limitation[]
+  minPrice          Int
+  commission        Int
 }
 
 model goldTransaction {
@@ -138,8 +140,8 @@ model walletTransaction {
 }
 
 model goldPrice {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-   
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
   date          DateTime @default(now())
   buyQuotation  Int
   sellQuotation Int
