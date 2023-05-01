@@ -10,8 +10,8 @@ const func = (app) => {
 
   route.post("/buyProduct", isAuth, async (req, res, next) => {
     try {
-      const { productId } = req.body;
-      const result = await buyGold(req.user.id, productId);
+      const { id, count } = req.body;
+      const result = await buyGold(req.user.id, id, );
       return result;
     } catch (error) {
       return next(new ApiError(error.statusCode, error.message));

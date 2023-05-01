@@ -24,6 +24,7 @@ model User {
   Cart              Cart?
   goldTransaction   goldTransaction?
   walletTransaction walletTransaction?
+  order             order?
 }
 
 type Address {
@@ -140,9 +141,33 @@ model walletTransaction {
 }
 
 model goldPrice {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
   date          DateTime @default(now())
   buyQuotation  Int
   sellQuotation Int
+}
+
+model order {
+  id         String         @id @default(auto()) @map("_id") @db.ObjectId
+  date       DateTime       @default(now())
+  userId     String         @unique @db.ObjectId
+  user       User           @relation(fields: [userId], references: [id])
+  products   productOrder[]
+  status     String
+  type       String
+  totalPrice Int
+  paidPrice  Int?
+}
+
+type productOrder {
+  productId    String        @db.ObjectId
+  quantity     Int?
+  installments installment[]
+}
+
+type installment {
+  date   DateTime @default(now())
+  weight Float    @default(0.000)
+  price  Int      @default(0)
+  wage   Float    @default(0.000)
 }
