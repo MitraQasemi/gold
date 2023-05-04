@@ -1,4 +1,5 @@
 const { ApiError } = require("../../api/middlewares/error");
+const moment = require("jalali-moment");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
@@ -33,7 +34,7 @@ const buyProduct = async (userId, productId) => {
         },
       },
     });
-    
+
   });
 };
 
@@ -69,33 +70,99 @@ const computing = async (type, value, product) => {
 
 const installmentPurchase = async (userId, productId, body) => {
   try {
-    const product = await prisma.Product.findUniqueOrThrow({
+    const order = await prisma.order.findMany({
       where: {
-        id: productId
+        userId: userId,
+        status: "pending",
+        type: "installment"
       }
     })
-    //موحود است یا نه
-    if (product.quantity === 0) {
-      throw new ApiError(403, "unavailable");
-    }    
-    // قسطی است یا نه
-    if (!product.installment.available) {
-      throw new ApiError(403, "this product does not have installment purchase");
+    if (order.length === 0) {
+      //قسط اول
+      const product = await prisma.product.findUniqueOrThrow({
+        where: {
+          id: productId
+        }
+      })
+      if (!product.installment.available || product.quantity === 0) {
+        throw new ApiError(400, "امکان خرید قسطی این محصول وجود ندارد")
+      }
+      requestedWeight = body.type === "buy-weight"
+        ? body.value
+        : await computing(body.type, body.value, product);
+
+      if (requestedWeight < product.installment.minWeight) {
+        throw new ApiError(400, ` شما نمیتوانید برای قسط اول کمتر از ${product.installment.minWeight} گرم پرداخت کتید`)
+      }
+      const transactionResult = await prisma.$transaction(async (prisma) => {
+        let price = body.type === "buy-price"
+          ? body.value
+          : await computing(body.type, body.value, product);
+
+        const config = await prisma.config.findFirstOrThrow();
+        price += (config.commission);
+        const user = await prisma.user.findUniqueOrThrow({
+          where: {
+            id: userId
+          }
+        })
+
+        if (price > user.walletBalance) {
+          throw new ApiError(400, `موجودی کافی نیست`)
+        }
+        const createdOrder = await prisma.order.create({
+          data: {
+            date: moment().toISOString(),
+            userId: userId,
+            products: [
+              {
+                productId: productId,
+                quantity: 1,
+                installments: [{
+                  date: moment().toISOString(),
+                  weight: requestedWeight,
+                  price: price,
+                  wage: product.wage
+                }]
+              }
+            ],
+            status: "pending",
+            type: "installment",
+            totalPrice: price,
+            paidPrice: price
+          }
+        })
+
+        await prisma.product.update({
+          where: {
+            id: productId
+          },
+          data: {
+            quantity: { decrement: 1 },
+            lockQuantity: { increment: 1 }
+          }
+        })
+
+        await prisma.user.update({
+          where: {
+            id: userId
+          },
+          data: {
+            walletBalance: { decrement: price }
+          }
+        })
+        return createdOrder
+      });
+
+      return transactionResult;
     }
 
-    const user = await prisma.user.findUniqueOrThrow({
-      where: {
-        id: userId
-      }
-    })
+    //چک کردن امکان خرید قسطی محصول و ادامه اقساط
+    if (order.products[0].productId != productId) {
+      throw new ApiError(400, `شما یک خرید قسطی تمام نشده دارید`)
+    }
 
-    // if (body.type === "buy-weight") {
-    //   if (value > product.installment.minWeight) {
-    //     throw new ApiError(403, "this product does not have installment purchase");
-    //   }
-    // }
-
-
+    
   } catch (error) {
     throw new ApiError(500, error.message);
   }

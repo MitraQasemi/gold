@@ -12,7 +12,7 @@ const func = (app) => {
     try {
       const { id, count } = req.body;
       const result = await buyGold(req.user.id, id, );
-      return result;
+      return res.send(result);
     } catch (error) {
       return next(new ApiError(error.statusCode, error.message));
     }
@@ -22,7 +22,7 @@ const func = (app) => {
     try {
 
       const result = await installmentPurchase(req.user.id, req.params.id, req.body);
-      return result;
+      return res.send(result);
     } catch (error) {
       return next(new ApiError(error.statusCode, error.message));
     }
