@@ -82,11 +82,12 @@ type Installment {
 }
 
 type Varient {
-  varientId    String      @db.ObjectId
+  varientId    String
   varients     String[]
   wage         Float
   weight       Float
   quantity     Int
+  weightUnit   String
   lockQuantity Int
   discount     Int
   installment  Installment
@@ -157,10 +158,12 @@ model order {
   type       String
   totalPrice Int
   paidPrice  Int?
+  deadLine   DateTime
 }
 
 type productOrder {
   productId    String        @db.ObjectId
+  varientId    String
   quantity     Int?
   installments installment[]
 }

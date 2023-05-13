@@ -21,7 +21,9 @@ const create = {
             deadLine: joi.number()
         }),
         varients: joi.array().items(joi.object({
+            varientId:joi.string(),
             varients: joi.array().items(joi.string()),
+            weightUnit:joi.string(),
             wage: joi.number(),
             weight: joi.number(),
             quantity: joi.number(),
