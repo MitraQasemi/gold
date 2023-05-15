@@ -21,7 +21,7 @@ model User {
   goldBalance       Float              @default(0.000)
   countryCode       Int                @default(0)
   addresses         Address[]
-  Cart              Cart?
+  cart              Cart?
   goldTransaction   goldTransaction?
   walletTransaction walletTransaction?
   order             order[]
@@ -42,7 +42,7 @@ model Cart {
 
 type cartProduct{
   productId String @db.ObjectId
-  varientId String @db.ObjectId
+  variantId Int
   count     Int    @default(0)
 }
 
@@ -63,7 +63,7 @@ model Product {
   discount       Float       @default(0)
   metaData       MetaData[]
   installment    Installment
-  varients       Varient[]
+  variants       Variant[]
 }
 
 model Category {
@@ -85,9 +85,9 @@ type Installment {
   deadLine  Int
 }
 
-type Varient {
-  varientId    String
-  varients     String[]
+type Variant {
+  variantId    Int
+  variants     String[]
   wage         Float
   weight       Float
   quantity     Int

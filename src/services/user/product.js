@@ -8,10 +8,10 @@ const buyProduct = async (userId, productDetails) => {
       id: productDetails.productId,
     },
   });
-  const varient = product.varients.find(
-    (varient) => varient.varientId === productDetails.varientId
+  const variant = product.variants.find(
+    (variant) => variant.variantId === productDetails.variantId
   );
-  if (varient.quantity === 0) {
+  if (variant.quantity === 0) {
     throw new ApiError(400, "this product was sold out");
   }
   const user = await prisma.user.findUniqueOrThrow({
@@ -56,14 +56,14 @@ const priceCalculator = async (cart) => {
 
   products.forEach((product) => {
     const request = cart.find((i) => i.productId == product.id);
-    const varient = product.varients.find(
-      (i) => i.varientId == request.varientId
+    const variant = product.variants.find(
+      (i) => i.variantId == reqaest.variantId
     );
-    const purePrice = varient.weight * unitPrices[product.weightUnit];
+    const purePrice = variant.weight * unitPrices[product.weightUnit];
     finalPrice +=
       (purePrice +
         purePrice *
-          (varient.wage + product.profitPercentage - varient.discount)) *
+          (variant.wage + product.profitPercentage - variant.discount)) *
       request.count;
   });
   return finalPrice;

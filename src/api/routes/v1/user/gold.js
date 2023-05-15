@@ -27,7 +27,6 @@ const func = (app) => {
         const result = await buyGold(req.user.id, req.body);
         return res.send(result);
       } catch (error) {
-        console.log(error);
         return next(new ApiError(error.statusCode, error.message));
       }
     }
