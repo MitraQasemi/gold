@@ -20,8 +20,8 @@ const create = {
             minWeight: joi.number(),
             deadLine: joi.number()
         }),
-        varients: joi.array().items(joi.object({
-            varients: joi.array().items(joi.string()),
+        variants: joi.array().items(joi.object({
+            variants: joi.array().items(joi.string()),
             wage: joi.number(),
             weight: joi.number(),
             quantity: joi.number(),
@@ -71,8 +71,8 @@ const update = {
             minWeight: joi.number(),
             deadLine: joi.number()
         }),
-        varients: joi.array().items(joi.object({
-            varients: joi.array().items(joi.string()),
+        variants: joi.array().items(joi.object({
+            variants: joi.array().items(joi.string()),
             wage: joi.number(),
             weight: joi.number(),
             quantity: joi.number(),
