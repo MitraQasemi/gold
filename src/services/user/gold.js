@@ -70,7 +70,7 @@ const buyGold = async (userId, body) => {
     throw new ApiError(403, "you can't buy gold anymore today");
   }
   const transactionResult = await prisma.$transaction(async (prisma) => {
-    const config = await prisma.config.findFirstOrThrow();
+      const config = await prisma.config.findFirstOrThrow();
 
     const price =
       body.type === "buy-price"

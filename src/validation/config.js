@@ -6,7 +6,9 @@ const create = {
       startAt: joi.string().required(),
       endAt: joi.string().required(),
       weightLimit: joi.number().required()
-    })).required()
+    })).required(),
+    minPrice:joi.number().required(),
+    commission:joi.number().required()
   }),
 };
 
@@ -20,7 +22,9 @@ const update = {
       startAt: joi.string(),
       endAt: joi.string(),
       weightLimit: joi.number()
-    }))
+    })),
+    minPrice:joi.number(),
+    commission:joi.number()
   }),
 };
 
