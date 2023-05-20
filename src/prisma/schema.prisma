@@ -21,10 +21,10 @@ model User {
   goldBalance       Float              @default(0.000)
   countryCode       Int                @default(0)
   addresses         Address[]
-  Cart              Cart?
+  cart              Cart?
   goldTransaction   goldTransaction?
   walletTransaction walletTransaction?
-  order             order?
+  order             order[]
 }
 
 type Address {
@@ -37,9 +37,13 @@ model Cart {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   userId     String   @unique @db.ObjectId
   user       User     @relation(fields: [userId], references: [id])
-  productsId String[] @db.ObjectId
-  product    Product  @relation(fields: [productsId], references: [id])
-  varientId  String   @db.ObjectId
+  products   cartProduct[]
+}
+
+type cartProduct{
+  productId String @db.ObjectId
+  variantId Int
+  count     Int    @default(0)
 }
 
 model Product {
@@ -51,6 +55,7 @@ model Product {
   image          String[]
   thumbnailImage String      @default("")
   wage           Float       @default(0)
+  profitPercentage Float  @default(0.000)
   weight         Float       @default(0.000)
   weightUnit     String      @default("")
   quantity       Int         @default(0)
@@ -58,8 +63,7 @@ model Product {
   discount       Float       @default(0)
   metaData       MetaData[]
   installment    Installment
-  varients       Varient[]
-  Cart           Cart[]
+  variants       Variant[]
 }
 
 model Category {
@@ -81,15 +85,16 @@ type Installment {
   deadLine  Int
 }
 
-type Varient {
-  varientId    String
-  varients     String[]
+
+type Variant {
+  variantId    Int
+  variants     String[]
   wage         Float
   weight       Float
   quantity     Int
   weightUnit   String
   lockQuantity Int
-  discount     Int
+  discount     Float
   installment  Installment
 }
 
@@ -151,7 +156,7 @@ model goldPrice {
 model order {
   id         String         @id @default(auto()) @map("_id") @db.ObjectId
   date       DateTime       @default(now())
-  userId     String         @unique @db.ObjectId
+  userId     String         @db.ObjectId
   user       User           @relation(fields: [userId], references: [id])
   products   productOrder[]
   status     String

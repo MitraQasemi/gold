@@ -4,14 +4,17 @@ const { PrismaClient } = require("@prisma/client");
 const { date } = require("joi");
 const { now } = require("moment");
 const prisma = new PrismaClient();
-//خرید مستقیم
-const buyProduct = async (userId, productId) => {
+
+const buyProduct = async (userId, productDetails) => {
   const product = await prisma.product.findUniqueOrThrow({
     where: {
-      id: productId,
+      id: productDetails.productId,
     },
   });
-  if (product.quantity === 0) {
+  const variant = product.variants.find(
+    (variant) => variant.variantId === productDetails.variantId
+  );
+  if (variant.quantity === 0) {
     throw new ApiError(400, "this product was sold out");
   }
   const user = await prisma.user.findUniqueOrThrow({
@@ -19,9 +22,7 @@ const buyProduct = async (userId, productId) => {
       id: userId,
     },
   });
-
   const productPrice = await priceCalculator(product);
-
   if (user.walletBalance < productPrice) {
     throw new ApiError(400, "not enugh cash in wallet");
   }
@@ -36,18 +37,38 @@ const buyProduct = async (userId, productId) => {
         },
       },
     });
-
   });
 };
-// محاسبه قیمت در خرید مستقیم
-const priceCalculator = async (product) => {
+
+const priceCalculator = async (cart) => {
   const unitPrices = await prisma.goldPrice.findFirstOrThrow({
     orderBy: {
       date: "desc",
     },
   });
-  const purePrice = product.weight * unitPrices[product.weightUnit];
-  const finalPrice = purePrice + (product.wage - product.discount) * purePrice;
+  const productIds = cart.map((i) => i.productId);
+  const products = await prisma.product.findMany({
+    where: {
+      id: {
+        in: productIds,
+      },
+    },
+  });
+
+  let finalPrice = 0;
+
+  products.forEach((product) => {
+    const request = cart.find((i) => i.productId == product.id);
+    const variant = product.variants.find(
+      (i) => i.variantId == reqaest.variantId
+    );
+    const purePrice = variant.weight * unitPrices[product.weightUnit];
+    finalPrice +=
+      (purePrice +
+        purePrice *
+          (variant.wage + product.profitPercentage - variant.discount)) *
+      request.count;
+  });
   return finalPrice;
 };
 //محاسبات خرید قسطی
@@ -296,14 +317,12 @@ const installmentPurchase = async (userId, productId, varientId, body) => {
       return { updatedOrder };
     });
     return transactionResult;
-
   } catch (error) {
     throw new ApiError(500, error.message);
   }
-
 };
 module.exports = {
   buyProduct,
   priceCalculator,
-  installmentPurchase
+  installmentPurchase,
 };
