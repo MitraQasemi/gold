@@ -3,6 +3,7 @@ const moment = require("jalali-moment");
 const { PrismaClient } = require("@prisma/client");
 const { date } = require("joi");
 const { now } = require("moment");
+const { notification } = require("../../jobs/notification");
 const prisma = new PrismaClient();
 
 const buyProduct = async (userId, productDetails) => {
@@ -81,10 +82,14 @@ const computing = async (type, value, varient) => {
 
   if (type === "buy-weight") {
     const purePrice = value * unitPrices[varient.weightUnit];
-    const finalPrice = purePrice + (varient.wage - varient.discount) * purePrice;
+    const finalPrice =
+      purePrice + (varient.wage - varient.discount) * purePrice;
     return Math.round(finalPrice);
   } else if (type === "buy-price") {
-    const totalWeight = value / (unitPrices[varient.weightUnit] + (varient.wage - varient.discount) * unitPrices[varient.weightUnit]);
+    const totalWeight =
+      value /
+      (unitPrices[varient.weightUnit] +
+        (varient.wage - varient.discount) * unitPrices[varient.weightUnit]);
     return Number(totalWeight.toFixed(3));
   } else {
     throw new ApiError(400, "bad request");
@@ -95,47 +100,54 @@ const computing = async (type, value, varient) => {
 const firstInstallment = async (userId, productId, varientId, body) => {
   const product = await prisma.product.findUniqueOrThrow({
     where: {
-      id: productId
-    }
-  })
+      id: productId,
+    },
+  });
 
-  const varient = product.varients
-    .find((varients) => { return varients.varientId === varientId })
+  const varient = product.varients.find((varients) => {
+    return varients.varientId === varientId;
+  });
 
   if (!varient || !varient.installment.available || varient.quantity === 0) {
-    throw new ApiError(400, "امکان خرید قسطی این محصول وجود ندارد")
+    throw new ApiError(400, "امکان خرید قسطی این محصول وجود ندارد");
   }
 
-  requestedWeight = body.type === "buy-weight"
-    ? body.value
-    : await computing(body.type, body.value, varient);
-
-  if (requestedWeight < varient.installment.minWeight) {
-    throw new ApiError(400, ` شما نمیتوانید برای قسط اول کمتر از ${product.installment.minWeight} گرم پرداخت کتید`)
-  }
-
-  const transactionResult = await prisma.$transaction(async (prisma) => {
-    let price = body.type === "buy-price"
+  requestedWeight =
+    body.type === "buy-weight"
       ? body.value
       : await computing(body.type, body.value, varient);
 
+  if (requestedWeight < varient.installment.minWeight) {
+    throw new ApiError(
+      400,
+      ` شما نمیتوانید برای قسط اول کمتر از ${product.installment.minWeight} گرم پرداخت کتید`
+    );
+  }
+
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: userId,
+    },
+  });
+
+  const transactionResult = await prisma.$transaction(async (prisma) => {
+    let price =
+      body.type === "buy-price"
+        ? body.value
+        : await computing(body.type, body.value, varient);
+
     const config = await prisma.config.findFirstOrThrow();
-    price += (config.commission);
+    price += config.commission;
 
     if (price < 100) {
-      throw new ApiError(400, `شما نمیتوانید کمتر از ${100} پرداخت کنید`)
+      throw new ApiError(400, `شما نمیتوانید کمتر از ${100} پرداخت کنید`);
     }
 
-    const user = await prisma.user.findUniqueOrThrow({
-      where: {
-        id: userId
-      }
-    })
     if (price > user.walletBalance) {
-      throw new ApiError(400, `موجودی کافی نیست`)
+      throw new ApiError(400, `موجودی کافی نیست`);
     }
     //set deadline
-    const deadLine = moment().add(varient.installment.deadLine, 'days');
+    const deadLine = moment().add(varient.installment.deadLine, "days");
     const createdOrder = await prisma.order.create({
       data: {
         date: moment().toISOString(),
@@ -146,51 +158,59 @@ const firstInstallment = async (userId, productId, varientId, body) => {
             productId: productId,
             varientId: varientId,
             quantity: 1,
-            installments: [{
-              date: moment().toISOString(),
-              weight: requestedWeight,
-              price: price,
-              wage: varient.wage
-            }]
-          }
+            installments: [
+              {
+                date: moment().toISOString(),
+                weight: requestedWeight,
+                price: price,
+                wage: varient.wage,
+              },
+            ],
+          },
         ],
         status: "pending",
         type: "installment",
         totalPrice: price,
-        paidPrice: price
-      }
-    })
+        paidPrice: price,
+      },
+    });
 
     //update varient
-    const updatedArray = product.varients.map(obj => {
+    const updatedArray = product.varients.map((obj) => {
       if (obj.varientId === varientId) {
-        return { ...obj, quantity: varient.quantity - 1, lockQuantity: varient.lockQuantity + 1 };
+        return {
+          ...obj,
+          quantity: varient.quantity - 1,
+          lockQuantity: varient.lockQuantity + 1,
+        };
       }
       return obj;
     });
 
     await prisma.product.update({
       where: {
-        id: productId
-
+        id: productId,
       },
       data: {
-        varients: updatedArray
-      }
-    })
+        varients: updatedArray,
+      },
+    });
 
     await prisma.user.update({
       where: {
-        id: userId
+        id: userId,
       },
       data: {
-        walletBalance: { decrement: price }
-      }
-    })
+        walletBalance: { decrement: price },
+      },
+    });
+    notification(createdOrder, 7);
+    notification(createdOrder, 3);
+    notification(createdOrder, 1);
     return { createdOrder };
   });
   return transactionResult;
-}
+};
 // خرید قسطی
 const installmentPurchase = async (userId, productId, varientId, body) => {
   try {
@@ -198,72 +218,83 @@ const installmentPurchase = async (userId, productId, varientId, body) => {
       where: {
         userId: userId,
         status: "pending",
-        type: "installment"
-      }
-    })
+        type: "installment",
+      },
+    });
     if (order.length === 0) {
       //قسط اول
       return await firstInstallment(userId, productId, varientId, body);
     }
     //چک کردن امکان خرید قسطی محصول و ادامه اقساط
     if (order[0].products[0].productId != productId) {
-      throw new ApiError(400, `شما یک خرید قسطی تمام نشده دارید`)
+      throw new ApiError(400, `شما یک خرید قسطی تمام نشده دارید`);
     }
     //چک کردن ددلاین
     currentDate = new Date();
     if (currentDate > order[0].deadLine) {
-      throw new ApiError(400, `شما دیگر قادر به پرداخت قسط  نیستید(موعد گذشته)`)
+      throw new ApiError(
+        400,
+        `شما دیگر قادر به پرداخت قسط  نیستید(موعد گذشته)`
+      );
     }
     //ادامه اقساط
-    const sumOfWeight = order[0].products[0].installments
-      .reduce((accumulator, current) => accumulator + current.weight, 0);
+    const sumOfWeight = order[0].products[0].installments.reduce(
+      (accumulator, current) => accumulator + current.weight,
+      0
+    );
     const product = await prisma.product.findUniqueOrThrow({
       where: {
-        id: productId
-      }
-    })
-    const varient = product.varients
-      .find((varients) => { return varients.varientId === varientId })
+        id: productId,
+      },
+    });
+    const varient = product.varients.find((varients) => {
+      return varients.varientId === varientId;
+    });
 
-    requestedWeight = body.type === "buy-weight"
-      ? body.value
-      : await computing(body.type, body.value, varient);
-
-    if (sumOfWeight + requestedWeight > varient.weight) {
-      throw new ApiError(400, `مقدار وارد شده بیشتر از مانده قسط پرداخت نشده است`)
-    }
-    const transactionResult = await prisma.$transaction(async (prisma) => {
-      let price = body.type === "buy-price"
+    requestedWeight =
+      body.type === "buy-weight"
         ? body.value
         : await computing(body.type, body.value, varient);
 
+    if (sumOfWeight + requestedWeight > varient.weight) {
+      throw new ApiError(
+        400,
+        `مقدار وارد شده بیشتر از مانده قسط پرداخت نشده است`
+      );
+    }
+    const transactionResult = await prisma.$transaction(async (prisma) => {
+      let price =
+        body.type === "buy-price"
+          ? body.value
+          : await computing(body.type, body.value, varient);
+
       const config = await prisma.config.findFirstOrThrow();
-      price += (config.commission);
+      price += config.commission;
 
       const user = await prisma.user.findUniqueOrThrow({
         where: {
-          id: userId
-        }
-      })
+          id: userId,
+        },
+      });
       if (price > user.walletBalance) {
-        throw new ApiError(400, `موجودی کافی نیست`)
+        throw new ApiError(400, `موجودی کافی نیست`);
       }
 
       if (price < 100) {
-        throw new ApiError(400, `شما نمیتوانید کمتر از ${100} پرداخت کنید`)
+        throw new ApiError(400, `شما نمیتوانید کمتر از ${100} پرداخت کنید`);
       }
       await prisma.user.update({
         where: {
-          id: userId
+          id: userId,
         },
         data: {
-          walletBalance: { decrement: price }
-        }
-      })
+          walletBalance: { decrement: price },
+        },
+      });
       if (sumOfWeight + requestedWeight === varient.weight) {
         //قسط اخر
         //خرید محصول نهایی میشود
-        const updatedArray = product.varients.map(obj => {
+        const updatedArray = product.varients.map((obj) => {
           if (obj.varientId === varientId) {
             return { ...obj, lockQuantity: varient.lockQuantity - 1 };
           }
@@ -271,30 +302,29 @@ const installmentPurchase = async (userId, productId, varientId, body) => {
         });
         await prisma.product.update({
           where: {
-            id: productId
-
+            id: productId,
           },
           data: {
-            varients: updatedArray
-          }
-        })
+            varients: updatedArray,
+          },
+        });
 
         //اضافه کردن قسط
         order[0].products[0].installments.push({
           date: moment().toISOString(),
           weight: requestedWeight,
           price: price,
-          wage: varient.wage
-        })
+          wage: varient.wage,
+        });
         const updatedOrder = await prisma.order.update({
           where: {
-            id: order[0].id
+            id: order[0].id,
           },
           data: {
             products: order[0].products[0],
-            status: "done"
-          }
-        })
+            status: "done",
+          },
+        });
         return { updatedOrder };
       }
 
@@ -304,16 +334,16 @@ const installmentPurchase = async (userId, productId, varientId, body) => {
         date: moment().toISOString(),
         weight: requestedWeight,
         price: price,
-        wage: varient.wage
-      })
+        wage: varient.wage,
+      });
       const updatedOrder = await prisma.order.update({
         where: {
-          id: order[0].id
+          id: order[0].id,
         },
         data: {
           products: order[0].products[0],
-        }
-      })
+        },
+      });
       return { updatedOrder };
     });
     return transactionResult;

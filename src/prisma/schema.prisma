@@ -163,12 +163,12 @@ model order {
   type       String
   totalPrice Int
   paidPrice  Int?
-  deadLine   DateTime
+  deadLine   DateTime?
 }
 
 type productOrder {
   productId    String        @db.ObjectId
-  varientId    String
+  varientId    Int
   quantity     Int?
   installments installment[]
 }
