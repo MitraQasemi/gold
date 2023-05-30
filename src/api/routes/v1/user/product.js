@@ -14,8 +14,8 @@ const func = (app) => {
 
   route.post("/test-calc", async (req, res, next) => {
     try {
-      const result = await priceCalculator(cart);
-      res.send({ result });
+      const result = await priceCalculator(req.body);
+      res.send(result);
     } catch (error) {
       return next(new ApiError(error.statusCode, error.message));
     }
@@ -23,17 +23,16 @@ const func = (app) => {
 
   route.post("/buyProduct", isAuth, async (req, res, next) => {
     try {
-      const { id, count } = req.body;
-      const result = await buyGold(req.user.id, id,);
+      const result = await buyProduct(req.user.id, req.body)
       return res.send(result);
     } catch (error) {
       return next(new ApiError(error.statusCode, error.message));
     }
   });
 
-  route.post("/installmentPurchase/:productId/:varientId", isAuth, async (req, res, next) => {
+  route.post("/installmentPurchase/:productId/:variantId", isAuth, async (req, res, next) => {
     try {
-      const result = await installmentPurchase(req.user.id, req.params.productId, req.params.varientId, req.body);
+      const result = await installmentPurchase(req.user.id, req.params.productId, req.params.variantId, req.body);
       return res.send(result);
     } catch (error) {
       return next(new ApiError(error.statusCode, error.message));
