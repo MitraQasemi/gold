@@ -6,39 +6,110 @@ const { now } = require("moment");
 const { notification } = require("../../jobs/notification");
 const prisma = new PrismaClient();
 
-const buyProduct = async (userId, productDetails) => {
-  const product = await prisma.product.findUniqueOrThrow({
-    where: {
-      id: productDetails.productId,
-    },
-  });
-  const variant = product.variants.find(
-    (variant) => variant.variantId === productDetails.variantId
-  );
-  if (variant.quantity === 0) {
-    throw new ApiError(400, "this product was sold out");
-  }
-  const user = await prisma.user.findUniqueOrThrow({
-    where: {
-      id: userId,
-    },
-  });
-  const productPrice = await priceCalculator(product);
-  if (user.walletBalance < productPrice) {
-    throw new ApiError(400, "not enugh cash in wallet");
-  }
-  const transactionResult = await prisma.$transaction(async (prisma) => {
-    await prisma.user.update({
+const buyProduct = async (userId, cart) => {
+  try {
+    const productIds = cart.map((i) => i.productId);
+    const products = await prisma.product.findMany({
       where: {
-        id: userId,
-      },
-      data: {
-        walletBalance: {
-          decrement: productPrice,
+        id: {
+          in: productIds,
         },
       },
     });
-  });
+
+    if (products.length === 0) {
+      throw new ApiError(400, "bad request");
+    }
+
+    const variantsShortage = [];
+    const orderedProductsList = [];
+    cart.forEach((request) => {
+      const reqProduct = products.find((i) => i.id === request.productId);
+      const variant = reqProduct.variants.find(
+        (i) => i.variantId === request.variantId
+      );
+      orderedProductsList.push({
+        productId: reqProduct.id,
+        variantId: variant.variantId,
+        quantity: request.count,
+      });
+
+      if (variant.quantity < request.count || variant.quantity === 0) {
+        variantsShortage.push(reqProduct.title);
+      }
+    });
+
+    if (variantsShortage.length !== 0) {
+      throw new ApiError(
+        400,
+        `There is not enough of these products ${variantsShortage.join(", ")}`
+      );
+    }
+
+    const user = await prisma.user.findUniqueOrThrow({
+      where: {
+        id: userId,
+      },
+    });
+
+    const productsPrice = await priceCalculator(cart);
+    if (user.walletBalance < productsPrice) {
+      throw new ApiError(400, "not enugh cash in wallet");
+    }
+    const transactionResult = await prisma.$transaction(async (prisma) => {
+      const updatedUser = await prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          walletBalance: {
+            decrement: productsPrice,
+          },
+        },
+      });
+
+      for (let i = 0; i < orderedProductsList.length; i++) {
+        const product = orderedProductsList[i];
+        await prisma.product.update({
+          where: {
+            id: product.productId,
+          },
+          data: {
+            variants: {
+              updateMany: {
+                where: {
+                  variantId: product.variantId,
+                },
+                data: {
+                  quantity: {
+                    decrement: product.quantity,
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+
+      const order = await prisma.order.create({
+        data: {
+          type: "directly",
+          status: "done",
+          totalPrice: productsPrice,
+          date: moment().toISOString(),
+          products: {
+            set: orderedProductsList,
+          },
+          userId: user.id,
+        },
+      });
+      return { updatedUser, order };
+    });
+    return transactionResult;
+  } catch (error) {
+    console.log(error);
+    throw new ApiError(error.statusCode, error.message);
+  }
 };
 
 const priceCalculator = async (cart) => {
@@ -55,25 +126,28 @@ const priceCalculator = async (cart) => {
       },
     },
   });
-
+  if (products.length === 0) {
+    throw new ApiError(400, "bad request");
+  }
   let finalPrice = 0;
 
-  products.forEach((product) => {
-    const request = cart.find((i) => i.productId == product.id);
-    const variant = product.variants.find(
-      (i) => i.variantId == reqaest.variantId
+  cart.forEach((request) => {
+    const reqProduct = products.find((i) => i.id == request.productId);
+    const variant = reqProduct.variants.find(
+      (i) => i.variantId == request.variantId
     );
-    const purePrice = variant.weight * unitPrices[product.weightUnit];
+    const purePrice = variant.weight * unitPrices[reqProduct.weightUnit];
     finalPrice +=
       (purePrice +
         purePrice *
-          (variant.wage + product.profitPercentage - variant.discount)) *
+          (variant.wage + reqProduct.profitPercentage - variant.discount)) *
       request.count;
   });
+
   return finalPrice;
 };
 //محاسبات خرید قسطی
-const computing = async (type, value, varient) => {
+const computing = async (type, value, variant) => {
   const unitPrices = await prisma.goldPrice.findFirstOrThrow({
     orderBy: {
       date: "desc",
@@ -81,15 +155,15 @@ const computing = async (type, value, varient) => {
   });
 
   if (type === "buy-weight") {
-    const purePrice = value * unitPrices[varient.weightUnit];
+    const purePrice = value * unitPrices[variant.weightUnit];
     const finalPrice =
-      purePrice + (varient.wage - varient.discount) * purePrice;
+      purePrice + (variant.wage - variant.discount) * purePrice;
     return Math.round(finalPrice);
   } else if (type === "buy-price") {
     const totalWeight =
       value /
-      (unitPrices[varient.weightUnit] +
-        (varient.wage - varient.discount) * unitPrices[varient.weightUnit]);
+      (unitPrices[variant.weightUnit] +
+        (variant.wage - variant.discount) * unitPrices[variant.weightUnit]);
     return Number(totalWeight.toFixed(3));
   } else {
     throw new ApiError(400, "bad request");
@@ -97,27 +171,27 @@ const computing = async (type, value, varient) => {
 };
 
 //قسط اول
-const firstInstallment = async (userId, productId, varientId, body) => {
+const firstInstallment = async (userId, productId, variantId, body) => {
   const product = await prisma.product.findUniqueOrThrow({
     where: {
       id: productId,
     },
   });
 
-  const varient = product.varients.find((varients) => {
-    return varients.varientId === varientId;
+  const variant = product.variants.find((variants) => {
+    return variants.variantId === variantId;
   });
 
-  if (!varient || !varient.installment.available || varient.quantity === 0) {
+  if (!variant || !variant.installment.available || variant.quantity === 0) {
     throw new ApiError(400, "امکان خرید قسطی این محصول وجود ندارد");
   }
 
   requestedWeight =
     body.type === "buy-weight"
       ? body.value
-      : await computing(body.type, body.value, varient);
+      : await computing(body.type, body.value, variant);
 
-  if (requestedWeight < varient.installment.minWeight) {
+  if (requestedWeight < variant.installment.minWeight) {
     throw new ApiError(
       400,
       ` شما نمیتوانید برای قسط اول کمتر از ${product.installment.minWeight} گرم پرداخت کتید`
@@ -134,7 +208,7 @@ const firstInstallment = async (userId, productId, varientId, body) => {
     let price =
       body.type === "buy-price"
         ? body.value
-        : await computing(body.type, body.value, varient);
+        : await computing(body.type, body.value, variant);
 
     const config = await prisma.config.findFirstOrThrow();
     price += config.commission;
@@ -147,7 +221,7 @@ const firstInstallment = async (userId, productId, varientId, body) => {
       throw new ApiError(400, `موجودی کافی نیست`);
     }
     //set deadline
-    const deadLine = moment().add(varient.installment.deadLine, "days");
+    const deadLine = moment().add(variant.installment.deadLine, "days");
     const createdOrder = await prisma.order.create({
       data: {
         date: moment().toISOString(),
@@ -156,14 +230,14 @@ const firstInstallment = async (userId, productId, varientId, body) => {
         products: [
           {
             productId: productId,
-            varientId: varientId,
+            variantId: variantId,
             quantity: 1,
             installments: [
               {
                 date: moment().toISOString(),
                 weight: requestedWeight,
                 price: price,
-                wage: varient.wage,
+                wage: variant.wage,
               },
             ],
           },
@@ -175,13 +249,13 @@ const firstInstallment = async (userId, productId, varientId, body) => {
       },
     });
 
-    //update varient
-    const updatedArray = product.varients.map((obj) => {
-      if (obj.varientId === varientId) {
+    //update variant
+    const updatedArray = product.variants.map((obj) => {
+      if (obj.variantId === variantId) {
         return {
           ...obj,
-          quantity: varient.quantity - 1,
-          lockQuantity: varient.lockQuantity + 1,
+          quantity: variant.quantity - 1,
+          lockQuantity: variant.lockQuantity + 1,
         };
       }
       return obj;
@@ -192,7 +266,7 @@ const firstInstallment = async (userId, productId, varientId, body) => {
         id: productId,
       },
       data: {
-        varients: updatedArray,
+        variants: updatedArray,
       },
     });
 
@@ -212,7 +286,7 @@ const firstInstallment = async (userId, productId, varientId, body) => {
   return transactionResult;
 };
 // خرید قسطی
-const installmentPurchase = async (userId, productId, varientId, body) => {
+const installmentPurchase = async (userId, productId, variantId, body) => {
   try {
     const order = await prisma.order.findMany({
       where: {
@@ -223,7 +297,7 @@ const installmentPurchase = async (userId, productId, varientId, body) => {
     });
     if (order.length === 0) {
       //قسط اول
-      return await firstInstallment(userId, productId, varientId, body);
+      return await firstInstallment(userId, productId, variantId, body);
     }
     //چک کردن امکان خرید قسطی محصول و ادامه اقساط
     if (order[0].products[0].productId != productId) {
@@ -247,16 +321,16 @@ const installmentPurchase = async (userId, productId, varientId, body) => {
         id: productId,
       },
     });
-    const varient = product.varients.find((varients) => {
-      return varients.varientId === varientId;
+    const variant = product.variants.find((variants) => {
+      return variants.variantId === variantId;
     });
 
     requestedWeight =
       body.type === "buy-weight"
         ? body.value
-        : await computing(body.type, body.value, varient);
+        : await computing(body.type, body.value, variant);
 
-    if (sumOfWeight + requestedWeight > varient.weight) {
+    if (sumOfWeight + requestedWeight > variant.weight) {
       throw new ApiError(
         400,
         `مقدار وارد شده بیشتر از مانده قسط پرداخت نشده است`
@@ -266,7 +340,7 @@ const installmentPurchase = async (userId, productId, varientId, body) => {
       let price =
         body.type === "buy-price"
           ? body.value
-          : await computing(body.type, body.value, varient);
+          : await computing(body.type, body.value, variant);
 
       const config = await prisma.config.findFirstOrThrow();
       price += config.commission;
@@ -291,12 +365,12 @@ const installmentPurchase = async (userId, productId, varientId, body) => {
           walletBalance: { decrement: price },
         },
       });
-      if (sumOfWeight + requestedWeight === varient.weight) {
+      if (sumOfWeight + requestedWeight === variant.weight) {
         //قسط اخر
         //خرید محصول نهایی میشود
-        const updatedArray = product.varients.map((obj) => {
-          if (obj.varientId === varientId) {
-            return { ...obj, lockQuantity: varient.lockQuantity - 1 };
+        const updatedArray = product.variants.map((obj) => {
+          if (obj.variantId === variantId) {
+            return { ...obj, lockQuantity: variant.lockQuantity - 1 };
           }
           return obj;
         });
@@ -305,7 +379,7 @@ const installmentPurchase = async (userId, productId, varientId, body) => {
             id: productId,
           },
           data: {
-            varients: updatedArray,
+            variants: updatedArray,
           },
         });
 
@@ -314,7 +388,7 @@ const installmentPurchase = async (userId, productId, varientId, body) => {
           date: moment().toISOString(),
           weight: requestedWeight,
           price: price,
-          wage: varient.wage,
+          wage: variant.wage,
         });
         const updatedOrder = await prisma.order.update({
           where: {
@@ -334,7 +408,7 @@ const installmentPurchase = async (userId, productId, varientId, body) => {
         date: moment().toISOString(),
         weight: requestedWeight,
         price: price,
-        wage: varient.wage,
+        wage: variant.wage,
       });
       const updatedOrder = await prisma.order.update({
         where: {

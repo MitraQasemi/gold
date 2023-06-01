@@ -168,7 +168,7 @@ model order {
 
 type productOrder {
   productId    String        @db.ObjectId
-  varientId    Int
+  variantId    Int
   quantity     Int?
   installments installment[]
 }

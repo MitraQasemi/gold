@@ -22,7 +22,7 @@ const remainingDaysNotif = async (orderId, dayCount) => {
     return;
   }
   const message = encodeURIComponent(`متن نمونه... ${dayCount} باقیمانده
-      https://domain/installmentPurchase/${order.products[0].productId}/${order.products[0].varientId}`);
+      https://domain/installmentPurchase/${order.products[0].productId}/${order.products[0].variantId}`);
   const url = `https://api.kavenegar.com/v1/${apiKey}/sms/send.json?receptor=${order.user.phoneNumber}&sender=${sender}&message=${message}`;
   const res = await axios.get(url);
   console.log(res.data);
