@@ -2,7 +2,7 @@ const express = require("express");
 const route = express.Router();
 const { ApiError } = require("../../../middlewares/error");
 const { isAuth, validate } = require("../../../middlewares");
-const goldValidation = require("../../../../validation/gold");
+const { productsList } = require("../../../../validation/userProduct");
 const {
   buyProduct,
   installmentPurchase,
@@ -21,7 +21,7 @@ const func = (app) => {
     }
   });
 
-  route.post("/buyProduct", isAuth, async (req, res, next) => {
+  route.post("/buyProduct", isAuth, validate(productsList), async (req, res, next) => {
     try {
       const result = await buyProduct(req.user.id, req.body)
       return res.send(result);
