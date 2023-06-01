@@ -34,7 +34,7 @@ const buyProduct = async (userId, cart) => {
         quantity: request.count,
       });
 
-      if (variant.quantity < request.count) {
+      if (variant.quantity < request.count || variant.quantity === 0) {
         variantsShortage.push(reqProduct.title);
       }
     });
@@ -67,7 +67,31 @@ const buyProduct = async (userId, cart) => {
           },
         },
       });
-      const order =await prisma.order.create({
+
+      for (let i = 0; i < orderedProductsList.length; i++) {
+        const product = orderedProductsList[i];
+        await prisma.product.update({
+          where: {
+            id: product.productId,
+          },
+          data: {
+            variants: {
+              updateMany: {
+                where: {
+                  variantId: product.variantId,
+                },
+                data: {
+                  quantity: {
+                    decrement: product.quantity,
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+
+      const order = await prisma.order.create({
         data: {
           type: "directly",
           status: "done",
@@ -79,7 +103,6 @@ const buyProduct = async (userId, cart) => {
           userId: user.id,
         },
       });
-      console.log(updatedUser, order);
       return { updatedUser, order };
     });
     return transactionResult;
@@ -90,12 +113,11 @@ const buyProduct = async (userId, cart) => {
 };
 
 const priceCalculator = async (cart) => {
-  // const unitPrices = await prisma.goldPrice.findFirstOrThrow({
-  //   orderBy: {
-  //     date: "desc",
-  //   },
-  // });
-  const unitPrices = { "18^": 1000, "24^": 2000 };
+  const unitPrices = await prisma.goldPrice.findFirstOrThrow({
+    orderBy: {
+      date: "desc",
+    },
+  });
   const productIds = cart.map((i) => i.productId);
   const products = await prisma.product.findMany({
     where: {
