@@ -4,6 +4,7 @@ const { PrismaClient } = require("@prisma/client");
 const { date } = require("joi");
 const { now } = require("moment");
 const { notification } = require("../../jobs/notification");
+const { unlockAt } = require("./../../jobs/unlockingProduct");
 const prisma = new PrismaClient();
 
 const buyProduct = async (userId, cart) => {
@@ -281,6 +282,7 @@ const firstInstallment = async (userId, productId, variantId, body) => {
     notification(createdOrder, 7);
     notification(createdOrder, 3);
     notification(createdOrder, 1);
+    unlockAt(createdOrder)
     return { createdOrder };
   });
   return transactionResult;
