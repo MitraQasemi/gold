@@ -20,23 +20,44 @@ const unlocking = async (orderId) => {
     0
   );
   const priceOfPaidWeight = await computing("sell-weight", paidWeight);
-  await prisma.user.update({
-    where: {
-      id: order.userId,
-    },
-    data: {
-      walletBalance: {
-        increment: priceOfPaidWeight,
+  await prisma.$transaction(async (prisma) => {
+    await prisma.product.update({
+      where: {
+        id: order.products[0].productId,
       },
-    },
-  });
-  await prisma.order.update({
-    where: {
-      id: order.id,
-    },
-    data: {
-      status: "faild",
-    },
+      data: {
+        variants: {
+          updateMany: {
+            where: {
+              variantId: order.products[0].variantId,
+            },
+            data: {
+              quantity: {
+                increment: 1,
+              },
+            },
+          },
+        },
+      },
+    });
+    await prisma.user.update({
+      where: {
+        id: order.userId,
+      },
+      data: {
+        walletBalance: {
+          increment: priceOfPaidWeight,
+        },
+      },
+    });
+    await prisma.order.update({
+      where: {
+        id: order.id,
+      },
+      data: {
+        status: "faild",
+      },
+    });
   });
 };
 
