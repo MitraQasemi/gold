@@ -10,8 +10,7 @@ module.exports = (req, directory) => {
       const form = formidable({ multiples: false });
       form.parse(req, (err, fields, file) => {
         if (err || !file.image) reject(err || new Error("Image is not provided."));
-
-        const newPath = path.join(process.cwd(), "src", "public", directory, uuid.v4() + '_' + file.image.originalFilename)
+        const newPath = path.join(process.cwd(),'public', directory, uuid.v4() + '_' + file.image.originalFilename)
 
         fs.createReadStream(file.image.filepath)
           .pipe(fs.createWriteStream(newPath))
