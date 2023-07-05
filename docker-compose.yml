@@ -1,0 +1,73 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4000:3000"
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+      - redis
+    environment:
+      - DATABASE_URL=mongodb://mongo1:27017,mongo1:27018,mongo1:27019/gold
+    networks:
+      - tavaqof
+
+
+  mongo1:
+    image: mongo:6.0.6
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo1_data:/data/db
+    networks:
+      - tavaqof
+    command: mongod --replSet rs0
+
+  mongo3:
+    image: mongo:6.0.6
+    restart: always
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongo3_data:/data/db
+    networks:
+      - tavaqof
+    command: mongod --replSet rs0
+
+  mongo2:
+    image: mongo:6.0.6
+    restart: always
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo2_data:/data/db
+    networks:
+      - tavaqof
+    command: mongod --replSet rs0
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+    networks:
+      - tavaqof
+    command: redis-server
+
+volumes:
+  mongo1_data:
+  mongo2_data:
+  mongo3_data:
+  redis_data:
+
+
+networks:
+  tavaqof:
+    name: network-tavaqof
