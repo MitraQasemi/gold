@@ -15,7 +15,10 @@ const goldPrice = async () => {
         await prisma.goldPrice.create({
             data: data
         })
+        console.log("gold price updated\n");
         return data;
+
+
     } catch (error) {
         throw new ApiError(500, error.message);
     }
