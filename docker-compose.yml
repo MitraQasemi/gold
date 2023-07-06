@@ -11,7 +11,7 @@ services:
       - mongo1
       - mongo2
       - mongo3
-      - redis
+      # - redis
     environment:
       - DATABASE_URL=mongodb://mongo1:27017,mongo1:27018,mongo1:27019/gold
     networks:
@@ -51,21 +51,21 @@ services:
       - tavaqof
     command: mongod --replSet rs0
 
-  redis:
-    image: redis:latest
-    ports:
-      - 6379:6379
-    volumes:
-      - redis_data:/data
-    networks:
-      - tavaqof
-    command: redis-server
+  # redis:
+  #   image: redis:latest
+  #   ports:
+  #     - 6379:6379
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - tavaqof
+  #   command: redis-server
 
 volumes:
   mongo1_data:
   mongo2_data:
   mongo3_data:
-  redis_data:
+  # redis_data:
 
 
 networks:
