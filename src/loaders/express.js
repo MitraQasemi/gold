@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const httpStatus = require('http-status-codes');
 const { errorHandler } = require("../api/middlewares/error")
 require("dotenv").config({ path: "../.env" });
@@ -6,6 +7,8 @@ const {ApiError} = require("../api/middlewares/error")
 const routes = require("../api/routes/v1");
 
 const expressLoader = async (app) => {
+    
+    app.use(cors());
     app.use(express.json());
     app.use("/v1", routes());
 
