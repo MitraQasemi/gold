@@ -28,7 +28,7 @@ const func = (app) => {
             return next( new ApiError(500, error.message));
         }
     })
-    route.post("/product",validate(productCrudValidation.create), isAuth, attachCurrentAdmin, isCan("create", "Product"), async (req, res, next) => {
+    route.post("/product", isAuth, attachCurrentAdmin, isCan("create", "Product"), async (req, res, next) => {
         try {
             const result = await createProduct(req.body);
             return res.send(result);

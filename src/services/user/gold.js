@@ -12,7 +12,6 @@ const checkAllow = async (userId, transactionType) => {
   const currentHouer = now.format("HH:mm");
 
   const config = await prisma.config.findFirstOrThrow();
-
   const currentLimitation = config.goldPurchaseLimit.find(
     (Lim) => Lim.startAt <= currentHouer && Lim.endAt > currentHouer
   );
@@ -33,6 +32,7 @@ const checkAllow = async (userId, transactionType) => {
       expense: true,
     },
   });
+
   return currentLimitation.weightLimit - totalPurchasedGold._sum.expense;
 };
 
@@ -69,10 +69,12 @@ const buyGold = async (userId, body) => {
   if (purchaseableWeight < requestedWeight) {
     throw new ApiError(403, "you can't buy gold anymore today");
   }
-  const transactionResult = await prisma.$transaction(async (prisma) => {
-      const config = await prisma.config.findFirstOrThrow();
 
-    const price =
+
+  const transactionResult = await prisma.$transaction(async (prisma) => {
+    const config = await prisma.config.findFirstOrThrow();
+
+    let price =
       body.type === "buy-price"
         ? body.value
         : await computing(body.type, body.value);
@@ -83,6 +85,15 @@ const buyGold = async (userId, body) => {
 
     price += config.commission;
 
+    try {
+      const user = await prisma.user.findUniqueOrThrow({
+        where: {
+          id: userId,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
     const user = await prisma.user.findUniqueOrThrow({
       where: {
         id: userId,
@@ -126,8 +137,8 @@ const buyGold = async (userId, body) => {
 };
 
 const sellGold = async (userId, body) => {
-  const salableWeight = await checkAllow(userId, "sell");
-  const requestedWeight =
+  let salableWeight = await checkAllow(userId, "sell");
+  let requestedWeight =
     body.type === "sell-weight"
       ? body.value
       : await computing(body.type, body.value);
@@ -148,7 +159,7 @@ const sellGold = async (userId, body) => {
 
     const config = await prisma.config.findFirstOrThrow();
 
-    const price =
+    let price =
       body.type === "sell-price"
         ? body.value
         : await computing(body.type, body.value);

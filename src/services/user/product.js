@@ -141,7 +141,7 @@ const priceCalculator = async (cart) => {
     finalPrice +=
       (purePrice +
         purePrice *
-          (variant.wage + reqProduct.profitPercentage - variant.discount)) *
+        (variant.wage + reqProduct.profitPercentage - variant.discount)) *
       request.count;
   });
 
@@ -180,9 +180,8 @@ const firstInstallment = async (userId, productId, variantId, body) => {
   });
 
   const variant = product.variants.find((variants) => {
-    return variants.variantId === variantId;
+    return variants.variantId == variantId;
   });
-
   if (!variant || !variant.installment.available || variant.quantity === 0) {
     throw new ApiError(400, "امکان خرید قسطی این محصول وجود ندارد");
   }
@@ -191,7 +190,13 @@ const firstInstallment = async (userId, productId, variantId, body) => {
     body.type === "buy-weight"
       ? body.value
       : await computing(body.type, body.value, variant);
-
+  
+  if (requestedWeight > variant.weight) {
+    throw new ApiError(
+      400,
+      "مقدار وارد شده بیشتر از وزن یا قیمت محصول است"
+    );
+  }
   if (requestedWeight < variant.installment.minWeight) {
     throw new ApiError(
       400,
@@ -223,6 +228,7 @@ const firstInstallment = async (userId, productId, variantId, body) => {
     }
     //set deadline
     const deadLine = moment().add(variant.installment.deadLine, "days");
+
     const createdOrder = await prisma.order.create({
       data: {
         date: moment().toISOString(),
@@ -231,7 +237,7 @@ const firstInstallment = async (userId, productId, variantId, body) => {
         products: [
           {
             productId: productId,
-            variantId: variantId,
+            variantId: variant.variantId,
             quantity: 1,
             installments: [
               {
@@ -299,6 +305,7 @@ const installmentPurchase = async (userId, productId, variantId, body) => {
     });
     if (order.length === 0) {
       //قسط اول
+
       return await firstInstallment(userId, productId, variantId, body);
     }
     //چک کردن امکان خرید قسطی محصول و ادامه اقساط
@@ -324,7 +331,7 @@ const installmentPurchase = async (userId, productId, variantId, body) => {
       },
     });
     const variant = product.variants.find((variants) => {
-      return variants.variantId === variantId;
+      return variants.variantId == variantId;
     });
 
     requestedWeight =
@@ -338,6 +345,7 @@ const installmentPurchase = async (userId, productId, variantId, body) => {
         `مقدار وارد شده بیشتر از مانده قسط پرداخت نشده است`
       );
     }
+
     const transactionResult = await prisma.$transaction(async (prisma) => {
       let price =
         body.type === "buy-price"
@@ -392,6 +400,7 @@ const installmentPurchase = async (userId, productId, variantId, body) => {
           price: price,
           wage: variant.wage,
         });
+
         const updatedOrder = await prisma.order.update({
           where: {
             id: order[0].id,

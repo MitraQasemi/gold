@@ -34,36 +34,36 @@ type Address {
 }
 
 model Cart {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @unique @db.ObjectId
-  user       User     @relation(fields: [userId], references: [id])
-  products   cartProduct[]
+  id       String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String        @unique @db.ObjectId
+  user     User          @relation(fields: [userId], references: [id])
+  products cartProduct[]
 }
 
-type cartProduct{
+type cartProduct {
   productId String @db.ObjectId
   variantId Int
   count     Int    @default(0)
 }
 
 model Product {
-  id             String      @id @default(auto()) @map("_id") @db.ObjectId
-  title          String      @default("product")
-  description    String      @default("")
-  category       String      @default("")
-  tags           String[]
-  image          String[]
-  thumbnailImage String      @default("")
-  wage           Float       @default(0)
-  profitPercentage Float  @default(0.000)
-  weight         Float       @default(0.000)
-  weightUnit     String      @default("")
-  quantity       Int         @default(0)
-  lockQuantity   Int         @default(0)
-  discount       Float       @default(0)
-  metaData       MetaData[]
-  installment    Installment
-  variants       Variant[]
+  id               String      @id @default(auto()) @map("_id") @db.ObjectId
+  title            String      @default("product")
+  description      String      @default("")
+  category         String      @default("")
+  tags             String[]
+  image            String[]
+  thumbnailImage   String      @default("")
+  wage             Float       @default(0)
+  profitPercentage Float       @default(0.000)
+  weight           Float       @default(0.000)
+  weightUnit       String      @default("")
+  quantity         Int         @default(0)
+  lockQuantity     Int         @default(0)
+  discount         Float       @default(0)
+  metaData         MetaData[]
+  installment      Installment
+  variants         Variant[]
 }
 
 model Category {
@@ -84,7 +84,6 @@ type Installment {
   minWeight Float
   deadLine  Int
 }
-
 
 type Variant {
   variantId    Int

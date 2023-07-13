@@ -31,8 +31,7 @@ const func = (app) => {
         try {
             const {id} = req.user;
             const result = await adminLogout(id);
-            const newResult = lodash.omit(result, ["password", "refreshToken"]);
-            return res.send(newResult);
+            return res.send(result);
         } catch (error) {
             return next( new ApiError(500, error.message));
         }

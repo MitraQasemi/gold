@@ -7,7 +7,7 @@ const create = {
         description: joi.string().max(1000),
         wage: joi.number(),
         weight: joi.number(),
-        weightUnit: joi.number(),
+        weightUnit: joi.string(),
         quantity: joi.number(),
         lockQuantity: joi.number(),
         discount: joi.number(),
@@ -20,9 +20,9 @@ const create = {
             minWeight: joi.number(),
             deadLine: joi.number()
         }),
-        variaants: joi.array().items(joi.object({
+        variants: joi.array().items(joi.object({
             variantId:joi.string(),
-            variaants: joi.array().items(joi.string()),
+            variants: joi.array().items(joi.string()),
             weightUnit:joi.string(),
             wage: joi.number(),
             weight: joi.number(),
