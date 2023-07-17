@@ -62,7 +62,7 @@ const func = (app) => {
         try {
 
             const imagePath = `${__dirname}/../../public/${req.body.path}`;
-            const fullPath = path.join("", imagePath);
+            const fullPath = path.join("/../../", imagePath);
             return res.sendFile(fullPath);
 
         } catch (error) {
