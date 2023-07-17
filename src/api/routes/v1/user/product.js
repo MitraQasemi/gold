@@ -15,7 +15,8 @@ const func = (app) => {
   route.post("/test-calc", async (req, res, next) => {
     try {
       const result = await priceCalculator(req.body);
-      res.send(result);
+
+      res.send({result:result});
     } catch (error) {
       return next(new ApiError(error.statusCode, error.message));
     }

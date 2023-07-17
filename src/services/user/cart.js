@@ -11,6 +11,7 @@ const addToCart = async (userId, body) => {
       id: body.productId,
     },
   });
+
   if (!product) {
     throw new ApiError(400, "there is not such product");
   }

@@ -39,7 +39,7 @@ const buyProduct = async (userId, cart) => {
         variantsShortage.push(reqProduct.title);
       }
     });
-
+    
     if (variantsShortage.length !== 0) {
       throw new ApiError(
         400,
@@ -190,7 +190,7 @@ const firstInstallment = async (userId, productId, variantId, body) => {
     body.type === "buy-weight"
       ? body.value
       : await computing(body.type, body.value, variant);
-  
+
   if (requestedWeight > variant.weight) {
     throw new ApiError(
       400,

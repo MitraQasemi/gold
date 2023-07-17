@@ -95,4 +95,6 @@ const deleteProduct = async (productId) => {
     }
 }
 
+
+
 module.exports = { getOneProduct, getManyProducts, createProduct, editProduct, deleteProduct }

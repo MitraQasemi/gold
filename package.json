@@ -27,6 +27,7 @@
     "level": "^8.0.0",
     "moment": "^2.29.4",
     "nodemon": "^2.0.22",
+    "path": "^0.12.7",
     "prisma": "^4.10.1",
     "simple-data-storage": "^1.0.0",
     "uuid": "^9.0.0"
