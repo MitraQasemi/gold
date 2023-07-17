@@ -62,7 +62,7 @@ const func = (app) => {
         try {
 
             const imagePath = `/public/products/${req.body.path}`;
-            const fullPath = path.join(process.cwd(), imagePath);
+            const fullPath = path.join("", imagePath);
             return res.sendFile(fullPath);
 
         } catch (error) {
