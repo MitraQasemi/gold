@@ -60,7 +60,7 @@ const func = (app) => {
 
     route.get("/photo", async (req, res, next) => {
         try {
-            const imagePath = `./public/products/${req.body.path}`;
+            const imagePath = `.src/public/products/${req.body.path}`;
             const fullPath = path.join(process.cwd(), imagePath);
             return res.sendFile(fullPath);
         } catch (error) {
