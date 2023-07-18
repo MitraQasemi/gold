@@ -10,12 +10,11 @@ module.exports = (req, directory) => {
       const form = formidable({ multiples: false });
       form.parse(req, (err, fields, file) => {
         if (err || !file.image) reject(err || new Error("Image is not provided."));
-        const newPath = path.join(`${__dirname}/../../public`, directory, uuid.v4() + '_' + file.image.originalFilename)
-        const newPath2 = path.join(directory, uuid.v4() + '_' + file.image.originalFilename)
-        console.log(newPath);
+        const newPath = path.join('public', directory, uuid.v4() + '_' + file.image.originalFilename)
+        console.log(file.image.filepath);
         fs.createReadStream(file.image.filepath)
           .pipe(fs.createWriteStream(newPath))
-          .on("finish", () => resolve(newPath2.split("\\")))
+          .on("finish", () => resolve(newPath.split("\\")))
           .on("error", (error) => reject(error));
       });
     });

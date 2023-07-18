@@ -60,11 +60,9 @@ const func = (app) => {
 
     route.get("/photo", async (req, res, next) => {
         try {
-
-            const imagePath = `${__dirname}/../../../../public/${req.body.path}`;
-            const fullPath = path.join("", imagePath);
+            const imagePath = `./public/products/${req.body.path}`;
+            const fullPath = path.join(process.cwd(), imagePath);
             return res.sendFile(fullPath);
-
         } catch (error) {
             return next(new ApiError(500, error.message));
         }
