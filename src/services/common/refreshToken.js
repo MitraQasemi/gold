@@ -28,6 +28,15 @@ const AdminRefreshToken = async (token) => {
                 id: id
             }, process.env.JWT_SECRET_REFRESH
                 , { expiresIn: 3600000 * 1000 })
+
+            await prisma.Admin.update({
+                where: {
+                    id: id
+                },
+                data: {
+                    refreshToken: refreshToken
+                }
+            })
             return { accessToken: accessToken, refreshToken: refreshToken };
         } else {
             throw new ApiError(403, "token did not match");
@@ -65,6 +74,15 @@ const UserRefreshToken = async (token) => {
                 id: id
             }, process.env.JWT_SECRET_REFRESH
                 , { expiresIn: 3600000 * 1000 })
+
+            await prisma.user.update({
+                where: {
+                    id: id
+                },
+                data: {
+                    refreshToken: refreshToken
+                }
+            })
             return { accessToken: accessToken, refreshToken: refreshToken };
         } else {
             throw new ApiError(403, "token did not match");
