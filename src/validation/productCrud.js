@@ -60,7 +60,7 @@ const update = {
         description: joi.string().max(1000),
         wage: joi.number(),
         weight: joi.number(),
-        weightUnit: joi.number(),
+        weightUnit: joi.string(),
         quantity: joi.number(),
         lockQuantity: joi.number(),
         discount: joi.number(),
