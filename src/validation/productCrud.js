@@ -74,11 +74,13 @@ const update = {
             deadLine: joi.number()
         }),
         variants: joi.array().items(joi.object({
+            variantId:joi.number(),
             variants: joi.array().items(joi.string()),
             wage: joi.number(),
             weight: joi.number(),
             quantity: joi.number(),
             lockQuantity: joi.number(),
+            weightUnit:joi.string(),
             discount: joi.number(),
             installment: joi.object({
                 available: joi.boolean(),
