@@ -48,7 +48,8 @@ const update = {
             country: joi.string().required(),
             city: joi.string().required(),
             address: joi.string().required()
-        }))
+        })),
+        walletBalance: joi.number(),
     })
 }
 
