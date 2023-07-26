@@ -9,7 +9,7 @@ const routes = require("../api/routes/v1");
 const expressLoader = async (app) => {
     
     app.use(cors({
-        origin: 'http://localhost:3000',
+        origin: '*',
       }));
     app.use(express.json());
     app.use("/v1", routes());
