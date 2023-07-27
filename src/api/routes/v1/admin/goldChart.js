@@ -1,6 +1,6 @@
 const express = require("express");
 const route = express.Router();
-const { isAuth, isCan, attachCurrentAdmin, validate } = require("../../../middlewares")
+// const { isAuth, isCan, attachCurrentAdmin, validate } = require("../../../middlewares")
 const { ApiError } = require("../../../middlewares/error");
 const { goldChart } = require("../../../../services/admin/goldChart");
 

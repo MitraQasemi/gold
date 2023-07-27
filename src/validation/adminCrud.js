@@ -3,8 +3,8 @@ const joi = require('joi');
 
 const create = {
     body: joi.object().keys({
-        username: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{5,16}$')).required(),
-        password: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,16}$')).required(),
+        username: joi.string().pattern(/^(?=.{5,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/).required(),
+        password: joi.string().pattern(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/).required(),
         permissions: joi.array().items(joi.object({
             action: joi.string().valid(...["create", "read", "update", "delete"]).required(),
             subject: joi.string().valid(...["Admin", "User", "Product", "Category", "Config", "goldPrice"]).required()
@@ -29,8 +29,8 @@ const update = {
         id: joi.string().hex().length(24)
     }).required(),
     body: joi.object().keys({
-        username: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{5,16}$')),
-        password: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,16}$')),
+        username: joi.string().pattern(/^(?=.{5,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/),
+        password: joi.string().pattern(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/),
         permissions: joi.array().items(joi.object({
             action: joi.string().valid(...["create", "read", "update", "delete"]).required(),
             subject: joi.string().valid(...["Admin", "User", "Product", "Category", "Config", "goldPrice"]).required()
