@@ -3,14 +3,17 @@ const joi = require('joi');
 
 const create = {
     body: joi.object().keys({
-        title: joi.string().max(1000),
-        description: joi.string().max(1000),
-        wage: joi.number(),
-        weight: joi.number(),
+        title: joi.string().max(1000).required(),
+        description: joi.string().max(1000).required(),
+        category: joi.string(),
+        tags: joi.array().items(joi.string()),
+        wage: joi.number().less(1),
+        profitPercentage: joi.number().less(1),
+        weight: joi.number().precision(3),
         weightUnit: joi.string(),
         quantity: joi.number(),
         lockQuantity: joi.number(),
-        discount: joi.number(),
+        discount: joi.number().less(1),
         metaData: joi.array().items(joi.object({
             property: joi.string(),
             value: joi.string()
@@ -58,12 +61,15 @@ const update = {
     body: joi.object().keys({
         title: joi.string().max(1000),
         description: joi.string().max(1000),
-        wage: joi.number(),
-        weight: joi.number(),
+        category: joi.string(),
+        tags: joi.array().items(joi.string()),
+        wage: joi.number().less(1),
+        profitPercentage: joi.number().less(1),
+        weight: joi.number().precision(3),
         weightUnit: joi.string(),
         quantity: joi.number(),
         lockQuantity: joi.number(),
-        discount: joi.number(),
+        discount: joi.number().less(1),
         metaData: joi.array().items(joi.object({
             property: joi.string(),
             value: joi.string()
@@ -74,13 +80,13 @@ const update = {
             deadLine: joi.number()
         }),
         variants: joi.array().items(joi.object({
-            variantId:joi.number(),
+            variantId:joi.string(),
             variants: joi.array().items(joi.string()),
+            weightUnit:joi.string(),
             wage: joi.number(),
             weight: joi.number(),
             quantity: joi.number(),
             lockQuantity: joi.number(),
-            weightUnit:joi.string(),
             discount: joi.number(),
             installment: joi.object({
                 available: joi.boolean(),

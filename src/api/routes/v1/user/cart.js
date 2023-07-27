@@ -2,6 +2,7 @@ const express = require("express");
 const route = express.Router();
 const { ApiError } = require("../../../middlewares/error");
 const { isAuth, validate } = require("../../../middlewares");
+const { addAndRemove } = require("../../../../validation/cart");
 const {
   addToCart,
   removeFromCart,
@@ -11,7 +12,7 @@ const {
 const func = (app) => {
   app.use(route);
 
-  route.put("/addToCart", isAuth, async (req, res, next) => {
+  route.put("/addToCart", isAuth, validate(addAndRemove), async (req, res, next) => {
     try {
       const result = await addToCart(req.user.id, req.body);
       return res.send(result);
@@ -20,7 +21,7 @@ const func = (app) => {
     }
   });
 
-  route.put("/removeFromCart", isAuth, async (req, res, next) => {
+  route.put("/removeFromCart", isAuth, validate(addAndRemove), async (req, res, next) => {
     try {
       const result = await removeFromCart(req.user.id, req.body);
       return res.send(result);
