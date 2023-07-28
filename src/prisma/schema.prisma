@@ -19,7 +19,7 @@ model User {
   age               Int                @default(0)
   walletBalance     Int                @default(0)
   goldBalance       Float              @default(0.000)
-  countryCode       Int                @default(0)
+  countryCode       String             @default("+98")
   addresses         Address[]
   cart              Cart?
   goldTransaction   goldTransaction?
