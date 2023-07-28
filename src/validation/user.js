@@ -20,6 +20,5 @@ const update = {
 };
 
 module.exports = {
-  read,
   update,
 };
