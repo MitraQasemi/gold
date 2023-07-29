@@ -6,7 +6,7 @@ const app = express();
 
 async function startServer() {
   await loader(app);
-  await seeder();
+  //await seeder();
 }
 
 startServer();
