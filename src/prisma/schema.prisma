@@ -22,8 +22,8 @@ model User {
   countryCode       String             @default("+98")
   addresses         Address[]
   cart              Cart?
-  goldTransaction   goldTransaction?
-  walletTransaction walletTransaction?
+  goldTransaction   goldTransaction[]
+  walletTransaction walletTransaction[]
   order             order[]
 }
 
