@@ -9,7 +9,7 @@ const getUser = async (userId) => {
       id: userId,
     },
     include: {
-      goldTransaction,
+      goldTransaction: true,
     },
   });
   if (!user) {
