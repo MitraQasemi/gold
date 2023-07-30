@@ -1,4 +1,3 @@
-const axios = require("axios");
 const moment = require("jalali-moment");
 const { ApiError } = require("../../api/middlewares/error");
 const { PrismaClient } = require("@prisma/client");
@@ -22,18 +21,18 @@ const checkAllow = async (userId, transactionType) => {
   const totalPurchasedGold = await prisma.goldTransaction.aggregate({
     where: {
       userId,
-      transactionType,
+      // transactionType,
       date: {
         gte: startAt,
         lt: endAt,
       },
     },
     _sum: {
-      expense: true,
+      weight: true,
     },
   });
-
-  return currentLimitation.weightLimit - totalPurchasedGold._sum.expense;
+  console.log(totalPurchasedGold._sum.weight);
+  return currentLimitation.weightLimit - totalPurchasedGold._sum.weight;
 };
 
 const computing = async (type, value) => {
@@ -69,7 +68,6 @@ const buyGold = async (userId, body) => {
   if (purchaseableWeight < requestedWeight) {
     throw new ApiError(403, "you can't buy gold anymore today");
   }
-
 
   const transactionResult = await prisma.$transaction(async (prisma) => {
     const config = await prisma.config.findFirstOrThrow();
@@ -123,8 +121,10 @@ const buyGold = async (userId, body) => {
         userId: user.id,
         date: moment().toISOString(),
         transactionType: "buy",
-        expense: requestedWeight,
-        status: "place holder",
+        weight: requestedWeight,
+        price: price,
+        trackingCode: `${Date.now()}${Math.floor(Math.random() * (99000 - 10000) + 10000)}`,
+        status: "تایید شده",
         paymentGateway: "place holder",
         details: "place holder",
       },
@@ -185,8 +185,10 @@ const sellGold = async (userId, body) => {
         userId: user.id,
         date: moment().toISOString(),
         transactionType: "sell",
-        expense: requestedWeight,
-        status: "place holder",
+        weight: requestedWeight,
+        price: price,
+        trackingCode: `${Date.now()}${Math.floor(Math.random() * (99000 - 10000) + 10000)}`,
+        status: "تایید شده",
         paymentGateway: "place holder",
         details: "place holder",
       },
