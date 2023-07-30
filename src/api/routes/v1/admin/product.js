@@ -21,7 +21,7 @@ const func = (app) => {
 
     })
 
-    route.get("/product", validate(productCrudValidation.readMany), isAuth, attachCurrentAdmin, isCan("read", "Product"), async (req, res, next) => {
+    route.get("/product", validate(productCrudValidation.readMany), async (req, res, next) => {
         try {
             const result = await getManyProducts(req.query)
             res.setHeader("count", result.count)
