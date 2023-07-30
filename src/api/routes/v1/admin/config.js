@@ -13,7 +13,7 @@ const func = (app) => {
             const result = await createConfig(req.body);
             return res.send(result);
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 
@@ -22,7 +22,7 @@ const func = (app) => {
             const result = await editConfig(req.params.id, req.body)
             return res.send(result)
         } catch (error) {
-            return next( new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 }

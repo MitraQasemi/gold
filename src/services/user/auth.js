@@ -34,7 +34,7 @@ const userSignup = async (phoneNumber) => {
         });
 
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
@@ -78,7 +78,7 @@ const userLogin = async (phoneNumber, password) => {
         return { accessToken: accessToken, refreshToken: refreshToken };
 
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
@@ -128,7 +128,7 @@ const userSignupVerification = async (phoneNumber, code, password) => {
             throw new ApiError(400, "verification failed(undefined code)");
         }
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
@@ -145,7 +145,7 @@ const userLogout = async (id) => {
         return "loged out"
 
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 module.exports = { userSignup, userLogin, userSignupVerification, userLogout };

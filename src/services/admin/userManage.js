@@ -21,7 +21,7 @@ const getUser = async (userId) => {
 
         return user;
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
@@ -38,7 +38,7 @@ const getManyUser = async (queryObject) => {
         const count = await prisma.user.count();
         return { result: result, count: count };
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 // POST
@@ -65,7 +65,7 @@ const createUser = async (userDetails) => {
 
         return user;
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
@@ -95,7 +95,7 @@ const editUser = async (userId, newDetails) => {
 
         return updatedUser
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 

@@ -21,7 +21,7 @@ const getAdmin = async (adminId) => {
 
         return admin;
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
@@ -64,7 +64,7 @@ const createAdmin = async (username, password, permissions) => {
 
         return admin;
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
@@ -99,7 +99,7 @@ const editAdmin = async (adminId, newDetails) => {
 
         return updatedAdmin
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 

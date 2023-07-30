@@ -89,7 +89,7 @@ const UserRefreshToken = async (token) => {
         }
 
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 module.exports = { AdminRefreshToken, UserRefreshToken };

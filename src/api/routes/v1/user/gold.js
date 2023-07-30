@@ -11,36 +11,36 @@ const {
 
 const func = (app) => {
   app.use(route);
-  route.post( "/user/computing", isAuth, validate(goldValidation.computing), async (req, res, next) => {
-      try {
-        const { type, value } = req.body;
-        const result = await computing(type, value);
-        return res.send({ result });
-      } catch (error) {
-        return next(new ApiError(error.statusCode, error.message));
-      }
+  route.post("/user/computing", isAuth, validate(goldValidation.computing), async (req, res, next) => {
+    try {
+      const { type, value } = req.body;
+      const result = await computing(type, value);
+      return res.send({ result });
+    } catch (error) {
+      return next(new ApiError(error.statusCode || 500, error.message));
     }
+  }
   );
 
-  route.post( "/user/buyGold", isAuth, validate(goldValidation.buyGold), async (req, res, next) => {
-      try {
-        const result = await buyGold(req.user.id, req.body);
-        return res.send(result);
-      } catch (error) {
-        return next(new ApiError(error.statusCode, error.message));
-      }
+  route.post("/user/buyGold", isAuth, validate(goldValidation.buyGold), async (req, res, next) => {
+    try {
+      const result = await buyGold(req.user.id, req.body);
+      return res.send(result);
+    } catch (error) {
+      return next(new ApiError(error.statusCode || 500, error.message));
     }
+  }
   );
 
-  route.post( "/user/sellGold", isAuth, validate(goldValidation.sellGold), async (req, res, next) => {
-      try {
-        const result = await sellGold(req.user.id, req.body);
-        return res.send(result);
-      } catch (error) {
-        console.log(error);
-        return next(new ApiError(error.statusCode, error.message));
-      }
+  route.post("/user/sellGold", isAuth, validate(goldValidation.sellGold), async (req, res, next) => {
+    try {
+      const result = await sellGold(req.user.id, req.body);
+      return res.send(result);
+    } catch (error) {
+      console.log(error);
+      return next(new ApiError(error.statusCode || 500, error.message));
     }
+  }
   );
 };
 

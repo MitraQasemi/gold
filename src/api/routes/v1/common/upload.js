@@ -12,7 +12,7 @@ const func = (app) => {
         res.send(result[result.length - 1]);
       })
       .catch((error) => {
-        next(new ApiError(500, error.message));
+        next(new ApiError(error.statusCode || 500, error.message));
       })
   })
 

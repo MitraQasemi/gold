@@ -12,7 +12,7 @@ const func = (app) => {
             const result = await goldPrice();
             return res.send(result)
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode||500, error.message));
         }
     })
 

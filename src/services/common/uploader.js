@@ -19,6 +19,6 @@ module.exports = (req, directory) => {
       });
     });
   } catch (error) {
-    throw new ApiError(500, error.message);
+    throw new ApiError(error.statusCode, error.message);
   }
 };
