@@ -6,7 +6,7 @@ const update = {
     lastName: joi.string(),
     password: joi.string().pattern(new RegExp("^[a-zA-Z0-9]{8,16}$")),
     age: joi.number().integer(),
-    countryCode: joi.number(),
+    countryCode: joi.string(),
     addresses: joi.array().items(
       joi.object({
         country: joi.string().required(),

@@ -10,7 +10,7 @@ const create = {
         age: joi.number().integer(),
         walletBalance:joi.number().integer(),
         goldBalance:joi.number(),
-        countryCode: joi.number(),
+        countryCode: joi.string(),
         addresses: joi.array().items(joi.object({
             country: joi.string().required(),
             city: joi.string().required(),
@@ -44,7 +44,7 @@ const update = {
         age: joi.number().integer(),
         walletBalance:joi.number().integer(),
         goldBalance:joi.number(),
-        countryCode: joi.number(),
+        countryCode: joi.string(),
         addresses: joi.array().items(joi.object({
             country: joi.string().required(),
             city: joi.string().required(),
