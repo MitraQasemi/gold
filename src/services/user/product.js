@@ -438,8 +438,29 @@ const installmentPurchase = async (userId, productId, variantId, body) => {
     throw new ApiError(500, error.message);
   }
 };
+
+const installmentPurchaseComputing = async (productId, variantId, body) => {
+  try {
+    const product = await prisma.product.findUniqueOrThrow({
+      where: {
+        id: productId,
+      },
+    });
+    const variant = product.variants.find((variants) => {
+      return variants.variantId == variantId;
+    });
+
+    const result = await computing(body.type, body.value, variant)
+    return {result:result};
+
+  } catch (error) {
+    throw new ApiError(400, "bad request");
+  }
+
+}
 module.exports = {
   buyProduct,
   priceCalculator,
   installmentPurchase,
+  installmentPurchaseComputing
 };

@@ -7,6 +7,7 @@ const {
   buyProduct,
   installmentPurchase,
   priceCalculator,
+  installmentPurchaseComputing
 } = require("../../../../services/user/product");
 
 const func = (app) => {
@@ -16,7 +17,7 @@ const func = (app) => {
     try {
       const result = await priceCalculator(req.body);
 
-      res.send({result:result});
+      res.send({ result: result });
     } catch (error) {
       return next(new ApiError(error.statusCode, error.message));
     }
@@ -34,6 +35,15 @@ const func = (app) => {
   route.post("/installmentPurchase/:productId/:variantId", isAuth, async (req, res, next) => {
     try {
       const result = await installmentPurchase(req.user.id, req.params.productId, req.params.variantId, req.body);
+      return res.send(result);
+    } catch (error) {
+      return next(new ApiError(error.statusCode, error.message));
+    }
+  });
+
+  route.post("/installmentPurchaseComputing/:productId/:variantId", isAuth, async (req, res, next) => {
+    try {
+      const result = await installmentPurchaseComputing(req.params.productId, req.params.variantId, req.body);
       return res.send(result);
     } catch (error) {
       return next(new ApiError(error.statusCode, error.message));
