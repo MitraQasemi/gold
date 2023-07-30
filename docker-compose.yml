@@ -17,7 +17,7 @@ services:
     networks:
       - tavaqof
     volumes:
-      - /home/goldImages:/app/src/public/products
+      - /root/goldImages:/app/src/public/products
 
 
   mongo1:
@@ -67,7 +67,7 @@ volumes:
   mongo1_data:
   mongo2_data:
   mongo3_data:
-  /home/goldImages:
+  /root/goldImages:
   # redis_data:
 
 
