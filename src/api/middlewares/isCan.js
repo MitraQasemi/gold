@@ -7,7 +7,7 @@ module.exports = (action, adminSubject) => {
       const ability = createMongoAbility(JSON.parse(req.admin.permissions))
       ForbiddenError.from(ability).throwUnlessCan(action, adminSubject)
     } catch (error) {
-      return next( new ApiError(500, error.message));
+      return next( new ApiError(411, error.message));
     }
     return next()
   }

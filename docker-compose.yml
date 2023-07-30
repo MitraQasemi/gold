@@ -16,6 +16,8 @@ services:
       - DATABASE_URL=mongodb://mongo1:27017,mongo1:27018,mongo1:27019/gold
     networks:
       - tavaqof
+    volumes:
+      - ./src/public/products:./src/public/products
 
 
   mongo1:
@@ -65,6 +67,7 @@ volumes:
   mongo1_data:
   mongo2_data:
   mongo3_data:
+  ./src/public/products:
   # redis_data:
 
 
