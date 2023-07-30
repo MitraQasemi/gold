@@ -48,6 +48,7 @@ type cartProduct {
 
 model Product {
   id               String      @id @default(auto()) @map("_id") @db.ObjectId
+  date             DateTime    @default(now())
   title            String      @default("product")
   description      String      @default("")
   category         String      @default("")
@@ -55,6 +56,7 @@ model Product {
   image            String[]
   thumbnailImage   String      @default("")
   wage             Float       @default(0)
+  sellQuantity     Int         @default(0)
   profitPercentage Float       @default(0.000)
   weight           Float       @default(0.000)
   weightUnit       String      @default("")

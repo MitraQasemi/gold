@@ -39,7 +39,7 @@ const buyProduct = async (userId, cart) => {
         variantsShortage.push(reqProduct.title);
       }
     });
-    
+
     if (variantsShortage.length !== 0) {
       throw new ApiError(
         400,
@@ -76,6 +76,7 @@ const buyProduct = async (userId, cart) => {
             id: product.productId,
           },
           data: {
+            sellQuantity: { increment: product.quantity },
             variants: {
               updateMany: {
                 where: {
@@ -389,6 +390,7 @@ const installmentPurchase = async (userId, productId, variantId, body) => {
             id: productId,
           },
           data: {
+            sellQuantity: { increment: 1 },
             variants: updatedArray,
           },
         });
