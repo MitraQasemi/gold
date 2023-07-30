@@ -5,7 +5,7 @@ const route = express.Router();
 const { ApiError } = require("../../../middlewares/error");
 const { isAuth, isCan, attachCurrentAdmin, validate } = require("../../../middlewares")
 const productCrudValidation = require("../../../../validation/productCrud");
-const { getOneProduct, getManyProducts, createProduct, editProduct, deleteProduct } = require("../../../../services/admin/productManage");
+const { getOneProduct, getManyProducts, createProduct, editProduct, deleteProduct, filter } = require("../../../../services/admin/productManage");
 
 const func = (app) => {
 
@@ -67,6 +67,17 @@ const func = (app) => {
             return next(new ApiError(500, error.message));
         }
     })
+    //filter
+    route.get("/filter", async (req, res, next) => {
+        try {
+            const result = await filter(req.query)
+            res.setHeader("count", result.count)
+            return res.send(result.result)
+        } catch (error) {
+            return next(new ApiError(500, error.message));
+        }
+    })
+
 
 }
 
