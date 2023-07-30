@@ -21,7 +21,7 @@ const checkAllow = async (userId, transactionType) => {
   const totalPurchasedGold = await prisma.goldTransaction.aggregate({
     where: {
       userId,
-      // transactionType,
+      transactionType,
       date: {
         gte: startAt,
         lt: endAt,
@@ -31,7 +31,7 @@ const checkAllow = async (userId, transactionType) => {
       weight: true,
     },
   });
-  console.log(totalPurchasedGold._sum.weight);
+
   return currentLimitation.weightLimit - totalPurchasedGold._sum.weight;
 };
 
