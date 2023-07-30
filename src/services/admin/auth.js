@@ -48,7 +48,7 @@ const adminSignup = async (username, password, permissions) => {
 
         return accessToken;
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
@@ -87,7 +87,7 @@ const adminLogin = async (username, password) => {
         })
         return { accessToken: accessToken, refreshToken: refreshToken };
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
@@ -104,7 +104,7 @@ const adminLogout = async (id) => {
         return "loged out"
 
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 module.exports = { adminSignup, adminLogin, adminLogout };

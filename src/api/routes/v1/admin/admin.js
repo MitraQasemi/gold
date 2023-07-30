@@ -17,7 +17,7 @@ const func = (app) => {
             const newResult = lodash.omit(result, ["password", "refreshToken"]);
             return res.send(newResult);
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 
@@ -28,7 +28,7 @@ const func = (app) => {
             const newResult = result.result.map((item) => lodash.omit(item, ["password", "refreshToken"]))
             return res.send(newResult);
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 
@@ -39,7 +39,7 @@ const func = (app) => {
             const newResult = lodash.omit(result, ["password", "refreshToken"]);
             return res.send(newResult);
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 
@@ -49,7 +49,7 @@ const func = (app) => {
             const newResult = lodash.omit(result, ["password", "refreshToken"]);
             return res.send(newResult);
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 }

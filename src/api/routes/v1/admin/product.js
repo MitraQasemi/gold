@@ -16,7 +16,7 @@ const func = (app) => {
             const result = await getOneProduct(req.params.id)
             return res.send(result);
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
 
     })
@@ -27,7 +27,7 @@ const func = (app) => {
             res.setHeader("count", result.count)
             return res.send(result.result)
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
     route.post("/product", isAuth, attachCurrentAdmin, isCan("create", "Product"), async (req, res, next) => {
@@ -35,7 +35,7 @@ const func = (app) => {
             const result = await createProduct(req.body);
             return res.send(result);
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 
@@ -45,7 +45,7 @@ const func = (app) => {
             const result = await editProduct(req.params.id, req.body)
             return res.send(result)
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 
@@ -54,7 +54,7 @@ const func = (app) => {
             const result = await deleteProduct(req.params.id)
             return res.send(result)
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 
@@ -64,7 +64,7 @@ const func = (app) => {
             const fullPath = path.join(process.cwd(), imagePath);
             return res.sendFile(fullPath);
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
     //filter
@@ -74,7 +74,7 @@ const func = (app) => {
             res.setHeader("count", result.count)
             return res.send(result.result)
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 

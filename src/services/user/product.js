@@ -109,7 +109,6 @@ const buyProduct = async (userId, cart) => {
     });
     return transactionResult;
   } catch (error) {
-    console.log(error);
     throw new ApiError(error.statusCode, error.message);
   }
 };
@@ -435,7 +434,7 @@ const installmentPurchase = async (userId, productId, variantId, body) => {
     });
     return transactionResult;
   } catch (error) {
-    throw new ApiError(500, error.message);
+    throw new ApiError(error.statusCode, error.message);
   }
 };
 
@@ -454,7 +453,7 @@ const installmentPurchaseComputing = async (productId, variantId, body) => {
     return {result:result};
 
   } catch (error) {
-    throw new ApiError(400, "bad request");
+    throw new ApiError(error.statusCode, "bad request");
   }
 
 }

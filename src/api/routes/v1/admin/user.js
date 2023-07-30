@@ -2,9 +2,9 @@ const express = require("express");
 const route = express.Router();
 const lodash = require("lodash");
 const { ApiError } = require("../../../middlewares/error");
-const {isAuth, isCan, attachCurrentAdmin, validate} = require("../../../middlewares");
+const { isAuth, isCan, attachCurrentAdmin, validate } = require("../../../middlewares");
 const userCrudValidation = require("../../../../validation/userCrud");
-const {getUser, createUser, editUser, getManyUser} = require("../../../../services/admin/userManage");
+const { getUser, createUser, editUser, getManyUser } = require("../../../../services/admin/userManage");
 
 const func = (app) => {
     app.use(route);
@@ -14,18 +14,18 @@ const func = (app) => {
             const newResult = lodash.omit(result, ["password", "refreshToken"]);
             return res.send(newResult);
         } catch (error) {
-            return next( new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 
     route.get("/admin/user", validate(userCrudValidation.readMany), isAuth, attachCurrentAdmin, isCan("read", "User"), async (req, res, next) => {
         try {
             const result = await getManyUser(req.query)
-            res.setHeader("count",result.count)
+            res.setHeader("count", result.count)
             const newResult = result.result.map((item) => lodash.omit(item, ["password", "refreshToken"]))
             return res.send(newResult);
         } catch (error) {
-            return next( new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 
@@ -35,7 +35,7 @@ const func = (app) => {
             const newResult = lodash.omit(result, ["password", "refreshToken"]);
             return res.send(newResult);
         } catch (error) {
-            return next( new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 
@@ -46,7 +46,7 @@ const func = (app) => {
             const newResult = lodash.omit(result, ["password", "refreshToken"]);
             return res.send(newResult);
         } catch (error) {
-            return next( new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 }

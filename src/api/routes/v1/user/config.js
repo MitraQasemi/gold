@@ -13,7 +13,7 @@ const func = (app) => {
       return res.send(result);
     } catch (error) {
       console.log(error);
-      return next(new ApiError(error.statusCode, error.message));
+      return next(new ApiError(error.statusCode||500, error.message));
     }
   });
 };

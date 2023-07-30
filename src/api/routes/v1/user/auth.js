@@ -14,7 +14,7 @@ const func = (app) => {
             const result = await userSignup(phoneNumber);
             return res.send(result);
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 
@@ -24,7 +24,7 @@ const func = (app) => {
             const result = await userLogin(phoneNumber, password);
             return res.send(result);
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 
@@ -34,7 +34,7 @@ const func = (app) => {
             const result = await userSignupVerification(phoneNumber, code, password);
             return res.send(result);
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 
@@ -44,7 +44,7 @@ const func = (app) => {
             const result = await userLogout(id);
             return res.send(result);
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 
@@ -54,7 +54,7 @@ const func = (app) => {
             const result = await forgetPassword(phoneNumber);
             return res.send(result);
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 
@@ -64,7 +64,7 @@ const func = (app) => {
             const result = await forgetPasswordVerification(phoneNumber, code, password);
             return res.send(result);
         } catch (error) {
-            return next(new ApiError(500, error.message));
+            return next(new ApiError(error.statusCode || 500, error.message));
         }
     })
 }

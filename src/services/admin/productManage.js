@@ -18,7 +18,7 @@ const getOneProduct = async (productId) => {
             return product;
         throw new ApiError(404, "this product does not exist")
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
@@ -49,7 +49,7 @@ const getManyProducts = async (queryObject) => {
         const count = await prisma.product.count(query);
         return { result: result, count: count };
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
@@ -62,7 +62,7 @@ const createProduct = async (productDetails) => {
         })
         return result
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
@@ -78,7 +78,7 @@ const editProduct = async (productId, data) => {
         })
         return result
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
@@ -93,40 +93,11 @@ const deleteProduct = async (productId) => {
         })
         return result;
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
 
-function deleteUndefinedProperties(obj) {
-    for (const key in obj) {
-        if (typeof obj[key] === 'object' && obj[key] !== null) {
-            // Recursively call the function for nested objects
-            deleteUndefinedProperties(obj[key]);
-
-            // After the recursive call, check if the current object is empty
-            if (Object.keys(obj[key]).length === 0) {
-                delete obj[key];
-            }
-        } else {
-            // Delete the property if it's undefined
-            if (obj[key] === undefined) {
-                delete obj[key];
-            }
-        }
-    }
-    return obj;
-}
-
-function deleteFieldsRecursively(obj, fieldsToDelete) {
-    for (const key in obj) {
-        if (typeof obj[key] === 'object' && obj[key] !== null) {
-            deleteFieldsRecursively(obj[key], fieldsToDelete);
-        } else if (fieldsToDelete.includes(key)) {
-            delete obj[key];
-        }
-    }
-}
 
 const filter = async (queryObject) => {
     try {
@@ -206,7 +177,7 @@ const filter = async (queryObject) => {
         const count = await prisma.product.aggregateRaw(query)
         return { result: result, count: count[0].totalNewestProducts };
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 

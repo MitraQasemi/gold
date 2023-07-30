@@ -19,7 +19,7 @@ const func = (app) => {
 
       res.send({ result: result });
     } catch (error) {
-      return next(new ApiError(error.statusCode, error.message));
+      return next(new ApiError(error.statusCode || 500, error.message));
     }
   });
 
@@ -28,7 +28,7 @@ const func = (app) => {
       const result = await buyProduct(req.user.id, req.body)
       return res.send(result);
     } catch (error) {
-      return next(new ApiError(error.statusCode, error.message));
+      return next(new ApiError(error.statusCode || 500, error.message));
     }
   });
 
@@ -37,7 +37,7 @@ const func = (app) => {
       const result = await installmentPurchase(req.user.id, req.params.productId, req.params.variantId, req.body);
       return res.send(result);
     } catch (error) {
-      return next(new ApiError(error.statusCode, error.message));
+      return next(new ApiError(error.statusCode || 500, error.message));
     }
   });
 
@@ -46,7 +46,7 @@ const func = (app) => {
       const result = await installmentPurchaseComputing(req.params.productId, req.params.variantId, req.body);
       return res.send(result);
     } catch (error) {
-      return next(new ApiError(error.statusCode, error.message));
+      return next(new ApiError(error.statusCode || 500, error.message));
     }
   });
 };

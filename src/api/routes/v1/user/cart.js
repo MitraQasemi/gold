@@ -17,7 +17,7 @@ const func = (app) => {
       const result = await addToCart(req.user.id, req.body);
       return res.send(result);
     } catch (error) {
-      return next(new ApiError(error.statusCode, error.message));
+      return next(new ApiError(error.statusCode || 500, error.message));
     }
   });
 
@@ -26,7 +26,7 @@ const func = (app) => {
       const result = await removeFromCart(req.user.id, req.body);
       return res.send(result);
     } catch (error) {
-      return next(new ApiError(error.statusCode, error.message));
+      return next(new ApiError(error.statusCode || 500, error.message));
     }
   });
 
@@ -35,7 +35,7 @@ const func = (app) => {
       const result = await getCart(req.user.id);
       return res.send(result);
     } catch (error) {
-      return next(new ApiError(error.statusCode, error.message));
+      return next(new ApiError(error.statusCode || 500, error.message));
     }
   });
 };

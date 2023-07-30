@@ -14,7 +14,7 @@ const func = (app) => {
       return res.send(result);
     } catch (error) {
       console.log(error);
-      return next(new ApiError(error.statusCode, error.message));
+      return next(new ApiError(error.statusCode || 500, error.message));
     }
   });
 
@@ -23,7 +23,7 @@ const func = (app) => {
       const result = await editUser(req.user.id, req.body);
       return res.send(result);
     } catch (error) {
-      return next(new ApiError(error.statusCode, error.message));
+      return next(new ApiError(error.statusCode || 500, error.message));
     }
   });
 };

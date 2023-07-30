@@ -39,7 +39,7 @@ const forgetPassword = async (phoneNumber) => {
         });
 
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
@@ -89,7 +89,7 @@ const forgetPasswordVerification = async (phoneNumber, code, password) => {
             throw new ApiError(400, "verification failed(undefined code)");
         }
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 module.exports = { forgetPassword, forgetPasswordVerification };
