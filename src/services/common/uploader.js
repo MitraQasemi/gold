@@ -11,6 +11,7 @@ module.exports = (req, directory) => {
       form.parse(req, (err, fields, file) => {
         if (err || !file.image) reject(err || new Error("Image is not provided."));
         const newPath = path.join('./src/public', directory, uuid.v4() + '_' + file.image.originalFilename)
+        console.log(result);
         const result = newPath.split("\\");
         console.log(result);
           fs.createReadStream(file.image.filepath)
