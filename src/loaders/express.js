@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require('path');
 const httpStatus = require('http-status-codes');
 const { errorHandler } = require("../api/middlewares/error")
 require("dotenv").config({ path: "../.env" });
@@ -7,7 +8,8 @@ const {ApiError} = require("../api/middlewares/error")
 const routes = require("../api/routes/v1");
 
 const expressLoader = async (app) => {
-    
+    app.use(express.static(path.join(__dirname, "../public/products")));
+    console.log(__dirname);
     app.use(cors({
         origin: '*',
       }));
