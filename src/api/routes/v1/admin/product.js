@@ -58,15 +58,6 @@ const func = (app) => {
         }
     })
 
-    route.get("/photo", async (req, res, next) => {
-        try {
-            const imagePath = `${req.body.path}`;
-            const fullPath = path.join(process.cwd(), imagePath);
-            return res.sendFile(fullPath);
-        } catch (error) {
-            return next(new ApiError(error.statusCode || 500, error.message));
-        }
-    })
     //filter
     route.get("/filter", async (req, res, next) => {
         try {

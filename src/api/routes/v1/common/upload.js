@@ -9,7 +9,7 @@ const func = (app) => {
   route.post("/upload", (req, res, next) => {
     uploader(req, "products")
       .then((result) => {
-        res.send(result[result.length - 1]);
+        res.send(result);
       })
       .catch((error) => {
         next(new ApiError(error.statusCode || 500, error.message));
