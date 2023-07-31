@@ -123,7 +123,9 @@ const buyGold = async (userId, body) => {
         transactionType: "buy",
         weight: requestedWeight,
         price: price,
-        trackingCode: `${Date.now()}${Math.floor(Math.random() * (99000 - 10000) + 10000)}`,
+        trackingCode: `${Date.now()}${Math.floor(
+          Math.random() * (99000 - 10000) + 10000
+        )}`,
         status: "تایید شده",
         paymentGateway: "place holder",
         details: "place holder",
@@ -187,7 +189,9 @@ const sellGold = async (userId, body) => {
         transactionType: "sell",
         weight: requestedWeight,
         price: price,
-        trackingCode: `${Date.now()}${Math.floor(Math.random() * (99000 - 10000) + 10000)}`,
+        trackingCode: `${Date.now()}${Math.floor(
+          Math.random() * (99000 - 10000) + 10000
+        )}`,
         status: "تایید شده",
         paymentGateway: "place holder",
         details: "place holder",
@@ -200,4 +204,15 @@ const sellGold = async (userId, body) => {
   return transactionResult;
 };
 
-module.exports = { computing, buyGold, sellGold };
+const getGoldTransactions = async (userId, queryObject) => {
+  const result = await prisma.goldTransaction.findMany({
+    where: {
+      userId: userId,
+    },
+    skip: Number(queryObject.size * (queryObject.page - 1)) || 0,
+    take: Number(queryObject.size),
+  });
+  return result;
+};
+
+module.exports = { computing, buyGold, sellGold, getGoldTransactions };

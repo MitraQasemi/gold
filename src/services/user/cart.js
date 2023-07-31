@@ -1,10 +1,15 @@
 const axios = require("axios");
 const { ApiError } = require("../../api/middlewares/error");
 const { PrismaClient } = require("@prisma/client");
+const {attachPriceToCart} = require("./attachPrice")
 
 const prisma = new PrismaClient();
 
 const addToCart = async (userId, body) => {
+
+  try{
+
+    
   const countRequest = Math.abs(body.count);
   const product = await prisma.product.findUnique({
     where: {
@@ -89,6 +94,11 @@ const addToCart = async (userId, body) => {
     },
   });
   return userCart;
+
+  }catch(error){
+    console.log(error);
+  }
+
 };
 
 const removeFromCart = async (userId, body) => {
@@ -153,7 +163,7 @@ const removeFromCart = async (userId, body) => {
 };
 
 const getCart = async (userId) => {
-  const user = await prisma.user.findUniqueOrThrow({
+  const user = await prisma.user.findUnique({
     where: {
       id: userId,
     },
@@ -161,10 +171,14 @@ const getCart = async (userId) => {
       cart: true,
     },
   });
+  if (!user) {
+    throw new ApiError(404, "user not found :{");
+  }
   if (!user.cart) {
     throw new ApiError(400, "you do not have Cart :{");
   }
-  return user.cart;
+  const result = await attachPriceToCart(user.cart.products)
+  return result;
 };
 module.exports = {
   addToCart,

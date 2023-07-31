@@ -2,7 +2,7 @@ const express = require("express");
 const route = express.Router();
 const { ApiError } = require("../../../middlewares/error");
 const { isAuth, validate } = require("../../../middlewares");
-const { productsList } = require("../../../../validation/userProduct");
+const { productsList, installmentPurchaseValidation } = require("../../../../validation/userProduct");
 const {
   buyProduct,
   installmentPurchase,
@@ -32,7 +32,7 @@ const func = (app) => {
     }
   });
 
-  route.post("/installmentPurchase/:productId/:variantId", isAuth, async (req, res, next) => {
+  route.post("/installmentPurchase/:productId/:variantId", isAuth, validate(installmentPurchaseValidation), async (req, res, next) => {
     try {
       const result = await installmentPurchase(req.user.id, req.params.productId, req.params.variantId, req.body);
       return res.send(result);
