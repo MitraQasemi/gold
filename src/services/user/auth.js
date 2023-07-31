@@ -85,6 +85,14 @@ const userLogin = async (phoneNumber, password) => {
 const userSignupVerification = async (phoneNumber, code, password) => {
     try {
         const data = await SData(phoneNumber);
+        const result = await prisma.user.findUnique({
+            where: {
+                phoneNumber: phoneNumber,
+            }
+        })
+        if (result) {
+            throw new ApiError(403, "this user already exists");
+        }
         if (data) {
             if (Date.now() - data.time > 120000) {
                 SData.clear(phoneNumber);

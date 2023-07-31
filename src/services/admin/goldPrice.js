@@ -17,8 +17,6 @@ const goldPrice = async () => {
         })
         console.log("gold price updated\n");
         return data;
-
-
     } catch (error) {
         throw new ApiError(error.statusCode, error.message);
     }
