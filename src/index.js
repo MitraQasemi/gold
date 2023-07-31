@@ -6,8 +6,8 @@ const app = express();
 
 async function startServer() {
   await loader(app);
-  await productSeeder();
-  await goldChartSeeder();
+  // await productSeeder();
+  // await goldChartSeeder();
 }
 
 startServer();
