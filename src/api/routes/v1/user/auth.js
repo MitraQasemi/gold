@@ -58,7 +58,7 @@ const func = (app) => {
         }
     })
 
-    route.post("user/forgetPassword/verification", validate(userAuthValidation.forgetPasswordVerification), async (req, res, next) => {
+    route.post("/user/forgetPasswordVerification", validate(userAuthValidation.forgetPasswordVerification), async (req, res, next) => {
         try {
             const { phoneNumber, code, password } = req.body;
             const result = await forgetPasswordVerification(phoneNumber, code, password);

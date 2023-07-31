@@ -72,6 +72,7 @@ const func = (app) => {
         try {
             const result = await filter(req.query)
             res.setHeader("count", result.count)
+            res.setHeader('Access-Control-Expose-Headers', 'count');
             return res.send(result.result)
         } catch (error) {
             return next(new ApiError(error.statusCode || 500, error.message));
