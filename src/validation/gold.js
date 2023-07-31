@@ -21,4 +21,11 @@ const sellGold = {
   }),
 };
 
-module.exports = { computing, buyGold, sellGold };
+const readMany = {
+  query: joi.object().keys({
+      size: joi.string().pattern(new RegExp('^\\d+$')),
+      page: joi.string().pattern(new RegExp('^^\\d+$'))
+  })
+}
+
+module.exports = { computing, buyGold, sellGold, readMany };

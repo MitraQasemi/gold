@@ -10,7 +10,7 @@ const productsList = {
   body: joi.array().items(productDetails),
 };
 
-const installmentPurchase = {
+const installmentPurchaseValidation = {
   params: joi.object().keys({
     productId: joi.string().hex().length(24),
     variantId: joi.number().integer()
@@ -21,4 +21,4 @@ const installmentPurchase = {
   })
 }
 
-module.exports = { productsList, installmentPurchase };
+module.exports = { productsList, installmentPurchaseValidation };
