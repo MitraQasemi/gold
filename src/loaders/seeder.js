@@ -21,7 +21,7 @@ const installment = [
 ];
 
 const seeder = async () => {
-  const productCount =await prisma.product.count({});
+  const productCount = await prisma.product.count({});
   if (productCount >= 100) {
     return;
   }
