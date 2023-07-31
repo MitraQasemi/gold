@@ -28,7 +28,7 @@ const userSignup = async (phoneNumber) => {
         const url = `https://api.kavenegar.com/v1/${apiKey}/verify/lookup.json?receptor=${phoneNumber}&token=${code}&template=${template}`
 
         return axios.get(url).then(response => {
-            return response.data;
+            return {result:"code sent"};
         }).catch(error => {
             throw new ApiError(500, error.message);
         });
