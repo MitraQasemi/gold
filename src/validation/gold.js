@@ -23,8 +23,8 @@ const sellGold = {
 
 const readMany = {
   query: joi.object().keys({
-      size: joi.string().pattern(new RegExp('^\\d+$')),
-      page: joi.string().pattern(new RegExp('^^\\d+$'))
+      size: joi.string().pattern(new RegExp('^\\d+$')).required(),
+      page: joi.string().pattern(new RegExp('^^\\d+$')).required()
   })
 }
 
