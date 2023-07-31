@@ -12,7 +12,7 @@ module.exports = (req, directory) => {
         if (err || !file.image) reject(err || new Error("Image is not provided."));
         const newPath = path.join('./src/public', directory, uuid.v4() + '_' + file.image.originalFilename)
         console.log(newPath);
-        const result = newPath.split("\\");
+        const result = newPath.split(path.sep);
         console.log(result);
           fs.createReadStream(file.image.filepath)
             .pipe(fs.createWriteStream(newPath))
