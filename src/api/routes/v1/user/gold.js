@@ -47,7 +47,9 @@ const func = (app) => {
   route.get("/userGoldTransactions", isAuth, validate(goldValidation.readMany), async (req, res, next) => {
     try {
       const result = await getGoldTransactions(req.user.id, req.query);
-      return res.send(result);
+      res.setHeader("count", result.count)
+      res.setHeader('Access-Control-Expose-Headers', 'count');
+      return res.send(result.transactions);
     } catch (error) {
       console.log(error);
       return next(new ApiError(error.statusCode, error.message));

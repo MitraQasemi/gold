@@ -2,7 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const { ApiError } = require("../../api/middlewares/error");
 const { number, boolean } = require("joi");
 const { query } = require("express");
-const { attachPriceToProduct }=require("../user/attachPrice")
+const { attachPriceToProduct, attachPriceToVariant }=require("../user/attachPrice")
 
 const prisma = new PrismaClient
 
@@ -15,8 +15,10 @@ const getOneProduct = async (productId) => {
                 id: productId
             }
         })
-        if (product)
-            return product;
+        if (product){
+            const result = attachPriceToVariant(product)
+            return result;
+        }
         throw new ApiError(404, "this product does not exist")
     } catch (error) {
         throw new ApiError(error.statusCode, error.message);
