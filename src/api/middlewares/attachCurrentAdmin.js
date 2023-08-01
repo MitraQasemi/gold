@@ -9,7 +9,7 @@ module.exports = async (req, res, next) => {
         }
     })
     if (!admin) {
-        return next (new ApiError(404, "this admin does not exist"));
+        return next (new ApiError(404, "مدیر یافت نشد "));
     }
 
     req.admin = admin

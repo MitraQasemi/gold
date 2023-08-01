@@ -47,22 +47,22 @@ type cartProduct {
 }
 
 model Product {
-  id               String      @id @default(auto()) @map("_id") @db.ObjectId
+  id               String      @id @default(auto()) @map("_id") @db.ObjectId//
   date             DateTime    @default(now())
-  title            String      @default("product")
+  title            String      @default("product")//
   description      String      @default("")
   category         String      @default("")
   tags             String[]
   image            String[]
-  thumbnailImage   String      @default("")
-  wage             Float       @default(0)
+  thumbnailImage   String      @default("")//
+  wage             Float       @default(0)//
   sellQuantity     Int         @default(0)
-  profitPercentage Float       @default(0.000)
-  weight           Float       @default(0.000)
-  weightUnit       String      @default("")
+  profitPercentage Float       @default(0.000)//
+  weight           Float       @default(0.000)//
+  weightUnit       String      @default("")//
   quantity         Int         @default(0)
   lockQuantity     Int         @default(0)
-  discount         Float       @default(0)
+  discount         Float       @default(0)//
   metaData         MetaData[]
   installment      Installment
   variants         Variant[]
@@ -154,6 +154,8 @@ model goldPrice {
   date          DateTime @default(now())
   buyQuotation  Int
   sellQuotation Int
+  geram24       Int
+  geram18       Int
 }
 
 model order {

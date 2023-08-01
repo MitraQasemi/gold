@@ -4,7 +4,7 @@ const { ApiError } = require("./error");
 module.exports = (req, res, next) => {
     const token = req.headers["access-token"]
     if (!token) {
-        return next(new ApiError(411, "access denied! token not available!"));
+        return next(new ApiError(401, "access denied! token not available!"));
     }
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET_ACCESS, (error, decoded) => {
