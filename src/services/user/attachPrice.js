@@ -85,7 +85,7 @@ const attachPriceToVariant = async (product) => {
   product.variants.forEach((variant) => {
     const purePrice = variant.weight * unitPrices[variant.weightUnit];
     const totalPrice = purePrice + purePrice * (variant.wage + product.profitPercentage);
-    const finalPrice = purePrice + purePrice * (reqVariant.wage + product.profitPercentage - reqVariant.discount);
+    const finalPrice = purePrice + purePrice * (variant.wage + product.profitPercentage - variant.discount);
     variant.totalPrice = Math.round(totalPrice);
     variant.finalPrice = Math.round(finalPrice);
   });
