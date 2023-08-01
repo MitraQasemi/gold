@@ -205,14 +205,20 @@ const sellGold = async (userId, body) => {
 };
 
 const getGoldTransactions = async (userId, queryObject) => {
-  const result = await prisma.goldTransaction.findMany({
+  const goldTransactions = await prisma.goldTransaction.findMany({
     where: {
-      userId: userId,
+      userId,
     },
     skip: Number(queryObject.size * (queryObject.page - 1)) || 0,
     take: Number(queryObject.size),
   });
-  return result;
+  const transactionCount = await prisma.goldTransaction.count({
+    where: {
+      userId,
+    },
+  });
+
+  return { transactions: goldTransactions, count: transactionCount };
 };
 
 module.exports = { computing, buyGold, sellGold, getGoldTransactions };
