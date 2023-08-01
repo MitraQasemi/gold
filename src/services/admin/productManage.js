@@ -2,6 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const { ApiError } = require("../../api/middlewares/error");
 const { number, boolean } = require("joi");
 const { query } = require("express");
+const { attachPriceToProduct }=require("../user/attachPrice")
 
 const prisma = new PrismaClient
 
@@ -173,9 +174,10 @@ const filter = async (queryObject) => {
         };
 
         query.pipeline.push({ $project: selectFields });
-        const result = await prisma.product.aggregateRaw(query)
-        const keysToRemove = ["$skip", "$limit"];
 
+        let result = await prisma.product.aggregateRaw(query)
+        const keysToRemove = ["$skip", "$limit"];
+        result = await attachPriceToProduct(result)
         query.pipeline = query.pipeline.filter((obj) => {
             const keys = Object.keys(obj);
             return !keys.some((key) => keysToRemove.includes(key));

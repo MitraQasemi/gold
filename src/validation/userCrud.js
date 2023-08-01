@@ -12,9 +12,11 @@ const create = {
         goldBalance:joi.number(),
         countryCode: joi.string(),
         addresses: joi.array().items(joi.object({
-            country: joi.string().required(),
+            province: joi.string().required(),
             city: joi.string().required(),
-            address: joi.string().required()
+            address: joi.string().required(),
+            postalCode: joi.string().required(),
+            plaque: joi.string().required()
         }))
     })
 }
@@ -46,9 +48,11 @@ const update = {
         goldBalance:joi.number(),
         countryCode: joi.string(),
         addresses: joi.array().items(joi.object({
-            country: joi.string().required(),
+            province: joi.string().required(),
             city: joi.string().required(),
-            address: joi.string().required()
+            address: joi.string().required(),
+            postalCode: joi.string().required(),
+            plaque: joi.string().required()
         }))
     })
 }

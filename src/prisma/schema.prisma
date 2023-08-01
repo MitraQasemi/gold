@@ -28,9 +28,11 @@ model User {
 }
 
 type Address {
-  country String
-  city    String
-  address String
+  province   String
+  city       String
+  address    String
+  postalCode String
+  plaque     String
 }
 
 model Cart {

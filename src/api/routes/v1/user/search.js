@@ -7,7 +7,7 @@ const { search } = require("../../../../services/user/search");
 const func = (app) => {
   app.use(route);
 
-  route.post("/search/:word", isAuth, async (req, res, next) => {
+  route.get("/search/:word", isAuth, async (req, res, next) => {
     try {
       const result = await search(req.params.word);
       return res.send(result);
