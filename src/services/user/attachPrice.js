@@ -38,13 +38,13 @@ const attachPriceToCart = async (cart) => {
         count: reqProduct.count,
       };
     });
-    const postPrice = 25000
+    const postPrice = 25000;
     return {
       products: result,
       totalPriceOfCart: Math.round(totalPriceOfCart),
-      discountPrice: Math.round( totalPriceOfCart - finalPriceOfCart ),
+      discountPrice: Math.round(totalPriceOfCart - finalPriceOfCart),
       postPrice,
-      paymentPrice: Math.round( finalPriceOfCart + postPrice )
+      paymentPrice: Math.round(finalPriceOfCart + postPrice),
     };
   } catch (error) {
     throw new ApiError(error.statusCode || 500, error.message);
@@ -72,6 +72,27 @@ const attachPriceToProduct = async (products) => {
   }
 };
 
+const attachPriceToVariant = async (product) => {
+  const unitPrices = await getCurrentGoldPrice();
+
+  const purePrice = product.weight * unitPrices[product.weightUnit];
+  const totalPrice = purePrice + purePrice * (product.wage + product.profitPercentage);
+  const finalPrice = purePrice + purePrice * (product.wage + product.profitPercentage - product.discount);
+
+  product.totalPrice = Math.round(totalPrice);
+  product.finalPrice = Math.round(finalPrice);
+    
+  product.variants.forEach((variant) => {
+    const purePrice = variant.weight * unitPrices[variant.weightUnit];
+    const totalPrice = purePrice + purePrice * (variant.wage + product.profitPercentage);
+    const finalPrice = purePrice + purePrice * (reqVariant.wage + product.profitPercentage - reqVariant.discount);
+    variant.totalPrice = Math.round(totalPrice);
+    variant.finalPrice = Math.round(finalPrice);
+  });
+
+  return product;
+};
+
 const getCurrentGoldPrice = async () => {
   const result = await prisma.goldPrice.findFirstOrThrow({
     orderBy: {
@@ -84,4 +105,5 @@ const getCurrentGoldPrice = async () => {
 module.exports = {
   attachPriceToCart,
   attachPriceToProduct,
+  attachPriceToVariant,
 };
