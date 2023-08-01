@@ -7,18 +7,26 @@ const prisma = new PrismaClient()
 
 const goldPrice = async () => {
     try {
-        const data = {
-            date: moment().toISOString(),
-            buyQuotation: 1000,
-            sellQuotation: 800
-        }
-        await prisma.goldPrice.create({
-            data: data
-        })
-        console.log("gold price updated\n");
-        return data;
+        return await axios.get('https://api.tgju.org/v1/widget/tmp?keys=137121,137122').then(async response => {
+            const result = response.data.response.indicators;
+            const data = {
+                buyQuotation: Number(result[0].p )+150000,
+                sellQuotation: Number(result[0].p),
+                geram18: Number(result[0].p),
+                geram24: Number(result[1].p)
+            }
+            await prisma.goldPrice.create({
+                data: data
+            })
+            console.log("gold price updated\n");
+            return data;
+        }).catch(error => {
+            // throw new ApiError(error.statusCode, error.message);
+            console.log(error.statusCode, error.message);
+        });
     } catch (error) {
-        throw new ApiError(error.statusCode, error.message);
+        console.log(error);
+        // throw new ApiError(error.statusCode, error.message);
     }
 }
 

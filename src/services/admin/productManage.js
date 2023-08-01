@@ -162,6 +162,18 @@ const filter = async (queryObject) => {
             }
 
         }
+        const selectFields = {
+            _id: 1,
+            title:1,
+            thumbnailImage:1,
+            wage:1,
+            profitPercentage:1,
+            weight:1,
+            weightUnit:1,
+            discount:1    
+        };
+
+        query.pipeline.push({ $project: selectFields });
 
         let result = await prisma.product.aggregateRaw(query)
         const keysToRemove = ["$skip", "$limit"];
