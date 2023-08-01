@@ -14,6 +14,10 @@ const attachPriceToCart = async (cart) => {
         },
       },
     });
+
+    let totalPriceOfCart = 0;
+    let finalPriceOfCart = 0;
+
     const result = products.map((product) => {
       const reqProduct = cart.find((i) => i.productId == product.id);
       const reqVariant = product.variants.find(
@@ -21,16 +25,45 @@ const attachPriceToCart = async (cart) => {
       );
       const purePrice = reqVariant.weight * unitPrices[reqVariant.weightUnit];
       const totalPrice = purePrice + purePrice * (reqVariant.wage + product.profitPercentage);
+      totalPriceOfCart += totalPrice;
       const finalPrice = purePrice + purePrice * (reqVariant.wage + product.profitPercentage - reqVariant.discount);
+      finalPriceOfCart += finalPrice;
       return {
         productId: product.id,
         variantId: reqVariant.variantId,
         title: product.title,
         image: product.thumbnailImage,
-        totalPrice,
-        finalPrice,
+        totalPrice: Math.round(totalPrice),
+        finalPrice: Math.round(finalPrice),
         count: reqProduct.count,
       };
+    });
+    const postPrice = 25000
+    return {
+      products: result,
+      totalPriceOfCart: Math.round(totalPriceOfCart),
+      discountPrice: Math.round( totalPriceOfCart - finalPriceOfCart ),
+      postPrice,
+      paymentPrice: Math.round( finalPriceOfCart + postPrice )
+    };
+  } catch (error) {
+    throw new ApiError(error.statusCode || 500, error.message);
+  }
+};
+
+const attachPriceToProduct = async (products) => {
+  try {
+    const unitPrices = await getCurrentGoldPrice();
+
+    const result = products.map((product) => {
+      const purePrice = product.weight * unitPrices[product.weightUnit];
+      const totalPrice = purePrice + purePrice * (product.wage + product.profitPercentage);
+      const finalPrice = purePrice + purePrice * (product.wage + product.profitPercentage - product.discount);
+
+      product.totalPrice = Math.round(totalPrice);
+      product.finalPrice = Math.round(finalPrice);
+
+      return product;
     });
 
     return result;
@@ -50,4 +83,5 @@ const getCurrentGoldPrice = async () => {
 
 module.exports = {
   attachPriceToCart,
+  attachPriceToProduct,
 };
