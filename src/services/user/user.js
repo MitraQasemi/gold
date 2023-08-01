@@ -8,9 +8,6 @@ const getUser = async (userId) => {
     where: {
       id: userId,
     },
-    include: {
-      goldTransaction: true,
-    },
   });
   if (!user) {
     throw new ApiError(404, "user not found");
