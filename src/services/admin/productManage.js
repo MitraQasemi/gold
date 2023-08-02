@@ -165,7 +165,7 @@ const filter = async (queryObject) => {
 
         }
         const selectFields = {
-            _id: 1,
+            id: 1,
             title:1,
             thumbnailImage:1,
             wage:1,
