@@ -10,10 +10,14 @@ function getRandomInt(max) {
 
 const productNames = ["ring", "earring", "Necklace", "wristband"];
 const productImages = [
-  "src/public/products/14619d4c-8476-4080-b8ee-83914f0da34c_c6.png",
-  "src/public/products/c1a39779-f36c-48a5-a359-139bcbc92e8c_c7.png",
-  "src/public/products/f5d82d1f-bdbf-48ab-899e-1e982c6a7734_c8.png",
-  "src/public/products/4292f825-4e5d-4e40-8377-904358e0ae9f_pro4.jpg",
+  "http://91.107.160.88:3001/6c338e59-a955-4167-97a3-25c17a400c27_c6.png",
+  "http://91.107.160.88:3001/c1a39779-f36c-48a5-a359-139bcbc92e8c_c7.png",
+  "http://91.107.160.88:3001/f5d82d1f-bdbf-48ab-899e-1e982c6a7734_c8.png",
+  "http://91.107.160.88:3001/4292f825-4e5d-4e40-8377-904358e0ae9f_pro4.jpg",
+];
+const tags = [
+  ["gold", "18"],
+  ["gold", "24"],
 ];
 const installment = [
   {
@@ -36,17 +40,18 @@ const productSeeder = async () => {
     return;
   }
   for (let i = 0; i < 100; i++) {
+    const randomName = productNames[getRandomInt(productNames.length)];
     await prisma.product.create({
       data: {
-        title: productNames[getRandomInt(productNames.length)],
+        title: randomName,
         description:
           "Lorem ipsum dolor sit amet. Aut officiis autem 33 reprehenderit porro non obcaecati ullam. Sed sint magnam rem modi rerum qui commodi ullam est illo doloremque in rerum numquam a adipisci fugiat. Eum rerum nobis est laudantium ducimus in harum omnis. ",
-        category: productNames[getRandomInt(productNames.length)],
+        category: randomName,
         discount: getRandomInt(4) / 100,
         profitPercentage: getRandomInt(7) / 100,
         quantity: getRandomInt(51),
         lockQuantity: 0,
-        tags: { set: ["gold", "ring", "wristband"] },
+        tags: { set: tags[getRandomInt(tags.length)] },
         wage: getRandomInt(8) / 100,
         installment: {
           set: installment[getRandomInt(installment.length)],
