@@ -178,6 +178,11 @@ const filter = async (queryObject) => {
         query.pipeline.push({ $project: selectFields });
 
         let result = await prisma.product.aggregateRaw(query)
+        result.map(i=>{
+            i.id = i._id.$oid
+            delete i._id
+            return i;
+        })
         const keysToRemove = ["$skip", "$limit"];
         result = await attachPriceToProduct(result)
         query.pipeline = query.pipeline.filter((obj) => {
