@@ -17,7 +17,9 @@ const user = require("./user/user");
 const configInfo = require("./user/config");
 const goldPriceInfo = require("./user/goldPrice");
 const search = require("./user/search");
+const order = require("./user/order")
 const express = require("express");
+const { required } = require("joi");
 
 const api = () => {
   const router = express.Router();
@@ -40,6 +42,7 @@ const api = () => {
   configInfo(router);
   goldPriceInfo(router);
   search(router);
+  order(router);
   return router;
 };
 module.exports = api;
