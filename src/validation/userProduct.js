@@ -1,24 +1,31 @@
-const Joi = require("joi");
+const joi = require("joi");
 
-const productDetails = Joi.object().keys({
-  productId: Joi.string().required(),
-  variantId: Joi.number().integer().required(),
-  count: Joi.number().integer().required(),
+const productDetails = joi.object().keys({
+  productId: joi.string().required(),
+  variantId: joi.number().integer().required(),
+  count: joi.number().integer().required(),
 });
 
 const productsList = {
-  body: Joi.array().items(productDetails),
+  body: joi.array().items(productDetails),
 };
 
-module.exports = { productsList };
+const readMany = {
+  query: joi.object().keys({
+      size: joi.string().pattern(new RegExp('^\\d+$')).required(),
+      page: joi.string().pattern(new RegExp('^^\\d+$')).required()
+  })
+}
 
-// let service = Joi.object().keys({
-//   serviceName: Joi.string().required(),
-// })
+const installmentPurchaseValidation = {
+  params: joi.object().keys({
+    productId: joi.string().hex().length(24),
+    variantId: joi.number().integer()
+  }).required(),
+  body: joi.object().keys({
+    type: joi.string().pattern(/^buy-(weight|price)$/i),
+    value: joi.number(),
+  })
+}
 
-// let services = Joi.array().items(service)
-
-// let test = Joi.validate(
-//   [{ serviceName: 'service1' }, { serviceName: 'service2' }],
-//   services,
-// )
+module.exports = { productsList, installmentPurchaseValidation, readMany };

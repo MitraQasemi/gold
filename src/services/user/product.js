@@ -5,7 +5,55 @@ const { date } = require("joi");
 const { now } = require("moment");
 const { notification } = require("../../jobs/notification");
 const { unlockAt } = require("./../../jobs/unlockingProduct");
+const { attachPriceToProduct } = require("./attachPrice");
 const prisma = new PrismaClient();
+
+const search = async (word, queryObject) => {
+  try {
+    const query = {
+      where: {
+        OR: [
+          {
+            title: {
+              contains: word,
+              mode: "insensitive",
+            },
+          },
+          {
+            description: {
+              contains: word,
+              mode: "insensitive",
+            },
+          },
+          {
+            tags: {
+              has: word,
+            },
+          },
+        ],
+      },
+      select: {
+        id: true,
+        title: true,
+        thumbnailImage: true,
+        profitPercentage: true,
+        weightUnit: true,
+        discount: true,
+        weight: true,
+        wage: true,
+      },
+      skip: Number(queryObject.size * (queryObject.page - 1)) | 0,
+      take: Number(queryObject.size),
+    };
+    let result = await prisma.product.findMany(query);
+    result = await attachPriceToProduct(result);
+    const { where } = query;
+    const count = await prisma.product.count({ where });
+    return { result, count };
+  } catch (error) {
+    throw new ApiError(error.statusCode || 500, error.message);
+  }
+};
 
 const buyProduct = async (userId, cart) => {
   try {
@@ -141,7 +189,7 @@ const priceCalculator = async (cart) => {
     finalPrice +=
       (purePrice +
         purePrice *
-        (variant.wage + reqProduct.profitPercentage - variant.discount)) *
+          (variant.wage + reqProduct.profitPercentage - variant.discount)) *
       request.count;
   });
 
@@ -192,10 +240,7 @@ const firstInstallment = async (userId, productId, variantId, body) => {
       : await computing(body.type, body.value, variant);
 
   if (requestedWeight > variant.weight) {
-    throw new ApiError(
-      400,
-      "مقدار وارد شده بیشتر از وزن یا قیمت محصول است"
-    );
+    throw new ApiError(400, "مقدار وارد شده بیشتر از وزن یا قیمت محصول است");
   }
   if (requestedWeight < variant.installment.minWeight) {
     throw new ApiError(
@@ -288,7 +333,7 @@ const firstInstallment = async (userId, productId, variantId, body) => {
     notification(createdOrder, 7);
     notification(createdOrder, 3);
     notification(createdOrder, 1);
-    unlockAt(createdOrder)
+    unlockAt(createdOrder);
     return { createdOrder };
   });
   return transactionResult;
@@ -449,17 +494,16 @@ const installmentPurchaseComputing = async (productId, variantId, body) => {
       return variants.variantId == variantId;
     });
 
-    const result = await computing(body.type, body.value, variant)
-    return {result:result};
-
+    const result = await computing(body.type, body.value, variant);
+    return { result: result };
   } catch (error) {
     throw new ApiError(error.statusCode, "bad request");
   }
-
-}
+};
 module.exports = {
+  search,
   buyProduct,
   priceCalculator,
   installmentPurchase,
-  installmentPurchaseComputing
+  installmentPurchaseComputing,
 };

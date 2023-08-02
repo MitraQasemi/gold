@@ -7,6 +7,7 @@ const {
   computing,
   buyGold,
   sellGold,
+  getGoldTransactions
 } = require("../../../../services/user/gold");
 
 const func = (app) => {
@@ -42,6 +43,18 @@ const func = (app) => {
     }
   }
   );
+
+  route.get("/userGoldTransactions", isAuth, validate(goldValidation.readMany), async (req, res, next) => {
+    try {
+      const result = await getGoldTransactions(req.user.id, req.query);
+      res.setHeader("count", result.count)
+      res.setHeader('Access-Control-Expose-Headers', 'count');
+      return res.send(result.transactions);
+    } catch (error) {
+      console.log(error);
+      return next(new ApiError(error.statusCode, error.message));
+    }
+  });
 };
 
 module.exports = func;

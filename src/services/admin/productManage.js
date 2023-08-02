@@ -2,6 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const { ApiError } = require("../../api/middlewares/error");
 const { number, boolean } = require("joi");
 const { query } = require("express");
+const { attachPriceToProduct, attachPriceToVariant }=require("../user/attachPrice")
 
 const prisma = new PrismaClient
 
@@ -14,8 +15,10 @@ const getOneProduct = async (productId) => {
                 id: productId
             }
         })
-        if (product)
-            return product;
+        if (product){
+            const result = attachPriceToVariant(product)
+            return result;
+        }
         throw new ApiError(404, "this product does not exist")
     } catch (error) {
         throw new ApiError(error.statusCode, error.message);
@@ -162,7 +165,7 @@ const filter = async (queryObject) => {
 
         }
         const selectFields = {
-            _id: 1,
+            id: 1,
             title:1,
             thumbnailImage:1,
             wage:1,
@@ -173,9 +176,10 @@ const filter = async (queryObject) => {
         };
 
         query.pipeline.push({ $project: selectFields });
-        const result = await prisma.product.aggregateRaw(query)
-        const keysToRemove = ["$skip", "$limit"];
 
+        let result = await prisma.product.aggregateRaw(query)
+        const keysToRemove = ["$skip", "$limit"];
+        result = await attachPriceToProduct(result)
         query.pipeline = query.pipeline.filter((obj) => {
             const keys = Object.keys(obj);
             return !keys.some((key) => keysToRemove.includes(key));
