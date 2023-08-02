@@ -73,24 +73,28 @@ const attachPriceToProduct = async (products) => {
 };
 
 const attachPriceToVariant = async (product) => {
-  const unitPrices = await getCurrentGoldPrice();
+  try {
+    const unitPrices = await getCurrentGoldPrice();
 
-  const purePrice = product.weight * unitPrices[product.weightUnit];
-  const totalPrice = purePrice + purePrice * (product.wage + product.profitPercentage);
-  const finalPrice = purePrice + purePrice * (product.wage + product.profitPercentage - product.discount);
+    const purePrice = product.weight * unitPrices[product.weightUnit];
+    const totalPrice = purePrice + purePrice * (product.wage + product.profitPercentage);
+    const finalPrice = purePrice + purePrice * (product.wage + product.profitPercentage - product.discount);
 
-  product.totalPrice = Math.round(totalPrice);
-  product.finalPrice = Math.round(finalPrice);
-    
-  product.variants.forEach((variant) => {
-    const purePrice = variant.weight * unitPrices[variant.weightUnit];
-    const totalPrice = purePrice + purePrice * (variant.wage + product.profitPercentage);
-    const finalPrice = purePrice + purePrice * (variant.wage + product.profitPercentage - variant.discount);
-    variant.totalPrice = Math.round(totalPrice);
-    variant.finalPrice = Math.round(finalPrice);
-  });
+    product.totalPrice = Math.round(totalPrice);
+    product.finalPrice = Math.round(finalPrice);
 
-  return product;
+    product.variants.forEach((variant) => {
+      const purePrice = variant.weight * unitPrices[variant.weightUnit];
+      const totalPrice = purePrice + purePrice * (variant.wage + product.profitPercentage);
+      const finalPrice = purePrice + purePrice * (variant.wage + product.profitPercentage - variant.discount);
+      variant.totalPrice = Math.round(totalPrice);
+      variant.finalPrice = Math.round(finalPrice);
+    });
+
+    return product;
+  } catch (error) {
+    throw new ApiError(error.statusCode || 500, error.message);
+  }
 };
 
 const getCurrentGoldPrice = async () => {

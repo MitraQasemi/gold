@@ -10,6 +10,13 @@ const productsList = {
   body: joi.array().items(productDetails),
 };
 
+const readMany = {
+  query: joi.object().keys({
+      size: joi.string().pattern(new RegExp('^\\d+$')).required(),
+      page: joi.string().pattern(new RegExp('^^\\d+$')).required()
+  })
+}
+
 const installmentPurchaseValidation = {
   params: joi.object().keys({
     productId: joi.string().hex().length(24),
@@ -21,4 +28,4 @@ const installmentPurchaseValidation = {
   })
 }
 
-module.exports = { productsList, installmentPurchaseValidation };
+module.exports = { productsList, installmentPurchaseValidation, readMany };
