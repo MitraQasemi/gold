@@ -12,9 +12,9 @@ const getOneCategory = async (categoryId) => {
         })
         if (result)
             return result;
-        throw new ApiError(404, "this category does not exist")
+        throw new ApiError(404, "!این دسته بندی در سیستم وجود ندارد")
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
@@ -31,7 +31,7 @@ const getManyCategories = async (queryObject) => {
         const count = await prisma.category.count();
         return { result: result, count: count };
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 
 }
@@ -48,12 +48,12 @@ const createCategory = async (categoryDetails) => {
             const result = await prisma.category.create({
                 data: categoryDetails
             })
-            return result;  
+            return result;
         }
-        throw new ApiError(404, "this parent does not exist")
+        throw new ApiError(404, "!سر دسته ای که انتخاب کرده اید در سیستم وجود ندارد")
 
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 }
 
@@ -67,7 +67,7 @@ const deleteCategory = async (categoryId) => {
         return result;
 
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error.statusCode, error.message);
     }
 
 }

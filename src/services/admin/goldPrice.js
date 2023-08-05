@@ -18,7 +18,7 @@ const goldPrice = async () => {
             await prisma.goldPrice.create({
                 data: data
             })
-            console.log("gold price updated\n");
+            console.log("!قیمت طلا بروزرسانی شد\n");
             return data;
         }).catch(error => {
             // throw new ApiError(error.statusCode, error.message);

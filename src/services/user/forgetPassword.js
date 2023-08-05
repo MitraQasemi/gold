@@ -19,10 +19,10 @@ const forgetPassword = async (phoneNumber) => {
 
         if (result) {
             if (result.blocked) {
-                throw new ApiError(403, "this user is blocked");
+                throw new ApiError(403, "!کاربر مورد نظر مسدود است ");
             }
         }else{
-            throw new ApiError(404, "this user does not exist");
+            throw new ApiError(404, "!کاربر در سیستم وجود ندارد");
         }
 
         const code = Math.floor(Math.random() * (99999 - 9999)) + 9999;
@@ -33,7 +33,7 @@ const forgetPassword = async (phoneNumber) => {
         const url = `https://api.kavenegar.com/v1/${apiKey}/verify/lookup.json?receptor=${phoneNumber}&token=${code}&template=${template}`
 
         return axios.get(url).then(response => {
-            return {result:"code sent"};
+            return {result:"!کد ارسال شد "};
         }).catch(error => {
             throw new ApiError(500, error.message);
         });
@@ -49,7 +49,7 @@ const forgetPasswordVerification = async (phoneNumber, code, password) => {
         if (data) {
             if (Date.now() - data.time > 120000) {
                 SData.clear(phoneNumber);
-                throw new ApiError(400, "verification failed");
+                throw new ApiError(400, "!راستی آزمایی ناموفق");
             }
 
             if (data.code == code) {
@@ -83,10 +83,10 @@ const forgetPasswordVerification = async (phoneNumber, code, password) => {
 
                 return { accessToken: accessToken };
             } else {
-                throw new ApiError(400, "verification failed");
+                throw new ApiError(400, "!راستی آزمایی ناموفق");
             }
         } else {
-            throw new ApiError(400, "verification failed(undefined code)");
+            throw new ApiError(400, "!راستی آزمایی ناموفق");
         }
     } catch (error) {
         throw new ApiError(error.statusCode, error.message);

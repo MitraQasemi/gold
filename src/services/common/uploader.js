@@ -9,7 +9,7 @@ module.exports = (req, directory) => {
     return new Promise((resolve, reject) => {
       const form = formidable({ multiples: false });
       form.parse(req, (err, fields, file) => {
-        if (err || !file.image) reject(err || new Error("Image is not provided."));
+        if (err || !file.image) reject(err || new Error(" !عکس قرار داده نشده "));
         const newPath = path.join('./src/public', directory, uuid.v4() + '_' + file.image.originalFilename)
         const result = newPath.split(path.sep);
           fs.createReadStream(file.image.filepath)

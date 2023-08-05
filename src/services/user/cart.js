@@ -15,16 +15,16 @@ const addToCart = async (userId, body) => {
     });
 
     if (!product) {
-      throw new ApiError(400, "there is not such product");
+      throw new ApiError(400, "!این محصول در سیستم وجود ندارد");
     }
     const variant = product.variants.find(
       (i) => i.variantId === body.variantId
     );
     if (!variant) {
-      throw new ApiError(400, "there is not such product");
+      throw new ApiError(400, "!این محصول در سیستم وجود ندارد");
     }
     if (variant.quantity < countRequest) {
-      throw new ApiError(400, "There is not enough of this product");
+      throw new ApiError(400, "!تعداد کافی از این محصول وجود ندارد ");
     }
     const user = await prisma.user.findUniqueOrThrow({
       where: {
@@ -58,7 +58,7 @@ const addToCart = async (userId, body) => {
     if (oldProduct) {
       oldProduct.count += countRequest;
       if (variant.quantity < oldProduct.count) {
-        throw new ApiError(400, "There is not enough of this product");
+        throw new ApiError(400, "!تعداد کافی از این محصول وجود ندارد ");
       }
       const userCart = await prisma.cart.update({
         where: {
@@ -110,13 +110,13 @@ const removeFromCart = async (userId, body) => {
       },
     });
     if (!user.cart) {
-      throw new ApiError(400, "you do not have Cart :{");
+      throw new ApiError(400, "!شما سبد خرید ندارید");
     }
     const oldProduct = user.cart.products.find(
       (i) => i.productId === body.productId && i.variantId === body.variantId
     );
     if (!oldProduct) {
-      throw new ApiError(400, "there is not such a product in your cart");
+      throw new ApiError(400, "!محصول مورد نظر در سبد خرید شما وجود ندارد");
     }
     oldProduct.count -= countRequest;
     if (oldProduct.count <= 0) {
@@ -169,10 +169,10 @@ const getCart = async (userId) => {
     },
   });
   if (!user) {
-    throw new ApiError(404, "user not found :{");
+    throw new ApiError(404, "!کاربر مورد نظر یافت نشد");
   }
   if (!user.cart) {
-    throw new ApiError(400, "you do not have Cart :{");
+    throw new ApiError(400, "!شما سبد خرید ندارد");
   }
   const result = await attachPriceToCart(user.cart.products);
   return result;

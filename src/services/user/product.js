@@ -91,7 +91,7 @@ const buyProduct = async (userId, cart) => {
     if (variantsShortage.length !== 0) {
       throw new ApiError(
         400,
-        `There is not enough of these products ${variantsShortage.join(", ")}`
+        `مقدار کافی از این محصول وجود ندارد ${variantsShortage.join(", ")}`
       );
     }
 
@@ -103,7 +103,7 @@ const buyProduct = async (userId, cart) => {
 
     const productsPrice = await priceCalculator(cart);
     if (user.walletBalance < productsPrice) {
-      throw new ApiError(400, "not enugh cash in wallet");
+      throw new ApiError(400, "!موجودی کیف پول شما کافی نیست");
     }
     const transactionResult = await prisma.$transaction(async (prisma) => {
       const updatedUser = await prisma.user.update({

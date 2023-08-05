@@ -10,7 +10,7 @@ const getUser = async (userId) => {
     },
   });
   if (!user) {
-    throw new ApiError(404, "user not found");
+    throw new ApiError(404, "!کابر در سیستم وجود ندارد ");
   }
   return user;
 };

@@ -16,7 +16,7 @@ const getUser = async (userId) => {
         })
 
         if (!user) {
-            throw new ApiError(404, "this user does not exist")
+            throw new ApiError(404, "!این کاربر در سیستم وجود ندارد")
         }
 
         return user;
@@ -53,7 +53,7 @@ const createUser = async (userDetails) => {
         })
 
         if (result) {
-            throw new ApiError(403, "this user already exists")
+            throw new ApiError(403, "!این کاربر در سیستم وجود دارد")
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -79,7 +79,7 @@ const editUser = async (userId, newDetails) => {
             }
         })
         if (!user) {
-            throw new ApiError(404, "this user does not exist")
+            throw new ApiError(404, "!این کاربر در سیستم وجود ندارد ")
         }
         const { password } = newDetails;
         if (password) {
