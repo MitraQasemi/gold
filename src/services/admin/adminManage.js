@@ -16,7 +16,7 @@ const getAdmin = async (adminId) => {
         })
 
         if (!admin) {
-            throw new ApiError(404, "this admin does not exist")
+            throw new ApiError(404, " !این مدیر در سیستم وجود ندارد")
         }
 
         return admin;
@@ -48,7 +48,7 @@ const createAdmin = async (username, password, permissions) => {
             }
         })
         if (result) {
-            throw new ApiError(403, "this admin already exists")
+            throw new ApiError(403, " !این مدیر در سیستم وجود دارد")
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -78,7 +78,7 @@ const editAdmin = async (adminId, newDetails) => {
             }
         })
         if (!admin) {
-            throw new ApiError(404, "this admin does not exist")
+            throw new ApiError(404, " !این مدیر در سیستم وجود ندارد")
         }
 
         const { password } = newDetails;

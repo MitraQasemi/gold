@@ -66,7 +66,7 @@ const buyGold = async (userId, body) => {
       : await computing(body.type, body.value);
 
   if (purchaseableWeight < requestedWeight) {
-    throw new ApiError(403, "you can't buy gold anymore today");
+    throw new ApiError(403, "!سقف روزانه خرید و فروش طلا شما پر شده است");
   }
 
   const transactionResult = await prisma.$transaction(async (prisma) => {
@@ -78,7 +78,7 @@ const buyGold = async (userId, body) => {
         : await computing(body.type, body.value);
 
     if (config.minPrice > price) {
-      throw new ApiError(403, "the price is less than minimum price");
+      throw new ApiError(403, "!مبلغ درخواستی کمتر از حداقل میزان فروش میباشد");
     }
 
     price += config.commission;
@@ -99,7 +99,7 @@ const buyGold = async (userId, body) => {
     });
 
     if (user.walletBalance < price) {
-      throw new ApiError(403, "your wallet balance is not enough");
+      throw new ApiError(403, "!موجودی کیف پول شما کافی نیست");
     }
 
     const updatedUser = await prisma.user.update({
@@ -146,7 +146,7 @@ const sellGold = async (userId, body) => {
       : await computing(body.type, body.value);
 
   if (salableWeight < requestedWeight) {
-    throw new ApiError(403, "you can't sell gold anymore today");
+    throw new ApiError(403, "!سقف روزانه خرید و فروش طلا شما پر شده است");
   }
   const transactionResult = await prisma.$transaction(async (prisma) => {
     const user = await prisma.user.findUniqueOrThrow({
@@ -156,7 +156,7 @@ const sellGold = async (userId, body) => {
     });
 
     if (user.goldBalance < requestedWeight) {
-      throw new ApiError(403, "your gold balance is not enough");
+      throw new ApiError(403, "!موجودی کیف پول شما کافی نیست");
     }
 
     const config = await prisma.config.findFirstOrThrow();

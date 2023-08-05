@@ -16,7 +16,7 @@ const userSignup = async (phoneNumber) => {
             }
         })
         if (result) {
-            throw new ApiError(403, "this user already exists");
+            throw new ApiError(403, "!این کابر در سیستم وجود دارد");
         }
 
         const code = Math.floor(Math.random() * (99999 - 9999)) + 9999;
@@ -28,9 +28,9 @@ const userSignup = async (phoneNumber) => {
         const url = `https://api.kavenegar.com/v1/${apiKey}/verify/lookup.json?receptor=${phoneNumber}&token=${code}&template=${template}`
 
         return axios.get(url).then(response => {
-            return {result:"code sent"};
+            return {result:"!کد ارسال شد"};
         }).catch(error => {
-            throw new ApiError(500, error.message);
+            throw new ApiError(error.statusCode, error.message);
         });
 
     } catch (error) {
@@ -47,15 +47,15 @@ const userLogin = async (phoneNumber, password) => {
         })
         if (foundedUser) {
             if (foundedUser.blocked) {
-                throw new ApiError(403, "this user is blocked");
+                throw new ApiError(403, "!این کاربر مسدود است ");
             }
         }else{
-            throw new ApiError(404, "wrong password or username");
+            throw new ApiError(404, "!نام کاربری یا رمز عبور اشتباه است");
         }
 
         const isMatch = await bcrypt.compare(password, foundedUser.password);
         if (!isMatch) {
-            throw new ApiError(403, "wrong password or username")
+            throw new ApiError(403, "!نام کاربری یا رمز عبور اشتباه است")
         }
 
         const accessToken = JWT.sign({
@@ -91,12 +91,12 @@ const userSignupVerification = async (phoneNumber, code, password) => {
             }
         })
         if (result) {
-            throw new ApiError(403, "this user already exists");
+            throw new ApiError(403, "!این کاربر در سیستم وجود دارد");
         }
         if (data) {
             if (Date.now() - data.time > 120000) {
                 SData.clear(phoneNumber);
-                throw new ApiError(400, "verification failed");
+                throw new ApiError(400, "!راستی آزمایی نا موفق");
             }
             if (data.code == code) {
 
@@ -130,10 +130,10 @@ const userSignupVerification = async (phoneNumber, code, password) => {
 
                 return { accessToken: accessToken, refreshToken: refreshToken };
             } else {
-                throw new ApiError(400, "verification failed");
+                throw new ApiError(400, "!راستی آزمایی نا موفق");
             }
         } else {
-            throw new ApiError(400, "verification failed(undefined code)");
+            throw new ApiError(400, "!راستی آزمایی نا موفق");
         }
     } catch (error) {
         throw new ApiError(error.statusCode, error.message);

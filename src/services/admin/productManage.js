@@ -19,7 +19,7 @@ const getOneProduct = async (productId) => {
             const result = attachPriceToVariant(product)
             return result;
         }
-        throw new ApiError(404, "this product does not exist")
+        throw new ApiError(404, "!این محصول در سیستم وجود ندارد")
     } catch (error) {
         throw new ApiError(error.statusCode, error.message);
     }

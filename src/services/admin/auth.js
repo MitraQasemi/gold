@@ -16,7 +16,7 @@ const adminSignup = async (username, password, permissions) => {
         })
 
         if (result) {
-            throw new ApiError(403, "this admin already exists")
+            throw new ApiError(403, " !این مدیر در سیستم وجود دارد ")
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -61,11 +61,11 @@ const adminLogin = async (username, password) => {
         })
 
         if (!foundedUser) {
-            throw new ApiError(404, "wrong password or username")
+            throw new ApiError(404, " !نام کاربری یا رمز عبور اشتباه است")
         }
         const isMatch = await bcrypt.compare(password, foundedUser.password);
         if (!isMatch) {
-            throw new ApiError(403, "wrong password or username")
+            throw new ApiError(403, " !نام کاربری یا رمز عبور اشتباه است")
         }
 
         const accessToken = JWT.sign({
@@ -101,7 +101,7 @@ const adminLogout = async (id) => {
                 refreshToken: ""
             }
         })
-        return "loged out"
+        return " !مدیر  از سیستم خارج شد "
 
     } catch (error) {
         throw new ApiError(error.statusCode, error.message);
