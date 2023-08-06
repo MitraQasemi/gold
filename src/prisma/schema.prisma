@@ -168,8 +168,8 @@ model order {
   products   productOrder[]
   status     String
   type       String
-  totalPrice Int
-  paidPrice  Int?
+  totalPrice Float
+  paidPrice  Float?
   deadLine   DateTime?
 }
 
@@ -183,6 +183,6 @@ type productOrder {
 type installment {
   date   DateTime @default(now())
   weight Float    @default(0.000)
-  price  Int      @default(0)
+  price  Float    @default(0.000)
   wage   Float    @default(0.000)
 }
