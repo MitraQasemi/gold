@@ -16,6 +16,7 @@ const goldChart = require("./admin/goldChart");
 const user = require("./user/user");
 const configInfo = require("./user/config");
 const goldPriceInfo = require("./user/goldPrice");
+const order = require("./user/order");
 const express = require("express");
 
 const api = () => {
@@ -38,6 +39,7 @@ const api = () => {
   user(router);
   configInfo(router);
   goldPriceInfo(router);
+  order(router);
   return router;
 };
 module.exports = api;

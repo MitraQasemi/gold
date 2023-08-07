@@ -89,7 +89,11 @@ const addToCart = async (userId, body) => {
         },
       },
       include: {
-        user: true,
+        user: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
     return userCart;

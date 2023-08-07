@@ -3,6 +3,19 @@ const { ApiError } = require("../../api/middlewares/error");
 
 const prisma = new PrismaClient();
 
+const calculatePrice = (product, variant, unitPrices) => {
+  const purePrice = variant.weight * unitPrices[variant.weightUnit];
+  const totalPrice =
+    purePrice + purePrice * (variant.wage + product.profitPercentage);
+  const finalPrice =
+    purePrice +
+    purePrice * (variant.wage + product.profitPercentage - variant.discount);
+  return {
+    totalPrice: Math.round(totalPrice),
+    finalPrice: Math.round(finalPrice),
+  };
+};
+
 const attachPriceToCart = async (cart) => {
   try {
     const unitPrices = await getCurrentGoldPrice();
@@ -23,10 +36,12 @@ const attachPriceToCart = async (cart) => {
       const reqVariant = product.variants.find(
         (i) => i.variantId == reqProduct.variantId
       );
-      const purePrice = reqVariant.weight * unitPrices[reqVariant.weightUnit];
-      const totalPrice = purePrice + purePrice * (reqVariant.wage + product.profitPercentage);
+      const { totalPrice, finalPrice } = calculatePrice(
+        product,
+        reqVariant,
+        unitPrices
+      );
       totalPriceOfCart += totalPrice;
-      const finalPrice = purePrice + purePrice * (reqVariant.wage + product.profitPercentage - reqVariant.discount);
       finalPriceOfCart += finalPrice;
       return {
         productId: product.id,
@@ -56,9 +71,11 @@ const attachPriceToProduct = async (products) => {
     const unitPrices = await getCurrentGoldPrice();
 
     const result = products.map((product) => {
-      const purePrice = product.weight * unitPrices[product.weightUnit];
-      const totalPrice = purePrice + purePrice * (product.wage + product.profitPercentage);
-      const finalPrice = purePrice + purePrice * (product.wage + product.profitPercentage - product.discount);
+      const { finalPrice, totalPrice } = calculatePrice(
+        product,
+        product,
+        unitPrices
+      );
 
       product.totalPrice = Math.round(totalPrice);
       product.finalPrice = Math.round(finalPrice);
@@ -76,17 +93,21 @@ const attachPriceToVariant = async (product) => {
   try {
     const unitPrices = await getCurrentGoldPrice();
 
-    const purePrice = product.weight * unitPrices[product.weightUnit];
-    const totalPrice = purePrice + purePrice * (product.wage + product.profitPercentage);
-    const finalPrice = purePrice + purePrice * (product.wage + product.profitPercentage - product.discount);
+    const { totalPrice, finalPrice } = calculatePrice(
+      product,
+      product,
+      unitPrices
+    );
 
     product.totalPrice = Math.round(totalPrice);
     product.finalPrice = Math.round(finalPrice);
 
     product.variants.forEach((variant) => {
-      const purePrice = variant.weight * unitPrices[variant.weightUnit];
-      const totalPrice = purePrice + purePrice * (variant.wage + product.profitPercentage);
-      const finalPrice = purePrice + purePrice * (variant.wage + product.profitPercentage - variant.discount);
+      const { totalPrice, finalPrice } = calculatePrice(
+        product,
+        variant,
+        unitPrices
+      );
       variant.totalPrice = Math.round(totalPrice);
       variant.finalPrice = Math.round(finalPrice);
     });
@@ -107,7 +128,9 @@ const getCurrentGoldPrice = async () => {
 };
 
 module.exports = {
+  calculatePrice,
   attachPriceToCart,
   attachPriceToProduct,
   attachPriceToVariant,
+  getCurrentGoldPrice,
 };
