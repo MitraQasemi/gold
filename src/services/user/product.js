@@ -5,7 +5,11 @@ const { date } = require("joi");
 const { now } = require("moment");
 const { notification } = require("../../jobs/notification");
 const { unlockAt } = require("./../../jobs/unlockingProduct");
-const { attachPriceToProduct } = require("./attachPrice");
+const {
+  attachPriceToProduct,
+  calculatePrice,
+  getCurrentGoldPrice,
+} = require("./attachPrice");
 const prisma = new PrismaClient();
 
 const search = async (word, queryObject) => {
@@ -69,7 +73,7 @@ const buyProduct = async (userId, cart) => {
     if (products.length === 0) {
       throw new ApiError(400, "bad request");
     }
-
+    const unitPrices = await getCurrentGoldPrice();
     const variantsShortage = [];
     const orderedProductsList = [];
     cart.forEach((request) => {
@@ -77,10 +81,17 @@ const buyProduct = async (userId, cart) => {
       const variant = reqProduct.variants.find(
         (i) => i.variantId === request.variantId
       );
+      const { totalPrice, finalPrice } = calculatePrice(
+        reqProduct,
+        variant,
+        unitPrices
+      );
       orderedProductsList.push({
         productId: reqProduct.id,
         variantId: variant.variantId,
-        quantity: request.count,
+        totalPurchasePrice: totalPrice,
+        finalPurchasePrice: finalPrice,
+        count: request.count,
       });
 
       if (variant.quantity < request.count || variant.quantity === 0) {
@@ -124,7 +135,7 @@ const buyProduct = async (userId, cart) => {
             id: product.productId,
           },
           data: {
-            sellQuantity: { increment: product.quantity },
+            sellQuantity: { increment: product.count },
             variants: {
               updateMany: {
                 where: {
@@ -132,7 +143,7 @@ const buyProduct = async (userId, cart) => {
                 },
                 data: {
                   quantity: {
-                    decrement: product.quantity,
+                    decrement: product.count,
                   },
                 },
               },
@@ -162,11 +173,7 @@ const buyProduct = async (userId, cart) => {
 };
 
 const priceCalculator = async (cart) => {
-  const unitPrices = await prisma.goldPrice.findFirstOrThrow({
-    orderBy: {
-      date: "desc",
-    },
-  });
+  const unitPrices = await getCurrentGoldPrice();
   const productIds = cart.map((i) => i.productId);
   const products = await prisma.product.findMany({
     where: {
@@ -178,22 +185,18 @@ const priceCalculator = async (cart) => {
   if (products.length === 0) {
     throw new ApiError(400, "bad request");
   }
-  let finalPrice = 0;
+  let orderFinalPrice = 0;
 
   cart.forEach((request) => {
     const reqProduct = products.find((i) => i.id == request.productId);
     const variant = reqProduct.variants.find(
       (i) => i.variantId == request.variantId
     );
-    const purePrice = variant.weight * unitPrices[reqProduct.weightUnit];
-    finalPrice +=
-      (purePrice +
-        purePrice *
-          (variant.wage + reqProduct.profitPercentage - variant.discount)) *
-      request.count;
+    const { finalPrice } = calculatePrice(reqProduct, variant, unitPrices);
+    orderFinalPrice += finalPrice * request.count;
   });
 
-  return finalPrice;
+  return orderFinalPrice;
 };
 //محاسبات خرید قسطی
 const computing = async (type, value, variant) => {
@@ -283,7 +286,7 @@ const firstInstallment = async (userId, productId, variantId, body) => {
           {
             productId: productId,
             variantId: variant.variantId,
-            quantity: 1,
+            count: 1,
             installments: [
               {
                 date: moment().toISOString(),

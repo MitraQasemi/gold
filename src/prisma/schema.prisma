@@ -168,16 +168,19 @@ model order {
   products   productOrder[]
   status     String
   type       String
-  totalPrice Float
-  paidPrice  Float?
+  totalPrice Int
+  paidPrice  Int?
+  postageFee Int?
   deadLine   DateTime?
 }
 
 type productOrder {
-  productId    String        @db.ObjectId
-  variantId    Int
-  quantity     Int?
-  installments installment[]
+  productId          String        @db.ObjectId
+  variantId          Int
+  count              Int?
+  totalPurchasePrice Int?
+  finalPurchasePrice Int?
+  installments       installment[]
 }
 
 type installment {
