@@ -15,7 +15,7 @@ const AdminRefreshToken = async (token) => {
             }
         })
         if (!result?.id) {
-            throw new ApiError(500, "this token is not valid");
+            throw new ApiError(413, "!توکن اشتباه است");
         }
         if (result.refreshToken === token) {
 
@@ -39,7 +39,7 @@ const AdminRefreshToken = async (token) => {
             })
             return { accessToken: accessToken, refreshToken: refreshToken };
         } else {
-            throw new ApiError(403, "token did not match");
+            throw new ApiError(413, "!توکن اشتباه است");
         }
 
     } catch (error) {
@@ -58,11 +58,11 @@ const UserRefreshToken = async (token) => {
         })
         if (result) {
             if (result.blocked) {
-                throw new ApiError(403, "this user is blocked");
+                throw new ApiError(403, "!کاربر مورد نظر مسدود است ");
             }
         }
         if (!result?.id) {
-            throw new ApiError(500, "this token is not valid");
+            throw new ApiError(413, "!توکن اشتباه است");
         }
         if (result.refreshToken === token) {
 
@@ -85,7 +85,7 @@ const UserRefreshToken = async (token) => {
             })
             return { accessToken: accessToken, refreshToken: refreshToken };
         } else {
-            throw new ApiError(403, "token did not match");
+            throw new ApiError(413, "!توکن اشتباه است");
         }
 
     } catch (error) {

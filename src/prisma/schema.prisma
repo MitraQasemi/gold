@@ -17,7 +17,7 @@ model User {
   refreshToken      String              @default("")
   blocked           Boolean             @default(false)
   age               Int                 @default(0)
-  walletBalance     Int                 @default(0)
+  walletBalance     Float               @default(0.000)
   goldBalance       Float               @default(0.000)
   countryCode       String              @default("+98")
   addresses         Address[]
@@ -186,6 +186,6 @@ type productOrder {
 type installment {
   date   DateTime @default(now())
   weight Float    @default(0.000)
-  price  Int      @default(0)
+  price  Float    @default(0.000)
   wage   Float    @default(0.000)
 }
