@@ -11,7 +11,7 @@ const func = (app) => {
 
     app.use(route);
 
-    route.get("/product/:id", validate(productCrudValidation.read), isAuth, attachCurrentAdmin, isCan("read", "Product"), async (req, res, next) => {
+    route.get("/product/:id", validate(productCrudValidation.read), async (req, res, next) => {
         try {
             const result = await getOneProduct(req.params.id)
             return res.send(result);
