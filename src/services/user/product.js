@@ -66,6 +66,9 @@ const buyProduct = async (userId, cart) => {
       where: {
         id: userId,
       },
+      include: {
+        cart: true,
+      },
     });
 
     if (user.addresses.length === 0) {
@@ -175,6 +178,7 @@ const buyProduct = async (userId, cart) => {
           userId: user.id,
         },
       });
+      await emptyCart(user);
       return { updatedUser, order };
     });
     return transactionResult;
@@ -523,6 +527,28 @@ const installmentPurchaseComputing = async (productId, variantId, body) => {
     throw new ApiError(error.statusCode, "bad request");
   }
 };
+
+const emptyCart = async (user) => {
+  try {
+    if (user.cart) {
+      await prisma.cart.update({
+        where: {
+          userId: user.id,
+        },
+        data: {
+          products: {
+            set: [],
+          },
+        },
+      });
+    } else {
+      return;
+    }
+  } catch (error) {
+    throw new ApiError(error.statusCode || 500, error.message);
+  }
+};
+
 module.exports = {
   search,
   buyProduct,
