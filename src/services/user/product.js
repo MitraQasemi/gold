@@ -61,6 +61,17 @@ const search = async (word, queryObject) => {
 
 const buyProduct = async (userId, cart) => {
   try {
+    //check address
+    const user = await prisma.user.findUniqueOrThrow({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (user.addresses.length === 0) {
+      throw new ApiError(400, "!اطلاعات آدرس وارد نشده است");
+    }
+
     const productIds = cart.map((i) => i.productId);
     const products = await prisma.product.findMany({
       where: {
@@ -106,11 +117,11 @@ const buyProduct = async (userId, cart) => {
       );
     }
 
-    const user = await prisma.user.findUniqueOrThrow({
-      where: {
-        id: userId,
-      },
-    });
+    // const user = await prisma.user.findUniqueOrThrow({
+    //   where: {
+    //     id: userId,
+    //   },
+    // });
 
     const productsPrice = await priceCalculator(cart);
     if (user.walletBalance < productsPrice) {
@@ -224,6 +235,15 @@ const computing = async (type, value, variant) => {
 
 //قسط اول
 const firstInstallment = async (userId, productId, variantId, body) => {
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (user.addresses.length === 0) {
+    throw new ApiError(400, "!اطلاعات آدرس وارد نشده است");
+  }
   const product = await prisma.product.findUniqueOrThrow({
     where: {
       id: productId,
@@ -252,11 +272,11 @@ const firstInstallment = async (userId, productId, variantId, body) => {
     );
   }
 
-  const user = await prisma.user.findUniqueOrThrow({
-    where: {
-      id: userId,
-    },
-  });
+  // const user = await prisma.user.findUniqueOrThrow({
+  //   where: {
+  //     id: userId,
+  //   },
+  // });
 
   const transactionResult = await prisma.$transaction(async (prisma) => {
     let price =
