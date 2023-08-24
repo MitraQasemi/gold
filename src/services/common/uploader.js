@@ -11,7 +11,7 @@ module.exports = (req, directory) => {
       form.parse(req, (err, fields, file) => {
         if (err || !file.image) reject(err || new Error(" !عکس قرار داده نشده "));
         let type = file.image.originalFilename.split(".");
-        const newPath = path.join('./src/public', directory, uuid.v4() + '_' + type[type.length - 1]);
+        const newPath = path.join('./src/public', directory, uuid.v4() + '_.' + type[type.length - 1]);
         //const newPath = path.join('./src/public', directory, uuid.v4() + '_' + file.image.originalFilename)
         const result = newPath.split(path.sep);
         fs.createReadStream(file.image.filepath)
