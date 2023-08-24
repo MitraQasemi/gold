@@ -120,12 +120,6 @@ const buyProduct = async (userId, cart) => {
       );
     }
 
-    // const user = await prisma.user.findUniqueOrThrow({
-    //   where: {
-    //     id: userId,
-    //   },
-    // });
-
     const productsPrice = await priceCalculator(cart);
     if (user.walletBalance < productsPrice) {
       throw new ApiError(400, "!موجودی کیف پول شما کافی نیست");
@@ -275,12 +269,6 @@ const firstInstallment = async (userId, productId, variantId, body) => {
       ` شما نمیتوانید برای قسط اول کمتر از ${product.installment.minWeight} گرم پرداخت کتید`
     );
   }
-
-  // const user = await prisma.user.findUniqueOrThrow({
-  //   where: {
-  //     id: userId,
-  //   },
-  // });
 
   const transactionResult = await prisma.$transaction(async (prisma) => {
     let price =
