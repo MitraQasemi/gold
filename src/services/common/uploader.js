@@ -10,7 +10,8 @@ module.exports = (req, directory) => {
       const form = formidable({ multiples: false });
       form.parse(req, (err, fields, file) => {
         if (err || !file.image) reject(err || new Error(" !عکس قرار داده نشده "));
-        const newPath = path.join('./src/public', directory, uuid.v4() + '_' + file.image.originalFilename)
+        const newPath = path.join('./src/public', directory, uuid.v4())
+        //const newPath = path.join('./src/public', directory, uuid.v4() + '_' + file.image.originalFilename)
         const result = newPath.split(path.sep);
           fs.createReadStream(file.image.filepath)
             .pipe(fs.createWriteStream(newPath))
