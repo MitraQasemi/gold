@@ -10,7 +10,8 @@ module.exports = (req, directory) => {
       const form = formidable({ multiples: false });
       form.parse(req, (err, fields, file) => {
         if (err || !file.image) {
-          throw new ApiError(400, 'عکس قرار داده نشده');
+          reject(err || new Error(" !عکس قرار داده نشده "));
+          return; // Add this line to exit the function here
         }
         let type = file.image.originalFilename.split(".");
         const newPath = path.join('./src/public', directory, uuid.v4() + '_.' + type[type.length - 1]);
