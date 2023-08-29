@@ -91,6 +91,55 @@ const getAllOrders = async (userId, queryObject) => {
   }
 };
 
+const getOrders = async (queryObject) => {
+  try {
+    const orders = await prisma.order.findMany({
+      orderBy: {
+        date: "desc",
+      },
+      select: {
+        id: true,
+        date: true,
+        paidPrice: true,
+        totalPrice: true,
+        status: true,
+        products: true,
+        type: true,
+        deadLine: true,
+      },
+      skip: Number((queryObject.page - 1) * queryObject.size),
+      take: Number(queryObject.size),
+    });
+    const productIds = [];
+    orders.map((order) => {
+      order.products.map((product) => {
+        productIds.push(product.productId);
+      });
+    });
+    const products = await prisma.product.findMany({
+      where: {
+        id: {
+          in: productIds,
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        thumbnailImage: true,
+      },
+    });
+    orders.map((order) => {
+      order.products.map((product) => {
+        const productDetails = products.find((i) => i.id == product.productId);
+        product.productDetails = productDetails;
+      });
+    });
+    return orders;
+  } catch (error) {
+    console.log(error);
+    throw new ApiError(error.statusCode || 500, error.message);
+  }
+};
 // const canselOrder = async (orderId) => {
 //   try {
 //   } catch (error) {
@@ -101,5 +150,6 @@ const getAllOrders = async (userId, queryObject) => {
 module.exports = {
   getOneOrder,
   getAllOrders,
+  getOrders
   // canselOrder,
 };
