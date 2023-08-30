@@ -41,8 +41,8 @@ const attachPriceToCart = async (cart) => {
         reqVariant,
         unitPrices
       );
-      totalPriceOfCart += totalPrice;
-      finalPriceOfCart += finalPrice;
+      totalPriceOfCart += totalPrice * reqProduct.count;
+      finalPriceOfCart += finalPrice * reqProduct.count;
       return {
         productId: product.id,
         variantId: reqVariant.variantId,

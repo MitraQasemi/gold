@@ -10,10 +10,10 @@ function getRandomInt(max) {
 
 const productNames = ["ring", "earring", "Necklace", "wristband"];
 const productImages = [
-  "http://91.107.160.88:3001/6c338e59-a955-4167-97a3-25c17a400c27_c6.png",
-  "http://91.107.160.88:3001/c1a39779-f36c-48a5-a359-139bcbc92e8c_c7.png",
-  "http://91.107.160.88:3001/f5d82d1f-bdbf-48ab-899e-1e982c6a7734_c8.png",
-  "http://91.107.160.88:3001/4292f825-4e5d-4e40-8377-904358e0ae9f_pro4.jpg",
+  "http://91.107.160.88:3001/bc698acf-16c0-4e0d-8737-aa3e3c32f339_.png",
+  "http://91.107.160.88:3001/6c3e9fc0-35e5-4090-b403-870391006d59_.png",
+  "http://91.107.160.88:3001/aec7c9f0-9316-4369-bf62-6d5bb17ab79e_.png",
+  "http://91.107.160.88:3001/5376d0d0-8a6a-4fdd-8fc7-804385c82cd4_.jpg",
 ];
 const tags = [
   ["gold", "18"],
@@ -35,11 +35,11 @@ const installment = [
 const now = new Date();
 
 const productSeeder = async () => {
-  const productCount = await prisma.product.count({});
-  if (productCount >= 100) {
+  const productCount = await prisma.product.count();
+  if (productCount >= 99) {
     return;
   }
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 99; i++) {
     const randomName = productNames[getRandomInt(productNames.length)];
     await prisma.product.create({
       data: {
@@ -104,22 +104,29 @@ const productSeeder = async () => {
   console.log("products seeded");
 };
 
-const goldChartSeeder = async () => {
-  for (let i = 1; i < 35; i++) {
-    await prisma.goldPrice.create({
+const goldTransactionSeeder = async () => {
+  const transactionType = ["sell", "buy"];
+  const count = await prisma.goldTransaction.count();
+  for (let i = 0; i < 30; i++) {
+    let transactionDate = new Date(`2023-08-${30 - i}`);
+    await prisma.goldTransaction.create({
       data: {
-        buyQuotation: Math.floor(Math.random() * (9000000 - 1000000) + 1000000),
-        sellQuotation: Math.floor(
-          Math.random() * (9000000 - 1000000) + 1000000
-        ),
-        date: Jnow.add(i, "days").toISOString(),
+        details: "test",
+        paymentGateway: "test",
+        price: 2000000,
+        status: "done",
+        trackingCode: "test",
+        weight: 1,
+        date: transactionDate,
+        transactionType: transactionType[getRandomInt(transactionType.length)],
+        userId: "64c39997b2243af7f0ee6717",
       },
     });
   }
-  console.log("goldChart seeded");
+  console.log("goldTransaction seeded");
 };
 
 module.exports = {
   productSeeder,
-  goldChartSeeder,
+  goldTransactionSeeder,
 };

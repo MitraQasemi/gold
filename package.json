@@ -26,6 +26,7 @@
     "jsonwebtoken": "^9.0.0",
     "level": "^8.0.0",
     "moment": "^2.29.4",
+    "moment-timezone": "^0.5.43",
     "nodemon": "^2.0.22",
     "path": "^0.12.7",
     "prisma": "^4.10.1",
