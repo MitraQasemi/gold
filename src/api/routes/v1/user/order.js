@@ -8,6 +8,7 @@ const { readOne, readMany } = require("../../../../validation/order");
 const {
   getOneOrder,
   getAllOrders,
+  getOrders
   // canselOrder,
 } = require("../../../../services/user/order");
 
@@ -32,6 +33,14 @@ const func = (app) => {
     }
   });
 
+  route.get("/getOrders", isAuth, validate(readMany), async (req, res, next) => {
+    try {
+      const result = await getOrders(req.query);
+      return res.send(result);
+    } catch (error) {
+      return next(new ApiError(error.statusCode || 500, error.message));
+    }
+  });
   // route.put("/order/:orderId", isAuth, async (req, res, next) => {
   //   try {
   //   } catch (error) {

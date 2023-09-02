@@ -173,7 +173,7 @@ const getCart = async (userId) => {
     },
   });
   if (!user) {
-    throw new ApiError(404, "!کاربر مورد نظر یافت نشد");
+    throw new ApiError(401, "!کاربر مورد نظر یافت نشد");
   }
   if (!user.cart) {
     throw new ApiError(400, "!شما سبد خرید ندارد");
