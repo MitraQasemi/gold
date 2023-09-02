@@ -104,29 +104,6 @@ const productSeeder = async () => {
   console.log("products seeded");
 };
 
-const goldTransactionSeeder = async () => {
-  const transactionType = ["sell", "buy"];
-  const count = await prisma.goldTransaction.count();
-  for (let i = 0; i < 30; i++) {
-    let transactionDate = new Date(`2023-08-${30 - i}`);
-    await prisma.goldTransaction.create({
-      data: {
-        details: "test",
-        paymentGateway: "test",
-        price: 2000000,
-        status: "done",
-        trackingCode: "test",
-        weight: 1,
-        date: transactionDate,
-        transactionType: transactionType[getRandomInt(transactionType.length)],
-        userId: "64c39997b2243af7f0ee6717",
-      },
-    });
-  }
-  console.log("goldTransaction seeded");
-};
-
 module.exports = {
   productSeeder,
-  goldTransactionSeeder,
 };
