@@ -13,6 +13,7 @@ const product = require("./user/product");
 const config = require("./admin/config");
 const goldPrice = require("./admin/goldprice");
 const goldChart = require("./admin/goldChart");
+const goldReports = require("./admin/gold");
 const user = require("./user/user");
 const configInfo = require("./user/config");
 const goldPriceInfo = require("./user/goldPrice");
@@ -36,6 +37,7 @@ const api = () => {
   config(router);
   goldPrice(router);
   goldChart(router);
+  goldReports(router);
   user(router);
   configInfo(router);
   goldPriceInfo(router);
