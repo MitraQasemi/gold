@@ -14,7 +14,7 @@ const signup = {
         password: joi.string().pattern(/^[a-zA-Z0-9_.-]{8,}$/).required(),
         permissions: joi.array().items(joi.object({
             action: joi.string().valid(...["create", "read", "update", "delete"]).required(),
-            subject: joi.string().valid(...["Admin", "User", "Product", "Category","Config","goldPrice"]).required()
+            subject: joi.string().valid(...["Admin", "User", "Product", "Category", "Config", "goldPrice", "goldTransaction"]).required()
         }))
     })
 }
