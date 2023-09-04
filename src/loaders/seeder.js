@@ -104,6 +104,65 @@ const productSeeder = async () => {
   console.log("products seeded");
 };
 
+const goldTransactionSeeder = async () => {
+  const transactionCount = await prisma.goldTransaction.count();
+  if (transactionCount >= 50) {
+    return;
+  }
+  const transactionType = ["sell", "buy"];
+  let month = 8;
+  let day = 1;
+  let hours = 0;
+  for (let i = 0; i < 30; i++) {
+    day += i;
+    if (day == 32) {
+      day = 1;
+      month = 9;
+    }
+    prisma.goldTransaction.createMany({
+      data: [
+        {
+          details: "from seeder",
+          paymentGateway: "test",
+          price: 250000000,
+          status: "done",
+          trackingCode: "123456789",
+          userId: "64f5c82863626027d059ba34",
+          weight: 1 + getRandomInt(10) / 10,
+          date: new Date(`2023-0${month}-${day} 00:00`),
+          transactionType:
+            transactionType[getRandomInt(transactionType.length)],
+        },
+        {
+          details: "from seeder",
+          paymentGateway: "test",
+          price: 250000000,
+          status: "done",
+          trackingCode: "123456789",
+          userId: "64f5c82863626027d059ba34",
+          weight: 1 + getRandomInt(10) / 10,
+          date: new Date(`2023-0${month}-${day} 08:40`),
+          transactionType:
+            transactionType[getRandomInt(transactionType.length)],
+        },
+        {
+          details: "from seeder",
+          paymentGateway: "test",
+          price: 250000000,
+          status: "done",
+          trackingCode: "123456789",
+          userId: "64f5c82863626027d059ba34",
+          weight: 1 + getRandomInt(10) / 10,
+          date: new Date(`2023-0${month}-${day} 23:55`),
+          transactionType:
+            transactionType[getRandomInt(transactionType.length)],
+        },
+      ],
+    });
+  }
+};
+
 module.exports = {
   productSeeder,
+  goldTransactionSeeder
 };
