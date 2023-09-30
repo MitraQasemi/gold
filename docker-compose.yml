@@ -13,7 +13,7 @@ services:
       - mongo3
       # - redis
     environment:
-      - DATABASE_URL=mongodb://mongo1:27017,mongo1:27018,mongo1:27019/gold
+      - DATABASE_URL=mongodb://mongo1:27020,mongo1:27021,mongo1:27022/gold
     networks:
       - tavaqof
     volumes:
@@ -24,7 +24,7 @@ services:
     image: mongo:6.0.6
     restart: always
     ports:
-      - "27017:27017"
+      - "27020:27017"
     volumes:
       - mongo1_data:/data/db
     networks:
@@ -35,7 +35,7 @@ services:
     image: mongo:6.0.6
     restart: always
     ports:
-      - "27019:27017"
+      - "27022:27017"
     volumes:
       - mongo3_data:/data/db
     networks:
@@ -46,7 +46,7 @@ services:
     image: mongo:6.0.6
     restart: always
     ports:
-      - "27018:27017"
+      - "27021:27017"
     volumes:
       - mongo2_data:/data/db
     networks:
