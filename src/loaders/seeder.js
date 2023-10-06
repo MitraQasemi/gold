@@ -10,10 +10,10 @@ function getRandomInt(max) {
 
 const productNames = ["ring", "earring", "Necklace", "wristband"];
 const productImages = [
-  "http://api.talayto.com/8820cd49-f498-4bcf-ac4c-2f60d74440b0_.png",
-  "http://api.talayto.com/77b9fe73-b213-4f07-9cb0-a3856529d643_.png",
-  "http://api.talayto.com/eec47095-ffdb-4079-a9e9-c51f76d33269_.png",
-  "http://api.talayto.com/b5b1829b-eeb4-4add-95b2-5bcd34702696_.png",
+  "http://82.11518.249/8820cd49-f498-4bcf-ac4c-2f60d74440b0_.png",
+  "http://82.11518.249/77b9fe73-b213-4f07-9cb0-a3856529d643_.png",
+  "http://82.11518.249/eec47095-ffdb-4079-a9e9-c51f76d33269_.png",
+  "http://82.11518.249/b5b1829b-eeb4-4add-95b2-5bcd34702696_.png",
 ];
 const tags = [
   ["gold", "18"],
