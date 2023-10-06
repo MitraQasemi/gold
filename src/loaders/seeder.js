@@ -10,10 +10,10 @@ function getRandomInt(max) {
 
 const productNames = ["ring", "earring", "Necklace", "wristband"];
 const productImages = [
-  "http://82.11518.249/8820cd49-f498-4bcf-ac4c-2f60d74440b0_.png",
-  "http://82.11518.249/77b9fe73-b213-4f07-9cb0-a3856529d643_.png",
-  "http://82.11518.249/eec47095-ffdb-4079-a9e9-c51f76d33269_.png",
-  "http://82.11518.249/b5b1829b-eeb4-4add-95b2-5bcd34702696_.png",
+  "http://82.115.18.249:3001/4b515854-ff20-4e7c-84a6-3d8429cf7443_.png",
+  "http://82.115.18.249:3001/66edd93f-7079-4c9c-83b8-8222e3445d77_.png",
+  "http://82.115.18.249:3001/3f8b36dd-9945-4d11-8a05-781017f73877_.png",
+  "http://82.115.18.249:3001/3f8b36dd-9945-4d11-8a05-781017f73877_.png",
 ];
 const tags = [
   ["gold", "18"],
