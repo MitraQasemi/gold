@@ -10,7 +10,7 @@ function getRandomInt(max) {
 
 const productNames = ["ring", "earring", "Necklace", "wristband"];
 const productImages = [
-  "http://91.107.160.88:3001/bc698acf-16c0-4e0d-8737-aa3e3c32f339_.png",
+  "http://91.107.160.88:3001/2d87e6de-1090-4516-aaa2-330656ee4cf1_.png",
   "http://91.107.160.88:3001/6c3e9fc0-35e5-4090-b403-870391006d59_.png",
   "http://91.107.160.88:3001/aec7c9f0-9316-4369-bf62-6d5bb17ab79e_.png",
   "http://91.107.160.88:3001/5376d0d0-8a6a-4fdd-8fc7-804385c82cd4_.jpg",

@@ -19,7 +19,7 @@ module.exports = (req, directory) => {
         const result = newPath.split(path.sep);
         fs.createReadStream(file.image.filepath)
           .pipe(fs.createWriteStream(newPath))
-          .on("finish", () => resolve(`http://91.107.160.88:3001/${result[result.length - 1]}`))
+          .on("finish", () => resolve(`http://api.talayto.com/${result[result.length - 1]}`))
           .on("error", (error) => reject(error));
       });
     });
