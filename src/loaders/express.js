@@ -11,6 +11,9 @@ const routes = require("../api/routes/v1");
 const { request } = require("http");
 
 const expressLoader = async (app) => {
+    app.use(cors({
+        origin: '*',
+    }));
     const limiter = rateLimit({
         windowMs: 2 * 60 * 1000, // 15 minutes
         max: 15, // limit each IP to 100 requests per windowMs
@@ -20,10 +23,6 @@ const expressLoader = async (app) => {
     app.use(limiter);
     app.use(helmet());
     app.use(express.static(path.join(__dirname, "../public/products")));
-    console.log(__dirname);
-    app.use(cors({
-        origin: '*',
-    }));
     app.use(express.json());
     app.use("/v1", routes());
 
