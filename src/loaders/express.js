@@ -1,8 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const path = require('path');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+//const helmet = require('helmet');
+//const rateLimit = require('express-rate-limit');
 const httpStatus = require('http-status-codes');
 const { errorHandler } = require("../api/middlewares/error")
 require("dotenv").config({ path: "../.env" });
@@ -14,14 +14,14 @@ const expressLoader = async (app) => {
     app.use(cors({
         origin: '*',
     }));
-    const limiter = rateLimit({
-        windowMs: 2 * 60 * 1000, // 15 minutes
-        max: 15, // limit each IP to 100 requests per windowMs
-        message: 'Too many requests from this IP, please try again later.',
-    });
+    // const limiter = rateLimit({
+    //     windowMs: 2 * 60 * 1000, // 15 minutes
+    //     max: 15, // limit each IP to 100 requests per windowMs
+    //     message: 'Too many requests from this IP, please try again later.',
+    // });
 
-    app.use(limiter);
-    app.use(helmet());
+    // app.use(limiter);
+    //app.use(helmet());
     app.use(express.static(path.join(__dirname, "../public/products")));
     app.use(express.json());
     app.use("/v1", routes());
